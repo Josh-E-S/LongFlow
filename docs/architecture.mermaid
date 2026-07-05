@@ -7,7 +7,7 @@ flowchart LR
 
   subgraph VV["Frozen VibeVoice core"]
     TOK["7.5 Hz acoustic + semantic<br/>tokenizers (σ-VAE enc)"]
-    QWEN["Qwen2.5 backbone<br/>hidden states [B,T,2048]"]
+    QWEN["Qwen2.5 backbone<br/>hidden states [B,T,d_model]"]
     TOK --> QWEN
   end
 
@@ -32,7 +32,7 @@ flowchart LR
   STEER -.->|"inject at layer ℓ,<br/>turn-localized"| QWEN
   ASA -.->|"blended speaker<br/>conditioning"| QWEN
   QWEN -->|"h_t"| FLOW
-  FLOW -->|"acoustic latents [B,T,64]"| DEC
+  FLOW -->|"acoustic latents [B,T,d_latent]"| DEC
   DEC --> AUDIO
   AUDIO --> EVAL
   AUDIO -.->|"per-turn speaker<br/>embeddings"| ASA
