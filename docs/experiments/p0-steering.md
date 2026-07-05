@@ -26,7 +26,7 @@ Build `src/steering/contrast_pairs.py`:
    - **Valence axis:** warm/happy delivery vs. somber/cold delivery.
    - Same text, same target speaker reference, opposite affect → differences in activations should isolate affect.
 3. During each generation, forward hooks on every Qwen2.5 decoder layer capture mean-pooled hidden states over the generated speech frames (not the text prompt region). Save as `{script_id, axis, pole, layer, vector}` in a single `.pt`.
-4. **Honesty check:** listen to the pairs. If VibeVoice's own prompting can't produce audibly different affect, note it — the extraction has no signal to find and the run design must change (fall back to Expresso utterances re-encoded through the tokenizer for extraction).
+4. **Honesty check:** listen to the pairs. If VibeVoice's own prompting can't produce audibly different affect, note it — the extraction has no signal to find and the run design must change (fall back to Expresso utterances re-encoded through the tokenizer for extraction). Note: the HF `ylacombe/expresso` repo is read-speech only (happy/sad/laughing/whisper); high-arousal styles (angry, projected, fast) are improvised-only and require Meta's official tarball via textlesslib — see `docs/resources.md` §4.
 
 ## Stage 2 — Vector extraction (2 hrs)
 

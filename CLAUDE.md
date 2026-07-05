@@ -15,7 +15,7 @@ Full scope, positioning, data plan, and phases: `README.md`. Paper target: Inter
 
 ## Current state (July 2026)
 
-- Repo contains README, `docs/architecture.mermaid`, `docs/negative-results.md`. **No code yet.**
+- Repo contains README, `docs/` (architecture, negative results, **`resources.md` — pinned repos/weights/datasets/eval stack, verified 2026-07-05, read it before touching any external dependency**), the package scaffold (`src/`, `tests/`, uv-managed Python 3.11 env, ruff + pre-commit), and the frame-alignment guard `src/cache/alignment.py`. No model/experiment code yet.
 - Next task is **P0: the steering gate check** — spec in `docs/experiments/p0-steering.md`. It is deliberately first: cheapest experiment, validates the highest-risk contribution (C2), no training required.
 - Phase order after P0: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.
 
