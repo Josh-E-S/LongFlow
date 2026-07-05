@@ -27,3 +27,11 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# Tier 1 (fast, synthetic, no GPU) runs by default; tiers are opt-in:
+#   uv run pytest -m slow        -> tier 2 (e.g. 1-clip overfit gate, needs GPU)
+# Tier 3 gate checks are experiments, not tests -- see experiments/NOTES-template.md
+addopts = "-m 'not slow and not gpu'"
+markers = [
+    "slow: integration tests that train/decode; run manually before training runs",
+    "gpu: requires CUDA; run on the Vast.ai box, not locally",
+]

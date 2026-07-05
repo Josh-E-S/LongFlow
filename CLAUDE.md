@@ -49,8 +49,8 @@ These come from documented negative results (`docs/negative-results.md`). They a
 
 - Python 3.11, PyTorch. `ruff` + `pre-commit` per Josh's standard project-starter setup.
 - Repo layout (already specified in README): `src/cache/`, `src/flow_head/`, `src/steering/`, `src/anchoring/`, `src/eval/`, `configs/`, `experiments/`, `tests/`.
-- Every experiment gets a directory under `experiments/` with a `NOTES.md` — record hypothesis, config, result, and verdict *even when it fails*. Negative results are first-class citizens in this project.
-- Shape-and-gradient tests in `tests/` before any training script runs (synthetic tensors, NaN/Inf checks, T-alignment assertion).
+- Every experiment gets a directory under `experiments/` with a `NOTES.md` copied from `experiments/NOTES-template.md` — hypothesis and gate criteria filled in *before* the run, results and verdict after, *even when it fails*. Negative results are first-class citizens in this project.
+- Testing is three-tier: **tier 1** fast unit tests in `tests/` (synthetic tensors, shapes/masks/NaN, T-alignment, loss values on known inputs, JVP-tangent vs finite differences — run by default, keep them fast); **tier 2** `@pytest.mark.slow`/`gpu` integration tests (1-clip overfit gate — opt-in via `pytest -m slow`); **tier 3** gate checks are *experiments with a human listening step*, documented via the NOTES template, never automated into assertions.
 - Audio artifacts for listening checks go to `experiments/<name>/audio/` — never committed to git except curated demo samples in `samples/` (git-lfs).
 - Tag a git release at each phase gate (`p0-pass`, `p1-baseline`, ...) so paper numbers map to commits.
 
