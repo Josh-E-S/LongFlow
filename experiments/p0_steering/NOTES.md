@@ -31,24 +31,33 @@ Listening step: every sweep sample; note α where affect becomes audible and α 
 
 ## Stage 0 — environment + baseline sanity
 
-- [ ] Model/version pins recorded (weights revision, fork commit, transformers version)
-- [ ] Single-speaker sample generated and listened to — sounds normal
-- [ ] 2-speaker dialogue sample generated and listened to — sounds normal
-- [ ] Hook map verified against `docs/resources.md` §1 (layers path, hidden_size 1536, generate() entry point, speaker→position mapping)
-- [ ] Measured actual default inference steps + CFG behavior (README reconciliation #1)
+- [x] Model/version pins recorded (fork `07cb79fea`, `transformers 4.51.3` confirmed in-session; weights revision: not printed — capture next session)
+- [ ] Single-speaker sample generated and listened to — sounds normal *(generated ✓; listening verdict pending)*
+- [ ] 2-speaker dialogue sample generated and listened to — sounds normal *(generated ✓; listening verdict pending)*
+- [x] Hook map verified against `docs/resources.md` §1
+- [ ] Measured actual default inference steps + CFG behavior *(CFG default 3.0 confirmed; step count still unmeasured)*
 
-Findings:
+Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record):
 
-- 2026-07-05, Colab run: both baseline samples generated and brought back to
-  `audio/single_generated.wav`, `audio/dialogue_generated.wav`.
+- Environment: Colab L4 23GB, CUDA 13.0, fork @ `07cb79fea`, `transformers==4.51.3`
+  installed cleanly. Voice presets shipped: en-Alice_woman, en-Carter_man,
+  en-Frank_man, en-Mary_woman_bgm, en-Maya_woman, in-Samuel_man + 3 zh voices.
+- **Hook map verified against the live model — all asserts passed:**
+  `model.model.language_model.layers` → 28 × `Qwen2DecoderLayer`, hidden_size **1536**,
+  head `VibeVoiceDiffusionHead` at **123.28M params**, acoustic latent dim **64**,
+  `sample_speech_tokens(condition, neg_condition, cfg_scale=3.0)` → CFG default 3.0.
+- **Design observation:** VibeVoice's own head is 123M params; our planned flow head
+  is ~15M — an 8× shrink *on top of* the step reduction. Favorable for the paper if
+  it works; a capacity risk to watch at the P1 gate (per constraint 5, evaluate the
+  thin MLP fully before adding capacity).
 - Automated acoustic sanity (local, `soundfile`): 24 kHz confirmed; single: 12.0s,
   −28.7 dBFS RMS, ZCR 3654/s; dialogue: 12.4s, −25.2 dBFS, ZCR 3540/s. **Both ZCRs
   are inside the 3,000–8,000/s speech band — the April 7 failure signature (~1,250/s)
   is absent.** Energy mildly front-weighted (~2:1 halves), 50–60% low-amplitude
   frames (pauses/turn gaps) — plausible for short scripted clips.
-- Listening verdict: PENDING (human ears required — metrics alone don't count).
-- Hook-map verification cell output: PENDING (asserts, head param count,
-  sample_speech_tokens defaults, transformers version, weights revision).
+- Still open before Stage 0 closes: listening verdict (both clips), weights
+  `revision`, and the actual default DDPM/DPM-Solver step count (search the demo
+  script's args / generation config next session).
 
 ## Results
 

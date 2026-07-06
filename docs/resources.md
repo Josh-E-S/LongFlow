@@ -40,11 +40,14 @@ Re-verify anything marked UNVERIFIED before depending on it.
   = `proj(hidden) + timestep_emb`, summed. **v-prediction**, cosine schedule, DPM-Solver++.
   Latent: 64-dim σ-VAE (`fix_std=0.5`) at 7.5 Hz (compress ratio 3200 @ 24 kHz); learned
   `speech_scaling_factor`/`speech_bias_factor` un-scaling before decode. Semantic feedback
-  dim 128; both connectors Linear→RMSNorm→Linear.
+  dim 128; both connectors Linear→RMSNorm→Linear. **Head size verified live (P0 Stage 0,
+  2026-07-05): 123.28M params** — so the planned ~15M flow head is an 8× head shrink on
+  top of the step reduction, not a like-for-like swap; capacity risk to watch at P1 gate.
 - **CFG detail:** inference keeps a parallel negative KV cache and applies CFG
-  (`sample_speech_tokens`, default scale 3.0, ~20 DPM-Solver steps in code — the README's
-  "10-step" figure needs reconciling against measured defaults; if 20 steps × 2× CFG
-  passes is the real baseline, the speedup headline improves).
+  (`sample_speech_tokens(condition, neg_condition, cfg_scale=3.0)` — **default 3.0
+  confirmed live**, P0 Stage 0). Solver step count still unmeasured (~20 DPM-Solver
+  per code reading; README says 10) — measure in the next Colab session; if 20 steps
+  × 2× CFG passes is the real baseline, the speedup headline improves.
 
 ## 2. Flow head implementation strategy
 
