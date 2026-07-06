@@ -29,11 +29,11 @@ character of generated speech without degrading intelligibility or speaker ident
 Automated checks: Whisper-large-v3 WER vs script, ECAPA cosine to reference, F0 mean/var + energy monotonicity with α.
 Listening step: every sweep sample; note α where affect becomes audible and α where speech degrades.
 
-## Stage 0 — environment + baseline sanity
+## Stage 0 — environment + baseline sanity — **DONE 2026-07-06** (2 carry-overs into Stage 1: weights revision, solver step count)
 
 - [x] Model/version pins recorded (fork `07cb79fea`, `transformers 4.51.3` confirmed in-session; weights revision: not printed — capture next session)
-- [ ] Single-speaker sample generated and listened to — sounds normal *(generated ✓; listening verdict pending)*
-- [ ] 2-speaker dialogue sample generated and listened to — sounds normal *(generated ✓; listening verdict pending)*
+- [x] Single-speaker sample generated and listened to — sounds normal (Josh, 2026-07-06: "sounded pretty good")
+- [x] 2-speaker dialogue sample generated and listened to — sounds normal (same session)
 - [x] Hook map verified against `docs/resources.md` §1
 - [ ] Measured actual default inference steps + CFG behavior *(CFG default 3.0 confirmed; step count still unmeasured)*
 

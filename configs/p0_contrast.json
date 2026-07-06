@@ -1,0 +1,30 @@
+{
+  "_design": "Same neutral target text + same voice reference across poles; affect is induced only by a short spoken lead-in sentence (1 sentence vs 2-4 target sentences, so lead-in frames are a minority and are excluded by mask or drop_first_fraction). Scripts vary in content domain so extracted directions do not encode topic.",
+  "axes": {
+    "arousal": {
+      "pos": "Oh wow, I can hardly sit still right now, this is absolutely thrilling!",
+      "neg": "Everything is quiet and settled now, and I feel completely at ease."
+    },
+    "valence": {
+      "pos": "What a wonderful day this has been, I am so delighted about all of it.",
+      "neg": "I have been feeling rather down and heavy-hearted about everything lately."
+    }
+  },
+  "scripts": {
+    "weather": "The forecast for the region shows partly cloudy skies through the afternoon. Temperatures will stay near twenty degrees with light winds from the northwest. Conditions are expected to remain stable into the weekend.",
+    "recipe": "Begin by dicing the onion into small, even pieces. Heat two tablespoons of oil in a wide pan over medium heat. Add the onion and stir occasionally until it turns translucent.",
+    "directions": "From the station, walk two blocks north along the main road. Turn left at the second traffic light onto Harbor Street. The entrance to the building is on the right, just past the pharmacy.",
+    "memo": "The quarterly meeting has been moved to Thursday at ten in the morning. Please bring a printed copy of the project summary. The agenda will be distributed by email the day before.",
+    "nature": "The river winds slowly through the valley floor before reaching the lake. Tall grasses line both banks for most of its length. Herons are often seen standing in the shallow water near the bend.",
+    "appliance": "To reset the device, hold the power button for ten seconds. Wait for the indicator light to blink twice before releasing. The system will restart and restore its default settings automatically.",
+    "history": "The old bridge was completed in eighteen ninety-four after six years of construction. It carried both rail and foot traffic for nearly a century. Today it serves as a pedestrian crossing and viewing platform.",
+    "routine": "Most mornings start with a short walk before breakfast. After that, there is usually an hour of reading at the kitchen table. Errands and appointments are generally scheduled for the afternoon.",
+    "library": "The library will extend its opening hours during the examination period. Study rooms on the second floor can be reserved at the front desk. Returned books should be placed in the bins near the entrance.",
+    "trains": "Trains on the coastal line depart every forty minutes during the day. The journey to the terminal station takes just under an hour. Passengers changing at the junction should use platform three."
+  },
+  "held_out_scripts": {
+    "museum": "The museum's new wing opens to visitors at the start of next month. It houses the photography collection and two rotating exhibition halls. Guided tours will run twice daily from the main lobby.",
+    "garden": "Water the seedlings early in the day, before the sun is at full strength. Check the soil each morning by pressing a finger just below the surface. Most varieties need thinning once the second leaves appear.",
+    "airport": "Check-in counters for international departures are located in terminal two. Passengers are advised to arrive three hours before their scheduled flight. Security lines are typically shortest before six in the morning."
+  }
+}
