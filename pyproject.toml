@@ -6,6 +6,8 @@ requires-python = ">=3.11"
 # Runtime deps are pinned in requirements/ per environment (local dev vs GPU box)
 # once the resource research in docs/resources.md is finalized.
 dependencies = [
+    "numpy>=2.4.6",
+    "soundfile>=0.14.0",
     "torch>=2.12.1",
 ]
 

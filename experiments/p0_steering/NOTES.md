@@ -39,7 +39,16 @@ Listening step: every sweep sample; note α where affect becomes audible and α 
 
 Findings:
 
-(fill in)
+- 2026-07-05, Colab run: both baseline samples generated and brought back to
+  `audio/single_generated.wav`, `audio/dialogue_generated.wav`.
+- Automated acoustic sanity (local, `soundfile`): 24 kHz confirmed; single: 12.0s,
+  −28.7 dBFS RMS, ZCR 3654/s; dialogue: 12.4s, −25.2 dBFS, ZCR 3540/s. **Both ZCRs
+  are inside the 3,000–8,000/s speech band — the April 7 failure signature (~1,250/s)
+  is absent.** Energy mildly front-weighted (~2:1 halves), 50–60% low-amplitude
+  frames (pauses/turn gaps) — plausible for short scripted clips.
+- Listening verdict: PENDING (human ears required — metrics alone don't count).
+- Hook-map verification cell output: PENDING (asserts, head param count,
+  sample_speech_tokens defaults, transformers version, weights revision).
 
 ## Results
 
