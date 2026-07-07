@@ -175,7 +175,20 @@ over-steer failure sample. Baselines: sim 0.63–0.77, F0 199–218.
 - **Against full axis collapse:** arousal raises F0 *variability* (+11..+15 σ)
   at all α; valence at usable α shifts F0 mean without widening σ (−5..−1).
   Distinct prosodic fingerprints.
-- Gate scorecard: audible ✓, WER ✓, speaker-sim ✓; multi-speaker probe pending.
+- Gate scorecard: audible ✓, WER ✓, speaker-sim ✓; multi-speaker probe below.
+
+**Multi-speaker probe (2026-07-07):** 2-turn Alice→Frank dialogue; SegmentGate
+(embed_tokens END-watch) flips steering ON after Alice's turn. L17 α=1 arousal:
+44 steps steered, all in Frank's turn. Split at the token-derived turn boundary:
+- Alice segment: 0.689 vs Alice ref (baseline's own Alice: 0.663); 0.707 vs
+  baseline Alice segment → **within normal generation variation, unchanged.**
+- Frank segment: 0.460 vs baseline Frank → **steering moved the steered speaker
+  substantially while leaving the unsteered one alone.**
+- Band-config probe void: generation degenerated (4.7s, single segment,
+  ~0 sim to everything) — 1/6 degenerate rate at this config not established,
+  logged only. Turn-marker emission variability remains a known quirk.
+- Listening confirmation of the probe pair: PENDING (Alice identical? Frank
+  more expressive?).
 
 ## Verdict
 
