@@ -74,8 +74,39 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
   NOT clearly audible. Matches the pre-registered PARTIAL trajectory (possible
   axis collapse to single "intensity" axis); Stage 2 consistency/independence
   diagnostics will decide quantitatively.
-- Capture loop stats: (fill in: records saved / failures)
-- vectors.pt: (fill in when placed in experiments/p0_steering/)
+- Capture loop stats: **80/80 records, 0 failures**, 35.5 min on L4. Frames kept
+  per record: 57–149 (turn masking active; lead-in excluded).
+- vectors.pt in experiments/p0_steering/ (13.8 MB, gitignored); honesty wavs in audio/.
+- Weights revision: `c00898d257e6b46004e3e2866a47534085fb685a`.
+- **Solver steps resolved (README reconciliation #1):** model default
+  `ddpm_inference_steps=20`, but the demo sets 10 (`inference_from_file.py:365`).
+  Head runs cond+neg CFG pair per step → baseline is 10 steps × 2 head passes/frame.
+- Calibration quirk: the tiny 2-sentence script emitted only ONE speech_end this
+  session (vs 3 segments in the first session) — segment-marker emission is
+  variable on short scripts. Real two-turn capture scripts produced boundaries
+  reliably (0 failures, healthy frame counts). Keep the 0-frames guard.
+
+## Stage 2 — extraction + diagnostics (2026-07-06, local CPU)
+
+- Naive consistency (spec's expectation was >0.4 mid-layers): **0.023–0.042 ≈ the
+  1/√1536 = 0.026 random baseline** on both axes. At face value: noise.
+- More sensitive tests found real transferable signal the consistency stat missed:
+  - Permutation test (2000 label-flips): valence per-layer p<0.05 at L0, L1, L17;
+    arousal global p=0.33 (norm-test underpowered).
+  - **Leave-one-script-out AUC: arousal 0.70 @L17/L18; valence 0.825 @L17**
+    (chance 0.5) — a direction from 9 scripts classifies the held-out script's
+    poles well above chance, concentrated exactly in the predicted mid-stack.
+- Interpretation: real but weak shared emotion component; K=2 per pole makes
+  per-script directions noise-dominated (norms swamped by generation-to-generation
+  variance), which floors the pairwise-cosine stat. Valence transfers better than
+  arousal internally — opposite of the listening impression; not contradictory
+  (states vs rendered audio).
+- Decision: **Stage 3 smoke test before any recapture** — inject the L17/L18
+  directions at a few α values, 3 clips, ~15 min GPU. Injection is the actual
+  go/no-go question; if inaudible, THEN recapture with K=4 + stronger lead-ins,
+  then Expresso fallback in that order.
+- directions.pt saved (extract_all output: unit directions, norms, consistency,
+  candidates, independence).
 - **Known artifact, deliberately not chased:** spontaneous podcast-jingle/BGM
   right after the opening line in almost all generations — inherited from
   VibeVoice's podcast training data, generated through the same latent stream
