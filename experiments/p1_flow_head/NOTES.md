@@ -65,8 +65,13 @@ generation. Never skipped.
 
 - Durations identical, F0 within a few Hz. **flow4 ≡ flow16 — 4 NFE already
   saturates this head**; strong signal for the P2 1–2 NFE push.
-- Known minor: brief utterance-onset artifact (small-data signature at 800 utts;
-  watch whether the 75K run irons it out; if not, investigate frame-0 handling).
+- Known minor, correctly attributed (Josh, on re-listen): the brief onset
+  artifact is present **identically in the teacher clips** — it is VibeVoice's
+  own utterance-onset behavior (same family as the P0 jingle/BGM inheritance),
+  carried into the cache and faithfully reproduced by the head. NOT a
+  distillation defect; more data won't and shouldn't change it. Covered by the
+  existing convention: throwaway first sentence + trim for demo/eval audio.
+  (Earlier "small-data signature, watch at 75K" note was wrong — corrected.)
 
 ## Verdict
 
