@@ -1,0 +1,452 @@
+[
+ {
+  "tag": "museum_base",
+  "script": "museum",
+  "axis": null,
+  "alpha": 0.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 0
+ },
+ {
+  "tag": "museum_arousal_a0.5_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 81
+ },
+ {
+  "tag": "museum_arousal_a1.0_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 95
+ },
+ {
+  "tag": "museum_arousal_a2.0_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 94
+ },
+ {
+  "tag": "museum_arousal_a3.0_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 80
+ },
+ {
+  "tag": "museum_arousal_a1.0_band",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 81
+ },
+ {
+  "tag": "museum_arousal_a2.0_band",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 84
+ },
+ {
+  "tag": "museum_valence_a0.5_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 90
+ },
+ {
+  "tag": "museum_valence_a1.0_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 89
+ },
+ {
+  "tag": "museum_valence_a2.0_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 86
+ },
+ {
+  "tag": "museum_valence_a3.0_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 104
+ },
+ {
+  "tag": "museum_valence_a1.0_band",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 90
+ },
+ {
+  "tag": "museum_valence_a2.0_band",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 92
+ },
+ {
+  "tag": "garden_base",
+  "script": "garden",
+  "axis": null,
+  "alpha": 0.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 0
+ },
+ {
+  "tag": "garden_arousal_a0.5_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 95
+ },
+ {
+  "tag": "garden_arousal_a1.0_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 103
+ },
+ {
+  "tag": "garden_arousal_a2.0_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 86
+ },
+ {
+  "tag": "garden_arousal_a3.0_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 89
+ },
+ {
+  "tag": "garden_arousal_a1.0_band",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 94
+ },
+ {
+  "tag": "garden_arousal_a2.0_band",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 94
+ },
+ {
+  "tag": "garden_valence_a0.5_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 109
+ },
+ {
+  "tag": "garden_valence_a1.0_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 94
+ },
+ {
+  "tag": "garden_valence_a2.0_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91
+ },
+ {
+  "tag": "garden_valence_a3.0_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 93
+ },
+ {
+  "tag": "garden_valence_a1.0_band",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 96
+ },
+ {
+  "tag": "garden_valence_a2.0_band",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 107
+ },
+ {
+  "tag": "airport_base",
+  "script": "airport",
+  "axis": null,
+  "alpha": 0.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 0
+ },
+ {
+  "tag": "airport_arousal_a0.5_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 115
+ },
+ {
+  "tag": "airport_arousal_a1.0_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 99
+ },
+ {
+  "tag": "airport_arousal_a2.0_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 79
+ },
+ {
+  "tag": "airport_arousal_a3.0_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 109
+ },
+ {
+  "tag": "airport_arousal_a1.0_band",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 104
+ },
+ {
+  "tag": "airport_arousal_a2.0_band",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 102
+ },
+ {
+  "tag": "airport_valence_a0.5_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91
+ },
+ {
+  "tag": "airport_valence_a1.0_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 111
+ },
+ {
+  "tag": "airport_valence_a2.0_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91
+ },
+ {
+  "tag": "airport_valence_a3.0_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91
+ },
+ {
+  "tag": "airport_valence_a1.0_band",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 81
+ },
+ {
+  "tag": "airport_valence_a2.0_band",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 96
+ }
+]

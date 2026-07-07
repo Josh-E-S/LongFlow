@@ -6,9 +6,15 @@ requires-python = ">=3.11"
 # Runtime deps are pinned in requirements/ per environment (local dev vs GPU box)
 # once the resource research in docs/resources.md is finalized.
 dependencies = [
+    "faster-whisper>=1.2.1",
+    "jiwer>=4.0.0",
     "numpy>=2.4.6",
+    "praat-parselmouth>=0.4.7",
     "soundfile>=0.14.0",
+    "speechbrain>=1.1.0",
     "torch>=2.12.1",
+    "torchaudio>=2.11.0",
+    "whisper-normalizer>=0.1.12",
 ]
 
 [dependency-groups]

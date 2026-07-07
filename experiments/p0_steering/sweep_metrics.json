@@ -1,0 +1,764 @@
+[
+ {
+  "tag": "museum_base",
+  "script": "museum",
+  "axis": null,
+  "alpha": 0.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 0,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.7650501728057861,
+  "f0_mean": 216.72444923552493,
+  "f0_std": 57.88102872205213,
+  "voiced_fraction": 0.6080760095011877,
+  "rms_dbfs": -24.59531021118164,
+  "duration_s": 12.666666666666666
+ },
+ {
+  "tag": "museum_arousal_a0.5_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 81,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.6456384658813477,
+  "f0_mean": 205.12276485732397,
+  "f0_std": 58.074715275752474,
+  "voiced_fraction": 0.5794920037629351,
+  "rms_dbfs": -24.405353546142578,
+  "duration_s": 10.666666666666666
+ },
+ {
+  "tag": "museum_arousal_a1.0_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 95,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.6823267936706543,
+  "f0_mean": 209.5433179692144,
+  "f0_std": 43.539882831288374,
+  "voiced_fraction": 0.6288,
+  "rms_dbfs": -26.32724952697754,
+  "duration_s": 12.533333333333333
+ },
+ {
+  "tag": "museum_arousal_a2.0_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 94,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.5665477514266968,
+  "f0_mean": 209.41895406658904,
+  "f0_std": 65.13517830472564,
+  "voiced_fraction": 0.6192400970088925,
+  "rms_dbfs": -25.250560760498047,
+  "duration_s": 12.4
+ },
+ {
+  "tag": "museum_arousal_a3.0_L17",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 80,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.3980635404586792,
+  "f0_mean": 198.7950914710989,
+  "f0_std": 74.35933873746914,
+  "voiced_fraction": 0.5742857142857143,
+  "rms_dbfs": -25.57233428955078,
+  "duration_s": 10.533333333333333
+ },
+ {
+  "tag": "museum_arousal_a1.0_band",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 81,
+  "wer": 0.029411764705882353,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection in two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.5960370302200317,
+  "f0_mean": 191.36028024465512,
+  "f0_std": 37.34976685315337,
+  "voiced_fraction": 0.5663217309501412,
+  "rms_dbfs": -24.508026123046875,
+  "duration_s": 10.666666666666666
+ },
+ {
+  "tag": "museum_arousal_a2.0_band",
+  "script": "museum",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 84,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.6972564458847046,
+  "f0_mean": 225.37576900470876,
+  "f0_std": 56.249616588545564,
+  "voiced_fraction": 0.6337262012692656,
+  "rms_dbfs": -25.688961029052734,
+  "duration_s": 11.066666666666666
+ },
+ {
+  "tag": "museum_valence_a0.5_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 90,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.7215163111686707,
+  "f0_mean": 218.8177086624927,
+  "f0_std": 47.33593933018881,
+  "voiced_fraction": 0.610312764158918,
+  "rms_dbfs": -25.413223266601562,
+  "duration_s": 11.866666666666667
+ },
+ {
+  "tag": "museum_valence_a1.0_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 89,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.7020448446273804,
+  "f0_mean": 210.57010522108163,
+  "f0_std": 43.41317661678389,
+  "voiced_fraction": 0.5735042735042735,
+  "rms_dbfs": -25.317298889160156,
+  "duration_s": 11.733333333333333
+ },
+ {
+  "tag": "museum_valence_a2.0_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 86,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.7006808519363403,
+  "f0_mean": 215.34311382415848,
+  "f0_std": 50.654964332594865,
+  "voiced_fraction": 0.5752212389380531,
+  "rms_dbfs": -24.749950408935547,
+  "duration_s": 11.333333333333334
+ },
+ {
+  "tag": "museum_valence_a3.0_L17",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 104,
+  "wer": 0.029411764705882353,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Dited tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.4545518457889557,
+  "f0_mean": 253.54005095322788,
+  "f0_std": 82.30358958115718,
+  "voiced_fraction": 0.5100521221146687,
+  "rms_dbfs": -24.925233840942383,
+  "duration_s": 13.466666666666667
+ },
+ {
+  "tag": "museum_valence_a1.0_band",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 90,
+  "wer": 0.029411764705882353,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection in two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.7437787055969238,
+  "f0_mean": 217.79093298134785,
+  "f0_std": 62.868593706263106,
+  "voiced_fraction": 0.5528317836010144,
+  "rms_dbfs": -25.13575553894043,
+  "duration_s": 11.866666666666667
+ },
+ {
+  "tag": "museum_valence_a2.0_band",
+  "script": "museum",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 92,
+  "wer": 0.0,
+  "transcript": "The museum's new wing opens to visitors at the start of next month.  It houses the photography collection and two rotating exhibition halls.  Guided tours will run twice daily from the main lobby.",
+  "speaker_sim": 0.46733981370925903,
+  "f0_mean": 227.6229658928712,
+  "f0_std": 70.62774581381349,
+  "voiced_fraction": 0.5570247933884298,
+  "rms_dbfs": -24.43617820739746,
+  "duration_s": 12.133333333333333
+ },
+ {
+  "tag": "garden_base",
+  "script": "garden",
+  "axis": null,
+  "alpha": 0.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 0,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day, before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.6268666386604309,
+  "f0_mean": 198.84825050651372,
+  "f0_std": 47.01074111223033,
+  "voiced_fraction": 0.547901821060966,
+  "rms_dbfs": -24.82324981689453,
+  "duration_s": 12.666666666666666
+ },
+ {
+  "tag": "garden_arousal_a0.5_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 95,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.6557938456535339,
+  "f0_mean": 230.4475175504361,
+  "f0_std": 73.4093438588336,
+  "voiced_fraction": 0.5536,
+  "rms_dbfs": -25.254295349121094,
+  "duration_s": 12.533333333333333
+ },
+ {
+  "tag": "garden_arousal_a1.0_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 103,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7290614247322083,
+  "f0_mean": 226.3513672842739,
+  "f0_std": 76.28899640457955,
+  "voiced_fraction": 0.5497420781134856,
+  "rms_dbfs": -25.814706802368164,
+  "duration_s": 13.6
+ },
+ {
+  "tag": "garden_arousal_a2.0_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 86,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7062932848930359,
+  "f0_mean": 223.12229206029477,
+  "f0_std": 69.74662657292588,
+  "voiced_fraction": 0.5398230088495575,
+  "rms_dbfs": -25.70003318786621,
+  "duration_s": 11.333333333333334
+ },
+ {
+  "tag": "garden_arousal_a3.0_L17",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 89,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.5673343539237976,
+  "f0_mean": 226.8677167567851,
+  "f0_std": 66.604373468731,
+  "voiced_fraction": 0.6196581196581197,
+  "rms_dbfs": -24.809293746948242,
+  "duration_s": 11.733333333333333
+ },
+ {
+  "tag": "garden_arousal_a1.0_band",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 94,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7021483182907104,
+  "f0_mean": 223.145652126176,
+  "f0_std": 74.1345700062895,
+  "voiced_fraction": 0.5715440582053355,
+  "rms_dbfs": -25.97626495361328,
+  "duration_s": 12.4
+ },
+ {
+  "tag": "garden_arousal_a2.0_band",
+  "script": "garden",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 94,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day, before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7442288398742676,
+  "f0_mean": 213.51399511910924,
+  "f0_std": 68.95239194568502,
+  "voiced_fraction": 0.50767987065481,
+  "rms_dbfs": -27.008398056030273,
+  "duration_s": 12.4
+ },
+ {
+  "tag": "garden_valence_a0.5_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 109,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7364752292633057,
+  "f0_mean": 216.5231057789716,
+  "f0_std": 58.01089478918775,
+  "voiced_fraction": 0.5400139178844816,
+  "rms_dbfs": -25.238384246826172,
+  "duration_s": 14.4
+ },
+ {
+  "tag": "garden_valence_a1.0_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 94,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7774719595909119,
+  "f0_mean": 215.7559304478883,
+  "f0_std": 54.31445609120552,
+  "voiced_fraction": 0.5578011317704122,
+  "rms_dbfs": -26.470279693603516,
+  "duration_s": 12.4
+ },
+ {
+  "tag": "garden_valence_a2.0_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the Sun is at full strength. Check  the soil each morning by pressing a finger just below the surface. Most  varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.4645651876926422,
+  "f0_mean": 230.66303217248247,
+  "f0_std": 69.64015205696664,
+  "voiced_fraction": 0.581453634085213,
+  "rms_dbfs": -21.169775009155273,
+  "duration_s": 12.0
+ },
+ {
+  "tag": "garden_valence_a3.0_L17",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 93,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.40928730368614197,
+  "f0_mean": 235.70037290278043,
+  "f0_std": 55.606896335773314,
+  "voiced_fraction": 0.5699100572363042,
+  "rms_dbfs": -22.127893447875977,
+  "duration_s": 12.266666666666667
+ },
+ {
+  "tag": "garden_valence_a1.0_band",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 96,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.7015385627746582,
+  "f0_mean": 230.2590652429776,
+  "f0_std": 57.467405908662364,
+  "voiced_fraction": 0.5613618368962787,
+  "rms_dbfs": -26.01348114013672,
+  "duration_s": 12.666666666666666
+ },
+ {
+  "tag": "garden_valence_a2.0_band",
+  "script": "garden",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 107,
+  "wer": 0.0,
+  "transcript": "Water the seedlings early in the day before the sun is at full strength.  Check the soil each morning by pressing a finger just below the surface.  Most varieties need thinning once the second leaves appear.",
+  "speaker_sim": 0.5029162764549255,
+  "f0_mean": 257.6461352317764,
+  "f0_std": 76.88752363022722,
+  "voiced_fraction": 0.4858156028368794,
+  "rms_dbfs": -24.85866928100586,
+  "duration_s": 14.133333333333333
+ },
+ {
+  "tag": "airport_base",
+  "script": "airport",
+  "axis": null,
+  "alpha": 0.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 0,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.7100881338119507,
+  "f0_mean": 217.84171321793113,
+  "f0_std": 60.15863904261695,
+  "voiced_fraction": 0.5261958997722096,
+  "rms_dbfs": -25.254989624023438,
+  "duration_s": 13.2
+ },
+ {
+  "tag": "airport_arousal_a0.5_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 115,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.7179929614067078,
+  "f0_mean": 241.29842718235585,
+  "f0_std": 74.21012777025247,
+  "voiced_fraction": 0.5477916941331575,
+  "rms_dbfs": -26.032291412353516,
+  "duration_s": 15.2
+ },
+ {
+  "tag": "airport_arousal_a1.0_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 99,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before six in the morning.",
+  "speaker_sim": 0.6753020882606506,
+  "f0_mean": 214.0469742776424,
+  "f0_std": 78.12776170764938,
+  "voiced_fraction": 0.5364543361473523,
+  "rms_dbfs": -24.70638656616211,
+  "duration_s": 13.066666666666666
+ },
+ {
+  "tag": "airport_arousal_a2.0_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 79,
+  "wer": 1.28125,
+  "transcript": "I trust the temple.  Sadist,  Matt,  Claire,  McGarge,  you're right.  I asked you to narrate to her in personal support.  Let's ignite.  So you're on.  I'll see you.  I'm perfect.  You're all that.  I for there.  Stir.",
+  "speaker_sim": 0.567755937576294,
+  "f0_mean": 243.21658510600756,
+  "f0_std": 71.20927006252948,
+  "voiced_fraction": 0.562198649951784,
+  "rms_dbfs": -25.629369735717773,
+  "duration_s": 10.4
+ },
+ {
+  "tag": "airport_arousal_a3.0_L17",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 109,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.3424888253211975,
+  "f0_mean": 226.11597168446858,
+  "f0_std": 69.73841987821301,
+  "voiced_fraction": 0.55741127348643,
+  "rms_dbfs": -24.851646423339844,
+  "duration_s": 14.4
+ },
+ {
+  "tag": "airport_arousal_a1.0_band",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 104,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.7309620976448059,
+  "f0_mean": 221.8619759446874,
+  "f0_std": 58.56206714058586,
+  "voiced_fraction": 0.5605839416058395,
+  "rms_dbfs": -25.318830490112305,
+  "duration_s": 13.733333333333333
+ },
+ {
+  "tag": "airport_arousal_a2.0_band",
+  "script": "airport",
+  "axis": "arousal",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 102,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before six in the morning.",
+  "speaker_sim": 0.6387208104133606,
+  "f0_mean": 208.22882362032905,
+  "f0_std": 48.440933509020915,
+  "voiced_fraction": 0.5428145941921072,
+  "rms_dbfs": -25.1628475189209,
+  "duration_s": 13.466666666666667
+ },
+ {
+  "tag": "airport_valence_a0.5_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 0.5,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.6894122362136841,
+  "f0_mean": 215.77010505038658,
+  "f0_std": 44.0753462236195,
+  "voiced_fraction": 0.6031746031746031,
+  "rms_dbfs": -25.20204734802246,
+  "duration_s": 12.0
+ },
+ {
+  "tag": "airport_valence_a1.0_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 111,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.7229218482971191,
+  "f0_mean": 227.52222585956235,
+  "f0_std": 65.81865300257415,
+  "voiced_fraction": 0.5892002734107997,
+  "rms_dbfs": -24.875167846679688,
+  "duration_s": 14.666666666666666
+ },
+ {
+  "tag": "airport_valence_a2.0_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.5814915895462036,
+  "f0_mean": 217.8057002512822,
+  "f0_std": 87.23025538106911,
+  "voiced_fraction": 0.5146198830409356,
+  "rms_dbfs": -24.278650283813477,
+  "duration_s": 12.0
+ },
+ {
+  "tag": "airport_valence_a3.0_L17",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 3.0,
+  "layers": [
+   17
+  ],
+  "steered_steps": 91,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive 3 hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.45033007860183716,
+  "f0_mean": 250.66545136417145,
+  "f0_std": 75.16707789493896,
+  "voiced_fraction": 0.5162907268170426,
+  "rms_dbfs": -23.35116958618164,
+  "duration_s": 12.0
+ },
+ {
+  "tag": "airport_valence_a1.0_band",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 1.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 81,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before 6 in the morning.",
+  "speaker_sim": 0.43696272373199463,
+  "f0_mean": 226.21739793954032,
+  "f0_std": 50.65132900779295,
+  "voiced_fraction": 0.5634995296331138,
+  "rms_dbfs": -24.52916717529297,
+  "duration_s": 10.666666666666666
+ },
+ {
+  "tag": "airport_valence_a2.0_band",
+  "script": "airport",
+  "axis": "valence",
+  "alpha": 2.0,
+  "layers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "steered_steps": 96,
+  "wer": 0.0,
+  "transcript": "Check-in counters for international departures are located in Terminal 2.  Passengers are advised to arrive three hours before their scheduled flight.  Security lines are typically shortest before six in the morning.",
+  "speaker_sim": 0.4139910936355591,
+  "f0_mean": 230.4311155101267,
+  "f0_std": 62.79170224829444,
+  "voiced_fraction": 0.564528899445764,
+  "rms_dbfs": -25.081016540527344,
+  "duration_s": 12.666666666666666
+ }
+]

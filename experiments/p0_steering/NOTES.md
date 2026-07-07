@@ -146,7 +146,36 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
 
 ## Results
 
-(fill in after the sweep)
+**Full sweep (39 clips, 3 held-out scripts), objective metrics — 2026-07-07, local
+faster-whisper large-v3 int8 + ECAPA + parselmouth (`sweep_metrics.json`):**
+
+| condition | WER | sim× (vs base) | ΔF0 | ΔF0σ | gates |
+|---|---|---|---|---|---|
+| arousal α0.5 L17 | 0.000 | 0.97 | +14 | +14 | PASS/PASS |
+| arousal α1.0 L17 | 0.000 | 1.00 | +6 | +11 | PASS/PASS |
+| arousal α2.0 L17 | 0.427* | 0.89 | +14 | +14 | fail/PASS |
+| arousal α3.0 L17 | 0.000 | 0.64 | +6 | +15 | PASS/fail |
+| valence α0.5 L17 | 0.000 | 1.03 | +6 | −5 | PASS/PASS |
+| valence α1.0 L17 | 0.000 | 1.06 | +7 | −1 | PASS/PASS |
+| valence α2.0 L17 | 0.000 | 0.83 | +10 | +14 | PASS/fail |
+| valence α3.0 L17 | 0.010 | 0.63 | +35 | +16 | PASS/fail |
+| arousal α1.0 band | 0.010 | 0.98 | +1 | +2 | PASS/PASS |
+| arousal α2.0 band | 0.000 | 1.00 | +5 | +3 | PASS/PASS |
+| valence α1.0 band | 0.010 | 0.90 | +14 | +2 | PASS/PASS |
+| valence α2.0 band | 0.000 | 0.67 | +27 | +15 | PASS/fail |
+
+\* one clip (airport_arousal_a2.0_L17) Whisper-hallucinated completely
+("I trust the temple. Sadist, Matt, Claire, McGarge...") — kept as the
+over-steer failure sample. Baselines: sim 0.63–0.77, F0 199–218.
+
+- **Usable window confirmed: α∈[0.5, 1] @L17 passes all gates on both axes**
+  (WER 0.000, sim 0.97–1.06×), matching the listening verdict exactly.
+- **Band (L14–19, α split per layer) is more robust than single-layer**: arousal
+  α=2 band = WER 0.000 / sim 1.00×. Wider control range via multi-layer spread.
+- **Against full axis collapse:** arousal raises F0 *variability* (+11..+15 σ)
+  at all α; valence at usable α shifts F0 mean without widening σ (−5..−1).
+  Distinct prosodic fingerprints.
+- Gate scorecard: audible ✓, WER ✓, speaker-sim ✓; multi-speaker probe pending.
 
 ## Verdict
 
