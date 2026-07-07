@@ -116,6 +116,19 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
   clean voice presets only (never `*_bgm`), and for eval/demo audio add a
   throwaway first sentence and trim it before metrics/listening.
 
+## Stage 3 — injection (2026-07-06, in progress)
+
+- Smoke test v1 (UNIT directions, α∈{2,8,−8}, layers 17+18 simultaneously):
+  **all steered outputs unintelligible gibberish; baseline clean.** Mechanism
+  confirmed (injection reaches the speech pipeline); scale mis-calibrated —
+  unit-vector α is the wrong unit. Raw pos−neg contrast norms are ~1.1, so
+  α=2 × unit × 2 compounding layers ≈ 4–8× the largest natural emotion gap,
+  every frame, further amplified by CFG. The spec's α∈{0.5..8} grid implicitly
+  assumed natural units; recorded as an empirical finding.
+- Smoke test v2: single layer (L17), directions at natural scale
+  (unit × raw norm), α∈{0.5,1,2,4}. Pending listen.
+- Keep one over-steered gibberish clip as the failure sample (spec deliverable).
+
 ## Results
 
 (fill in after the sweep)
