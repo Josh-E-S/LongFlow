@@ -51,11 +51,32 @@ generation. Never skipped.
 
 ## Results
 
-(fill in)
+- Training (5K steps, bs 1024, 41,450 pairs from 800 utts): loss 2.02 → 0.29,
+  smooth monotonic, no NaN. **Criterion (b) PASS.**
+- Listening (Josh): flow clips sound good; one small start-of-speech artifact
+  that clears ("warm-up"); teacher-quality otherwise. **Criterion (c) ears PASS.**
+- Objective parity vs teacher (5 utts, `gate_metrics.json`; WER reference =
+  Whisper transcript of the teacher clip):
+
+| config | mean WER vs teacher | mean sim to teacher |
+|---|---|---|
+| flow4 | **0.030** | **0.984** |
+| flow16 | 0.030 | 0.978 |
+
+- Durations identical, F0 within a few Hz. **flow4 ≡ flow16 — 4 NFE already
+  saturates this head**; strong signal for the P2 1–2 NFE push.
+- Known minor: brief utterance-onset artifact (small-data signature at 800 utts;
+  watch whether the 75K run irons it out; if not, investigate frame-0 handling).
 
 ## Verdict
 
-(fill in against the pre-registered criteria)
+**PASS (2026-07-08).** All three pre-registered criteria met: roundtrip clean,
+training healthy, 4-NFE samples intelligible and speaker-faithful (0.984 sim,
+0.030 WER vs teacher). **N2's conditioning hypothesis confirmed in both
+directions** — identical head recipe to the April 7 failure succeeds when
+conditioned on VibeVoice's own pre-validated hidden states. Proceed to the full
+P1 run: 75K caching, full training, DDPM-baseline eval (WER, WavLM SIM,
+wall-clock), then tag `p1-baseline`.
 
 ## Artifacts
 

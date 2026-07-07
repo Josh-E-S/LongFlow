@@ -1,0 +1,62 @@
+[
+ {
+  "tag": "192_123167_000016_000000",
+  "teacher_transcript": "Vanilla beans, well bruised, half an ounce French brandy, on",
+  "flow4_wer": 0.043,
+  "flow4_sim": 0.99,
+  "flow16_wer": 0.043,
+  "flow16_sim": 0.983,
+  "f0_teacher": 186,
+  "f0_flow4": 183,
+  "dur_t": 8.8,
+  "dur_f4": 8.8
+ },
+ {
+  "tag": "192_123167_000016_000001",
+  "teacher_transcript": "Keep it corked tight.  This article will keep any length of ",
+  "flow4_wer": 0.0,
+  "flow4_sim": 0.981,
+  "flow16_wer": 0.0,
+  "flow16_sim": 0.975,
+  "f0_teacher": 182,
+  "f0_flow4": 174,
+  "dur_t": 5.6,
+  "dur_f4": 5.6
+ },
+ {
+  "tag": "192_123167_000018_000000",
+  "teacher_transcript": "1 gallon of cream, 2 pounds rolled loaf sugar, 1 teaspoonful",
+  "flow4_wer": 0.0,
+  "flow4_sim": 0.983,
+  "flow16_wer": 0.0,
+  "flow16_sim": 0.975,
+  "f0_teacher": 173,
+  "f0_flow4": 177,
+  "dur_t": 8.0,
+  "dur_f4": 8.0
+ },
+ {
+  "tag": "7145_87280_000126_000000",
+  "teacher_transcript": "If I see her again, he said, I have life to kill someone, ev",
+  "flow4_wer": 0.105,
+  "flow4_sim": 0.983,
+  "flow16_wer": 0.105,
+  "flow16_sim": 0.977,
+  "f0_teacher": 169,
+  "f0_flow4": 169,
+  "dur_t": 7.1,
+  "dur_f4": 7.1
+ },
+ {
+  "tag": "7145_87280_000128_000000",
+  "teacher_transcript": "But providence, or fate, or someone, ordered it differently,",
+  "flow4_wer": 0.0,
+  "flow4_sim": 0.981,
+  "flow16_wer": 0.0,
+  "flow16_sim": 0.982,
+  "f0_teacher": 193,
+  "f0_flow4": 192,
+  "dur_t": 7.1,
+  "dur_f4": 7.1
+ }
+]

@@ -95,7 +95,7 @@ def train(
         torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0)
         opt.step()
         ema.update(head)
-        losses.append(float(loss))
+        losses.append(float(loss.detach()))
         if step % log_every == 0 or step == 1:
             recent = sum(losses[-log_every:]) / len(losses[-log_every:])
             print(f"step {step}/{steps}  loss {recent:.4f}")
