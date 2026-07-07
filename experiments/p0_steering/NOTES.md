@@ -132,7 +132,16 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
   injected ~4–8× the natural gap per layer, compounding across 2 layers.)
   Near-identical norms across axes = noise-power signature (directions still
   noise-dominated; real signal is a small rider). ~95 steered steps/clip.
-  Listening verdict: PENDING.
+- **v2 listening verdict (Josh): AUDIBLE EFFECT.** α=1.0 best on both axes —
+  subtle but definite emotion: pitch rises in places, louder, present across the
+  whole clip ("9/10 blind listeners would call arousal α=1 more expressive").
+  α=4 degrades voice quality on both axes (still audible, sounds weird) →
+  usable control window ≈ α∈[1, 3] natural units. Caveat: both axes described
+  as "more expressive/excited" — axis-collapse (PARTIAL scenario) still live;
+  F0/energy stats in the full sweep to arbitrate.
+- Full sweep launched: 3 held-out scripts × {baseline; 2 axes × α{0.5,1,2,3} @L17;
+  2 axes × α{1,2} spread across L14–19 band (per-layer α divided by band size)}
+  = 39 clips + manifest + reference voice → sweep.zip; metrics run locally.
 - Keep one over-steered gibberish clip as the failure sample (spec deliverable).
 
 ## Results
