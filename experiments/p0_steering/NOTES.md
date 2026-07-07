@@ -76,6 +76,14 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
   diagnostics will decide quantitatively.
 - Capture loop stats: (fill in: records saved / failures)
 - vectors.pt: (fill in when placed in experiments/p0_steering/)
+- **Known artifact, deliberately not chased:** spontaneous podcast-jingle/BGM
+  right after the opening line in almost all generations — inherited from
+  VibeVoice's podcast training data, generated through the same latent stream
+  as speech (no off switch short of retraining = out of scope). Harmless to
+  extraction: appears in both poles so the pos−neg subtraction cancels it, and
+  it clusters in the lead-in turn we already mask out. Conventions adopted:
+  clean voice presets only (never `*_bgm`), and for eval/demo audio add a
+  throwaway first sentence and trim it before metrics/listening.
 
 ## Results
 
