@@ -8,18 +8,16 @@ Deliberately duck-typed: nothing here imports vibevoice, so the math and hook
 mechanics are unit-testable on synthetic modules (tests/test_steering.py) and the
 VibeVoice-specific wiring lives in the experiment notebook.
 
-Two assumptions MUST be calibrated in-session before trusting output
-(see the calibration cell in experiments/p0_steering/stage1_colab.ipynb):
-
-1. `calls_per_step` — VibeVoice's inference keeps a parallel negative KV cache
-   for CFG, which may drive a second forward pass through the decoder layers
-   each AR step. If so, hooks fire twice per generated token: set
-   calls_per_step=2 and keep_call to whichever index is the positive pass.
-2. Frame attribution — the affect lead-in sentence is spoken too. If the emitted
-   token stream exposes per-turn speech_start/speech_end boundaries, mask to the
-   target turn's frames; otherwise fall back to dropping the first
-   `drop_first_fraction` of captured frames (lead-in is deliberately short
-   relative to the target text).
+Calibration finding (Colab L4, 2026-07-06): VibeVoice's inference runs a parallel
+negative (CFG) stream through the same decoder layers, and only on speech-frame
+steps — hook calls per generated token are NON-uniform (measured: 116 calls =
+1 prefill + 60 positive + 55 negative for 61 tokens). So no fixed calls-per-step
+assumption can work. Instead each hook call records the layer's `cache_position`;
+the positive AR stream is recovered as the unique chain of seq-len-1 calls whose
+positions continue the prompt (prompt_len, prompt_len+1, ...). The negative
+stream's positions restart near zero and stay ~prompt_len below the positive
+chain forever (both advance at most 1 per step), so classification is unambiguous
+at any generation length.
 """
 
 from dataclasses import dataclass
@@ -35,40 +33,42 @@ class PairRecord:
     sample_idx: int
     layer_vectors: torch.Tensor  # [num_layers, d_model], mean over kept frames
     num_frames_kept: int
-    num_calls_total: int  # raw hook calls, for calibration sanity checks
+    num_calls_total: int  # raw hook calls, for sanity checks
 
 
 class LayerActivationRecorder:
-    """Forward hooks on a list of decoder layers, buffering per-call hidden states.
-
-    Call pattern per layer during HF generate with KV cache:
-      call 0: prefill (seq_len == prompt length) -- always skipped,
-      calls 1..N: one per AR step (seq_len == 1), x calls_per_step if CFG
-      runs a parallel negative pass through the same modules.
+    """Position-aware forward hooks on a list of decoder layers.
 
     Layers may return tuples (Qwen2DecoderLayer does); the hidden state is
-    element 0. States are detached, moved to CPU, and stored fp32.
+    element 0. States are detached, moved to CPU, and stored fp32. Requires the
+    layers to receive `cache_position` as a kwarg (transformers 4.51.x does).
     """
 
-    def __init__(self, layers, calls_per_step: int = 1, keep_call: int = 0):
-        if calls_per_step < 1 or not (0 <= keep_call < calls_per_step):
-            raise ValueError(f"bad calibration: {calls_per_step=}, {keep_call=}")
+    def __init__(self, layers):
         self.layers = list(layers)
-        self.calls_per_step = calls_per_step
-        self.keep_call = keep_call
-        self._buffers: list[list[torch.Tensor]] = [[] for _ in self.layers]
+        self._states: list[list[torch.Tensor]] = [[] for _ in self.layers]
+        self._meta: list[tuple[int, int]] = []  # (last cache_position, seq_len); layer 0 only
         self._handles = []
 
     def _make_hook(self, layer_idx: int):
-        def hook(_module, _inputs, output):
+        def hook(_module, _args, kwargs, output):
             hidden = output[0] if isinstance(output, tuple) else output
-            self._buffers[layer_idx].append(hidden.detach().to("cpu", torch.float32))
+            if layer_idx == 0:
+                cp = kwargs.get("cache_position")
+                if cp is None:
+                    raise RuntimeError(
+                        "decoder layer did not receive cache_position kwarg — "
+                        "expected the transformers==4.51.x call signature"
+                    )
+                self._meta.append((int(cp[-1]), hidden.shape[1]))
+            self._states[layer_idx].append(hidden.detach().to("cpu", torch.float32))
 
         return hook
 
     def __enter__(self):
         self._handles = [
-            layer.register_forward_hook(self._make_hook(i)) for i, layer in enumerate(self.layers)
+            layer.register_forward_hook(self._make_hook(i), with_kwargs=True)
+            for i, layer in enumerate(self.layers)
         ]
         return self
 
@@ -80,53 +80,83 @@ class LayerActivationRecorder:
 
     @property
     def num_calls(self) -> int:
-        return len(self._buffers[0]) if self._buffers else 0
+        return len(self._states[0]) if self._states else 0
 
-    def step_states(self) -> torch.Tensor:
-        """Per-AR-step hidden states, calibration applied.
+    def step_states(self, prompt_len: int) -> tuple[torch.Tensor, torch.Tensor]:
+        """Recover the positive AR stream.
 
-        Returns [num_layers, num_steps, d_model]: prefill call dropped, then one
-        kept call per step (keep_call within each calls_per_step group), squeezed
-        from seq_len 1. Raises if the call pattern contradicts the calibration.
+        Returns (states, token_indices):
+          states [num_layers, n, d_model] — hidden states of positive AR calls;
+          token_indices [n] — for each kept call, the index into the
+          generated-token sequence of the token that call PREDICTED (i.e. the
+          state VibeVoice conditions that token's diffusion on). Generated token
+          0 is conditioned by the prefill call and is deliberately dropped.
         """
-        counts = {len(b) for b in self._buffers}
+        counts = {len(s) for s in self._states}
         if len(counts) != 1:
             raise RuntimeError(f"layers saw different call counts: {sorted(counts)}")
-        per_layer = []
-        for buf in self._buffers:
-            ar_calls = [t for t in buf[1:]]  # drop prefill
-            if len(ar_calls) % self.calls_per_step != 0:
-                raise RuntimeError(
-                    f"{len(ar_calls)} AR calls not divisible by calls_per_step="
-                    f"{self.calls_per_step} — recalibrate before trusting output"
-                )
-            kept = ar_calls[self.keep_call :: self.calls_per_step]
-            for t in kept:
-                if t.shape[1] != 1:
-                    raise RuntimeError(f"expected seq_len 1 AR call, got shape {tuple(t.shape)}")
-            per_layer.append(torch.cat(kept, dim=1)[0])  # [num_steps, d]
-        return torch.stack(per_layer)  # [L, num_steps, d]
+        if len(self._meta) != self.num_calls:
+            raise RuntimeError("metadata/call-count mismatch — hooks were tampered with")
+        kept, token_indices = [], []
+        expected = prompt_len
+        for ci, (pos, seq_len) in enumerate(self._meta):
+            if seq_len != 1:
+                continue  # a prefill (positive prompt, or negative CFG seed)
+            if pos == expected:
+                kept.append(ci)
+                token_indices.append(pos - prompt_len + 1)
+                expected += 1
+        if not kept:
+            raise RuntimeError(
+                f"no positive-stream calls found for prompt_len={prompt_len} — wrong prompt_len?"
+            )
+        states = torch.stack(
+            [
+                torch.cat([self._states[li][ci] for ci in kept], dim=1)[0]
+                for li in range(len(self.layers))
+            ]
+        )
+        return states, torch.tensor(token_indices)
 
 
-def select_frames(
-    step_states: torch.Tensor,
-    speech_frame_mask: torch.Tensor | None = None,
-    drop_first_fraction: float = 0.0,
+def target_frame_mask(
+    gen_ids: list[int],
+    token_indices: torch.Tensor,
+    *,
+    frame_id: int,
+    end_id: int | None = None,
 ) -> torch.Tensor:
-    """Keep speech frames belonging to the target text.
+    """Bool mask over step_states columns: speech frames in the target region.
 
-    speech_frame_mask: bool [num_steps], True where the emitted token was a
-    speech frame inside the target region (preferred, from token-stream parsing).
-    drop_first_fraction: fallback lead-in exclusion when no mask is available.
+    With end_id set, frames at or before the FIRST speech_end are excluded —
+    that first segment is the spoken affect lead-in, which must not contribute
+    to the pooled vector. With end_id=None, all speech frames are kept.
     """
+    first_end = None
+    if end_id is not None:
+        first_end = next((i for i, t in enumerate(gen_ids) if t == end_id), None)
+    mask = torch.zeros(len(token_indices), dtype=torch.bool)
+    for j, g in enumerate(token_indices.tolist()):
+        is_target_frame = 0 <= g < len(gen_ids) and gen_ids[g] == frame_id
+        if is_target_frame and (first_end is None or g > first_end):
+            mask[j] = True
+    return mask
+
+
+def drop_leading_true(mask: torch.Tensor, fraction: float) -> torch.Tensor:
+    """Fallback lead-in exclusion when no turn markers exist: clear the first
+    `fraction` of True entries (earliest frames) from a frame mask."""
+    out = mask.clone()
+    true_idx = mask.nonzero(as_tuple=True)[0]
+    out[true_idx[: int(len(true_idx) * fraction)]] = False
+    return out
+
+
+def select_frames(step_states: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     L, n, d = step_states.shape
-    if speech_frame_mask is not None:
-        if speech_frame_mask.shape != (n,):
-            raise ValueError(f"mask shape {tuple(speech_frame_mask.shape)} != ({n},)")
-        kept = step_states[:, speech_frame_mask, :]
-    else:
-        start = int(n * drop_first_fraction)
-        kept = step_states[:, start:, :]
+    if mask.shape != (n,):
+        raise ValueError(f"mask shape {tuple(mask.shape)} != ({n},)")
+    kept = step_states[:, mask, :]
     if kept.shape[1] == 0:
         raise ValueError("frame selection kept 0 frames")
     return kept
@@ -134,23 +164,25 @@ def select_frames(
 
 def pool_record(
     step_states: torch.Tensor,
+    mask: torch.Tensor,
     *,
     script_id: str,
     axis: str,
     pole: str,
     sample_idx: int,
     num_calls_total: int,
-    speech_frame_mask: torch.Tensor | None = None,
-    drop_first_fraction: float = 0.0,
 ) -> PairRecord:
-    kept = select_frames(step_states, speech_frame_mask, drop_first_fraction)
+    kept = select_frames(step_states, mask)
+    vectors = kept.mean(dim=1)  # [L, d]
+    if not torch.isfinite(vectors).all():
+        raise ValueError("non-finite pooled vectors — refusing to record")
     return PairRecord(
         script_id=script_id,
         axis=axis,
         pole=pole,
         sample_idx=sample_idx,
-        layer_vectors=kept.mean(dim=1),  # [L, d]
-        num_frames_kept=kept.shape[1],
+        layer_vectors=vectors,
+        num_frames_kept=int(kept.shape[1]),
         num_calls_total=num_calls_total,
     )
 
