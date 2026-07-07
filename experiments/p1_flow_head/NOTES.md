@@ -38,7 +38,16 @@ generation. Never skipped.
 
 ## Stage log
 
-(fill in per session)
+- 2026-07-07/08 (overnight, Colab L4): caching complete — **800/800 utterances**
+  at ~9s/utt, filters healthy, fully resumable via Drive (survived at least one
+  session boundary). One notebook bug: cold-start only imports on the READY
+  branch, so a skipped-DRAG first run left `SampleCapture` undefined and the
+  loop's try/except mislabeled it as per-utterance skips — fixed live; make
+  setup errors fail loudly in future notebooks.
+- 2026-07-08: **Roundtrip sanity PASS (gate criterion a)** — cached ground-truth
+  latents decoded through the frozen σ-VAE sound like normal VibeVoice speech
+  (Josh listening). Un-scale + decode call worked first try. Capture and decode
+  paths validated; training data is clean by construction.
 
 ## Results
 
