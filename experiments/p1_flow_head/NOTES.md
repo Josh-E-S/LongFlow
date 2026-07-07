@@ -89,6 +89,21 @@ wall-clock), then tag `p1-baseline`.
 - Checkpoint: Drive `longflow_p1_ckpt/`
 - Audio: `experiments/p1_flow_head/audio/` (gitignored)
 
+## Batched caching (2026-07-07, validated on L4)
+
+- `BatchedSampleCapture` + token-stream row attribution: all invariants held on
+  the real model, 8/8 utterances split with correct dims; batched-captured
+  latents decode to clean speech (Josh listening) — attribution proven by ear.
+- **Speedup 4.9× (8.4 → 1.7 s/utt at batch 8).** VibeVoice batch generate uses
+  left-padding (confirmed via attention-mask edges), so generated streams align
+  at the shared padded prompt length.
+- New cost math: 75K ≈ 35 GPU-h (was 187); **10K ≈ 5 h — one overnight Colab
+  session.** Vast.ai deferred until a run actually exceeds Colab session limits.
+- Not done (deliberate): length-bucketing batches to cut padding waste — note
+  for the 75K run if it happens; ~5h for 10K doesn't justify the complexity.
+
 ## Follow-ups
 
-(fill in)
+- 10K overnight caching run → retrain → compare vs 800-utt gate metrics →
+  decide whether 75K buys anything (data-scaling curve).
+- Then P2 (MeanFlow 1–2 NFE) — timeline priority per dots.tts (docs/related-work.md).
