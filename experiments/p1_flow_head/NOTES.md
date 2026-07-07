@@ -18,7 +18,9 @@ failure (N2), with the conditioning source as the only changed variable.
 - Hardware: Colab L4; cache persisted to Google Drive (resumable across VM recycles)
 - Cost budget: ≤ $10 GPU for the gate
 - Model pin: `microsoft/VibeVoice-1.5B` @ `c00898d257e6b46004e3e2866a47534085fb685a`, fork @ `07cb79fea`
-- This repo: record commit at run time
+- This repo: gate run used the bundle built at `96c645f` (trainer commit);
+  batched-caching validation used `bb0736a`; 10K run uses `1cb8c24` or later —
+  record the actual bundle commit in this line for every run
 - Data: LibriTTS-R `train.clean.360` (streaming), ~800 utterances, voice prompt =
   first 3s of each utterance's own ground-truth audio, text = `text_normalized`
 - Head: width 640, 4 layers, 16.64M params; Adam lr 2e-4, betas (0.9, 0.95),
