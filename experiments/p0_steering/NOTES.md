@@ -59,6 +59,24 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
   `revision`, and the actual default DDPM/DPM-Solver step count (search the demo
   script's args / generation config next session).
 
+## Stage 1 — contrast-pair generation (2026-07-06, Colab L4)
+
+- Calibration falsified the fixed-calls-per-step assumption: 116 hook calls for
+  61 generated tokens (1 prefill + 60 positive + 55 negative) — the CFG negative
+  pass fires only on speech-frame steps. Recorder rewritten position-aware
+  (classification by cache_position chain); verify cell asserts n_gen−1 recovery.
+- Per-turn speech_start/speech_end markers confirmed in the token stream →
+  lead-in exclusion uses exact turn masking, not the drop-fraction fallback.
+- GitHub-token clone friction in Colab (fine-grained PAT + VM recycle) — switched
+  to drag-and-drop upload of contrast_pairs.py + p0_contrast.json; simpler, keep it.
+- **Honesty check (Stage 1.4, Josh listening):** arousal contrast audible —
+  pos lead-in gives excited delivery, neg noticeably flatter. Valence contrast
+  NOT clearly audible. Matches the pre-registered PARTIAL trajectory (possible
+  axis collapse to single "intensity" axis); Stage 2 consistency/independence
+  diagnostics will decide quantitatively.
+- Capture loop stats: (fill in: records saved / failures)
+- vectors.pt: (fill in when placed in experiments/p0_steering/)
+
 ## Results
 
 (fill in after the sweep)
