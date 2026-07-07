@@ -126,7 +126,13 @@ Findings (2026-07-05 Colab L4 run; executed notebook committed as the run record
   every frame, further amplified by CFG. The spec's α∈{0.5..8} grid implicitly
   assumed natural units; recorded as an empirical finding.
 - Smoke test v2: single layer (L17), directions at natural scale
-  (unit × raw norm), α∈{0.5,1,2,4}. Pending listen.
+  (unit × raw norm), α∈{0.5,1,2,4}. Scale measurements: **typical hidden norm
+  @L17 = 7.6; raw contrast norms @L17: arousal 0.4622, valence 0.4636** — the
+  natural emotion contrast is ~6% of the residual stream. (v1 gibberish therefore
+  injected ~4–8× the natural gap per layer, compounding across 2 layers.)
+  Near-identical norms across axes = noise-power signature (directions still
+  noise-dominated; real signal is a small rider). ~95 steered steps/clip.
+  Listening verdict: PENDING.
 - Keep one over-steered gibberish clip as the failure sample (spec deliverable).
 
 ## Results
