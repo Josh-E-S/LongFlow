@@ -7,7 +7,7 @@ Project context for Claude Code. Read this fully before writing any code.
 LongFlow makes VibeVoice — the only open 90-minute, 4-speaker TTS system — fast, emotion-controllable, and drift-free **without training the backbone or tokenizers**. Four contributions, each a bolt-on to a frozen VibeVoice:
 
 - **C1** — Replace the 10-step DDPM diffusion head with a ~15M-param flow-matching head (OT-CFM 4-NFE baseline → MeanFlow 1–2 NFE), trained on cached hidden states. Target 15–20× end-to-end speedup.
-- **C2** — Training-free per-speaker emotion control: activation steering vectors along continuous valence/arousal axes, injected into the frozen Qwen2.5 backbone, localized to a speaker's turns.
+- **C2** — ~~Training-free per-speaker emotion control~~ **DESCOPED 2026-07-07 (P0 verdict: PARTIAL)** — steering localizes cleanly but the backbone's affect ceiling caps perception; now a paper-appendix negative result (finding N7). The turn-localized injection machinery (`src/steering/`) is retained for possible reuse (e.g. anti-jingle suppression).
 - **C3** — Inference-time speaker anchoring: blend immutable reference embedding with a running buffer of the speaker's generated turns.
 - **C4** — Long-horizon consistency benchmark: speaker-drift curves, durational WER, windowed UTMOS at 30s → 90min.
 
@@ -15,9 +15,10 @@ Full scope, positioning, data plan, and phases: `README.md`. Paper target: Inter
 
 ## Current state (July 2026)
 
-- Repo contains README, `docs/` (architecture, negative results, **`resources.md` — pinned repos/weights/datasets/eval stack, verified 2026-07-05, read it before touching any external dependency**), the package scaffold (`src/`, `tests/`, uv-managed Python 3.11 env, ruff + pre-commit), and the frame-alignment guard `src/cache/alignment.py`. No model/experiment code yet.
-- Next task is **P0: the steering gate check** — spec in `docs/experiments/p0-steering.md`. It is deliberately first: cheapest experiment, validates the highest-risk contribution (C2), no training required.
-- Phase order after P0: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.
+- Repo contains README, `docs/` (architecture, negative results incl. **N7**, **`resources.md` — pinned repos/weights/datasets/eval stack, verified 2026-07-05, read it before touching any external dependency**), the package scaffold (uv-managed Python 3.11 env, ruff + pre-commit), working `src/steering/` (capture + extraction + injection, retained post-descope), `src/eval/metrics.py` (WER/ECAPA/prosody, exercised on real sweeps), and `src/cache/alignment.py`.
+- **P0 complete (2026-07-07, verdict PARTIAL, C2 descoped — see `experiments/p0_steering/NOTES.md` and finding N7).** Paper scope is now C1+C3+C4.
+- **Next task is P1: the flow-head baseline** — caching pipeline (`src/cache/`, reuse the positive-stream logic from `src/steering/contrast_pairs.py`), then OT-CFM 4-NFE head with the mandatory 1K/5K gate check before the full 75K run.
+- Phase order: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.
 
 ## Hard constraints — never violate these
 

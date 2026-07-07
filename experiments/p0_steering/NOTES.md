@@ -192,7 +192,30 @@ over-steer failure sample. Baselines: sim 0.63–0.77, F0 199–218.
 
 ## Verdict
 
-(fill in against the pre-registered criteria)
+**PARTIAL — C2 descoped to a documented negative result (decided 2026-07-07, Josh).**
+
+Against the pre-registered criteria: the letter of the PASS row is met (audible
+shift in short single-speaker clips at α=1; WER 0.000 and speaker-sim 0.97–1.06×
+in the usable window; multi-speaker probe leaves the unsteered speaker unchanged
+by ears and ECAPA). But the spirit of C2 — emotion control you can *hear* in
+long-form multi-speaker audio — is not demonstrated: the long-clip listening test
+("not enough to be effective") and weak cross-speaker audibility cap it.
+
+Root-cause assessment: **the backbone's own affect ceiling, not vector quality.**
+The tell is the Stage 1 honesty check — even VibeVoice's *prompted* affect
+contrast (the ceiling for extraction-based steering) was subtle; the natural
+contrast is ~6% of the residual stream; and α≥2 breaks intelligibility/timbre
+before affect strengthens. Cleaner vectors would reproduce this ceiling more
+faithfully, not raise it. VibeVoice is a stability-first backbone with little
+affect dynamic range; EmoSteer-style wins came on more expressive models.
+
+Per the pre-registered plan ("if steering doesn't land, the paper reshapes
+around C1+C3+C4 before any flow-head compute is spent"): **paper reshapes to
+C1 (flow head) + C3 (anchoring) + C4 (benchmark)**; this experiment becomes a
+paper-appendix negative result — first test of activation steering on a
+long-form multi-speaker TTS backbone: localization clean, perception capped.
+
+Total P0 cost: ~2 days, < $10 GPU. The gate did exactly what it was built for.
 
 ## Artifacts
 
@@ -201,4 +224,15 @@ over-steer failure sample. Baselines: sim 0.63–0.77, F0 199–218.
 
 ## Follow-ups
 
-(fill in)
+- **P1 next**: the capture hooks here are ~80% of the caching pipeline
+  (`src/cache/`) — reuse `LayerActivationRecorder`'s positive-stream logic for
+  hidden-state/latent pair dumping.
+- Optional, non-blocking: Expresso-based extraction iteration (~1 day, ~$3) if
+  C2 is ever revisited — real expressive speech might point at affect regions
+  prompting never reached; low prior of clearing the ceiling.
+- **Anti-jingle steering (Josh's idea, promising aside):** extract a "BGM
+  direction" from contrast pairs (`*_bgm` voice presets vs clean presets, or
+  jingle-heavy vs clean generations), inject *negatively*, turn-localized via
+  SegmentGate. Could suppress VibeVoice's spontaneous intro music — useful for
+  the demo page and a neat appendix showing the machinery's general utility.
+- The negative result goes in the paper appendix + docs/negative-results.md.

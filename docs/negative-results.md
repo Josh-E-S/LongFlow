@@ -74,6 +74,20 @@ For completeness — the frozen-tokenizer-transplant thesis itself was partially
 
 The April 8 training crash (epoch 16, `_pin_memory_loop` file-descriptor failure on Modal, likely `/dev/shm` exhaustion) was unrelated to the scientific result but cost a run. Standing mitigations for all LongFlow training: `pin_memory=False`, `num_workers=2`, `persistent_workers=False` on Modal; prefer Vast.ai for iteration loops.
 
+---
+
+# Negative Results — LongFlow (July 2026 onward)
+
+## N7 — Activation steering on VibeVoice: localization clean, perception capped by the backbone's affect ceiling
+
+**Finding (P0, July 2026).** Contrast-pair activation steering (EmoSteer-style) on frozen VibeVoice-1.5B produces mechanically clean, turn-localized control — the unsteered speaker is untouched by ears and ECAPA, WER 0.000 and speaker-sim 0.97–1.06× inside the usable window — but the perceptual affect shift saturates at "subtle" and does not survive long-form listening as an effective control.
+
+**Evidence.** LOSO-AUC 0.70–0.825 at layers 17/18 (real transferable internal signal); natural prompted-affect contrast only ~6% of the residual-stream norm at L17; steering at α=1 (the natural gap) audible-but-subtle, α≥2 degrades timbre (ECAPA 0.63–0.83×) and can catastrophically derail content (a Whisper-hallucinated clip) before affect strengthens. Critically, VibeVoice's own *prompted* contrast pairs — the ceiling for any extraction-based method — were themselves only subtly different.
+
+**Implication.** Steering cannot exceed the expressive dynamic range the backbone exposes; VibeVoice is stability-first with little affect range. Full record: `experiments/p0_steering/NOTES.md`. Retained assets: turn-localized injection machinery (positive-stream targeting through the CFG double-stream, segment gating) and the eval pipeline. C2 dropped from the paper's claims; LongFlow proceeds on C1+C3+C4 per the pre-registered P0 plan.
+
+---
+
 ## Rejected alternative architectures
 
 See README § "Rejected alternatives." Summary: Mamba-Flow-TTS (from-scratch AR-MSE backbone + flow head = N1/N2 recipe with a Mamba swap; no dialogue data; unsupervised VAD controller), Endurance v2 (sound, but single-speaker by design — retained as follow-on work).
