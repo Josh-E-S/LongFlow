@@ -6,3 +6,4 @@ experiments/**/audio/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+longflow_bundle.zip
