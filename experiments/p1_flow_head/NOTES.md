@@ -130,8 +130,13 @@ wall-clock), then tag `p1-baseline`.
 
 ## Follow-ups
 
-- Josh: listen to held-out teacher vs 10K-flow pairs — calibrate what sim 0.824
-  sounds like before committing full-run budget.
+- ~~Josh: listen/calibrate~~ **DONE (2026-07-08):** Josh rates flow4 vs teacher
+  "75–85% close — sounds good, just a bit of noise, almost like the voice is
+  doubled and offset slightly, not as clear." Ears match the ECAPA number
+  (0.82) almost exactly → the sim metric is perceptually calibrated in this
+  range. Artifact signature (phasey/doubled) → two candidate causes to split
+  with an NFE-16 A/B on the same checkpoint: integration error (more steps
+  fixes) vs velocity-field imprecision (full run fixes). Pending.
 - Full P1 run: 75K cache (~35 GPU-h with batching — exceeds Colab sessions →
   Vast.ai onboarding, or chunked Colab) + dialogue caching (turn-boundary
   coverage per data plan) + ≥50K-step training + proper multi-speaker held-out
