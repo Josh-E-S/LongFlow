@@ -212,3 +212,26 @@ paired map distillation) only if still short.
   coverage per data plan) + ≥50K-step training + proper multi-speaker held-out
   eval + wall-clock vs DDPM baseline → tag `p1-baseline`.
 - Then P2 (MeanFlow 1–2 NFE) — timeline priority per dots.tts (docs/related-work.md).
+- **P3 idea (Josh, 2026-07-08): windowed/anchored context for long generation** —
+  StreamingLLM-style attention sink: keep the sequence START (which in VibeVoice
+  IS the voice-reference prompt → identity stays permanently in view) + a
+  recent sliding window; evict the drifting middle history. Potential double
+  win: stability (drift can't accumulate through evicted context) AND speed
+  (attention stops growing with length). Test in P3 as a C4-measured arm:
+  anchoring (C3) vs windowed context vs both. Caveat to measure: long-range
+  prosody/discourse coherence may need the window not-too-small.
+
+## Endurance test (2026-07-08, first C4-style measurement)
+
+- 1,668-word script (~10 min expected) → **5.3 min audio, early termination**;
+  365s wall. Drift curve over 8 segments:
+  [1.099, 1.193, 1.185, 1.249, 1.327, 1.384, 1.542, 1.572] — steady ~linear
+  UPWARD accumulation (over-dispersion), opposite sign from the cured fade,
+  milder dynamics (no collapse), but past 1.4 by segment 7 and likely audible;
+  early stop consistent with loop-state wander.
+- Current stability envelope: clean ≈1–2 min; degraded by ~5; 10 min not yet.
+- Treatments in order: polish training (sharper field → less per-frame bias to
+  compound); sampler balance probe (heun8 runs slightly hot teacher-forced,
+  euler16 slightly cold → possible loop-neutral setting between); P3
+  anchoring/windowed-context (see follow-up idea above) as the structural cure.
+- Pending listens: late-clip harshness vs start; full-script coverage vs cutoff.
