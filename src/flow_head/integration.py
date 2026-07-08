@@ -75,14 +75,17 @@ class FlowHeadPatch:
             del self.model.sample_speech_tokens  # restore class-method lookup
         return False
 
-    def latent_stats(self) -> dict:
-        """Std over quarters of the generated sequence — the drift curve."""
+    def latent_stats(self, segments: int = 4) -> dict:
+        """Std over equal segments of the generated sequence — the drift curve.
+
+        segments=8 matches the endurance-test analysis (NOTES 2026-07-08);
+        keep it fixed across runs being compared."""
         if not self.latents:
             return {}
         zs = torch.cat(self.latents)
-        q = max(len(zs) // 4, 1)
+        q = max(len(zs) // segments, 1)
         return {
             "frames": len(zs),
             "std_overall": float(zs.std()),
-            "std_quarters": [float(zs[i * q : (i + 1) * q].std()) for i in range(4)],
+            "std_segments": [float(zs[i * q : (i + 1) * q].std()) for i in range(segments)],
         }

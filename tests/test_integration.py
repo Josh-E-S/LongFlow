@@ -52,5 +52,6 @@ def test_latent_stats_drift_curve():
             model.sample_speech_tokens(torch.randn(1, DM))
     stats = patch.latent_stats()
     assert stats["frames"] == 8
-    assert len(stats["std_quarters"]) == 4
-    assert all(s > 0 for s in stats["std_quarters"])
+    assert len(stats["std_segments"]) == 4
+    assert all(s > 0 for s in stats["std_segments"])
+    assert len(patch.latent_stats(segments=8)["std_segments"]) == 8

@@ -241,6 +241,28 @@ paired map distillation) only if still short.
   "early termination": the clip likely COMPRESSED the full script by
   accelerating (10 min of words in 5.3), rather than truncating. Runaway in
   the energetic direction, milder dynamics than the old fade.
+## E3 — polish run (2026-07-08/09 overnight, training DONE, eval pending)
+
+- Warm start from the 20K ckpt (fresh Adam), 60K further steps, bs 1024, cosine
+  lr tail 2e-4 → 2e-5, on the existing 10K cache (478,191 pairs).
+  **Loss 0.975 → 0.693**, smooth, no NaN; end slope ~0.0015/1K with the tail
+  mostly responsible for the flattening. Saved `full10k_80k.pt` (Drive).
+- Read: the 20K loss (~0.965) sat almost exactly at the reviewer's Gaussian-toy
+  bound for σ_cond ≈ 0.61 — the field had learned little beyond conditional
+  means + noise. 0.693 is well below that bound: the head now captures real
+  conditional fine structure it previously left as "irreducible" noise. This is
+  the quantity that owns the "digital cold" doubling/ghosting texture.
+- Caveats: 60K × 1024 ≈ +128 epochs on 478K pairs → memorization watch; train
+  loss can't adjudicate. Multi-t (LatentLM ~4 t-draws/condition) was NOT in
+  this run — still unimplemented; bank for the next continuation or the 75K.
+- **Eval protocol: `eval80k_colab.ipynb`** (built 2026-07-09) — (1) fresh
+  multi-speaker held-out capture, 20 speakers from test.clean (fixes the n=5
+  single-speaker caveat); (2) E1-protocol dispersion re-audit 80K vs 20K;
+  (3) parity A/B renders for ears + Mac WER/ECAPA; (4) E1b closed-loop
+  replication; (5) endurance re-baseline on the same 1,668-word script,
+  8-segment curve vs [1.10 … 1.57]. The endurance slope after polish is the
+  baseline the thermostat probe is queued against.
+
 - **Queued probe: statistical anchoring ("thermostat")** — inference-time
   feedback controller on latent statistics: track running std over recent
   frames; when it creeps past anchor stats (from the cache), scale residuals
