@@ -75,11 +75,17 @@ def train(
     steps: int = 5000,
     batch_size: int = 512,
     lr: float = 2e-4,
+    lr_final: float | None = None,
     ema_decay: float = 0.9999,
     device: str = "cpu",
     log_every: int = 500,
     seed: int = 0,
 ) -> dict:
+    """lr_final: if set, cosine-decay from lr to lr_final over the run
+    (review-adversarial.md §3 — constant-lr-to-the-end leaves terminal loss
+    on the table)."""
+    import math
+
     head = head.float().to(device).train()
     hidden = data.hidden.to(device)
     latent = data.latent.to(device)
@@ -88,6 +94,9 @@ def train(
     g = torch.Generator(device="cpu").manual_seed(seed)
     losses = []
     for step in range(1, steps + 1):
+        if lr_final is not None:
+            frac = 0.5 * (1 + math.cos(math.pi * step / steps))
+            opt.param_groups[0]["lr"] = lr_final + (lr - lr_final) * frac
         idx = torch.randint(0, hidden.shape[0], (batch_size,), generator=g)
         loss = cfm_loss(head, latent[idx], hidden[idx])
         opt.zero_grad()
@@ -98,7 +107,7 @@ def train(
         losses.append(float(loss.detach()))
         if step % log_every == 0 or step == 1:
             recent = sum(losses[-log_every:]) / len(losses[-log_every:])
-            print(f"step {step}/{steps}  loss {recent:.4f}")
+            print(f"step {step}/{steps}  loss {recent:.4f}  lr {opt.param_groups[0]['lr']:.2e}")
     return {"losses": losses, "ema": ema}
 
 

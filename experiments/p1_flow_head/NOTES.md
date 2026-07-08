@@ -235,3 +235,9 @@ paired map distillation) only if still short.
   euler16 slightly cold → possible loop-neutral setting between); P3
   anchoring/windowed-context (see follow-up idea above) as the structural cure.
 - Pending listens: late-clip harshness vs start; full-script coverage vs cutoff.
+- Listening (Josh) on the 5.3-min endurance clip: **no fade — instead it slowly
+  sped up and got louder, less intelligible near the end but still
+  understandable.** Matches the hot-drift curve exactly; also reframes the
+  "early termination": the clip likely COMPRESSED the full script by
+  accelerating (10 min of words in 5.3), rather than truncating. Runaway in
+  the energetic direction, milder dynamics than the old fade.
