@@ -35,6 +35,32 @@ def sway_grid(nfe: int, coef: float = -1.0, device="cpu") -> torch.Tensor:
 
 
 @torch.no_grad()
+def heun_sample(
+    head,
+    condition: torch.Tensor,
+    d_latent: int,
+    nfe: int = 8,
+    sway: float = 0.0,
+    generator=None,
+) -> torch.Tensor:
+    """Heun (2nd-order) sampler: 2 function evals per step; better curvature
+    tracking near t=1 where the distribution re-expands (review-adversarial.md
+    §2b — Euler's linearization under-disperses there)."""
+    b = condition.shape[0]
+    device = condition.device
+    grid = sway_grid(nfe, sway, device=device)
+    x = torch.randn(b, d_latent, device=device, generator=generator)
+    for i in range(nfe):
+        dt = grid[i + 1] - grid[i]
+        v1 = head(x, grid[i].expand(b), condition)
+        v2 = head(x + dt * v1, grid[i + 1].expand(b), condition)
+        x = x + dt * 0.5 * (v1 + v2)
+    if not torch.isfinite(x).all():
+        raise RuntimeError("non-finite sample — head diverged")
+    return x
+
+
+@torch.no_grad()
 def euler_sample(
     head,
     condition: torch.Tensor,

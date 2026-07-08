@@ -104,3 +104,29 @@ def test_synthetic_learning_loss_drops_and_samples_track_targets():
     err = (sample - target).pow(2).mean()
     null = (sample - target[torch.randperm(64)]).pow(2).mean()
     assert err < 0.7 * null, f"samples don't track conditions (err {err:.3f} vs null {null:.3f})"
+
+
+def test_heun_sample_shape_determinism_and_tracks_targets():
+    from src.flow_head.cfm import heun_sample
+
+    torch.manual_seed(0)
+    head = tiny_head(width=64, layers=2)
+    w_true = torch.randn(DM, DL) / DM**0.5
+    cond = torch.randn(256, DM)
+    x1 = cond @ w_true
+    opt = torch.optim.Adam(head.parameters(), lr=3e-3)
+    g = torch.Generator().manual_seed(1)
+    for _ in range(300):
+        idx = torch.randint(0, 256, (64,), generator=g)
+        loss = cfm_loss(head, x1[idx], cond[idx], generator=g)
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
+    c = torch.randn(16, DM)
+    s1 = heun_sample(head, c, DL, nfe=4, generator=torch.Generator().manual_seed(0))
+    s2 = heun_sample(head, c, DL, nfe=4, generator=torch.Generator().manual_seed(0))
+    assert s1.shape == (16, DL) and torch.allclose(s1, s2)
+    target = c @ w_true
+    err = (s1 - target).pow(2).mean()
+    null = (s1 - target[torch.randperm(16)]).pow(2).mean()
+    assert err < null
