@@ -70,3 +70,16 @@ Getting this wrong wastes the entire 35 GPU-h run.
   C4 benchmark multi-system (VibeVoice + MOSS-TTSD + SoulX-Podcast) — pending
   a capability-verification pass on those two systems. "Compose a new system
   from pieces" rejected (= TransplantTTS graveyard, N1–N6).
+
+## SUPERSEDED IN PART (2026-07-08, reviewer 2)
+
+Reviewer 2's adversarial report (review-adversarial.md) demotes the CFG
+hypothesis (acquitted with literature; second-order at most) and identifies
+the sampler (sway -1 + NFE 4 under-disperses even a PERFECT field to ~0.59)
+plus undertraining as the primary suspects. MERGED PRIORITY: E1 dispersion
+audit -> E2 versioned-patch closed-loop rerun (DONE in code: src/flow_head/
+integration.py, seed footgun fixed) -> E3 steps continuation + multi-t + lr
+tail -> capacity probe -> E4 condition-drift -> E5 neg-condition probe.
+Hard gate updated: no 75K cache until E1+E3 resolve, and any big-run schema
+must capture (teacher noise, neg_condition, cfg_scale) for paired map
+distillation (ReFlow-family).

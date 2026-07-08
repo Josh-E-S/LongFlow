@@ -135,12 +135,20 @@ def sample_latents(
     latent_mean: torch.Tensor,
     latent_std: torch.Tensor,
     nfe: int = 4,
-    sway: float = -1.0,
-    seed: int = 0,
+    sway: float = 0.0,
+    seed: int | None = None,
 ) -> torch.Tensor:
-    """condition [T, d_model] -> head-space latents [T, d_latent] (de-standardized)."""
+    """condition [T, d_model] -> head-space latents [T, d_latent] (de-standardized).
+
+    seed defaults to None (fresh entropy): a deterministic-by-default sampler
+    inside an AR loop is a footgun — identical x0 every call reproduces the
+    under-dispersion signature (review-adversarial.md §2c). Pass a seed only
+    for reproducible offline evals. sway default changed -1.0 -> 0.0: the
+    front-loaded grid leaves a giant final step in the re-expansion phase and
+    under-disperses even a perfect field (§2b); sweep it explicitly in E1.
+    """
     device = next(head.parameters()).device
-    g = torch.Generator(device=device).manual_seed(seed)
+    g = None if seed is None else torch.Generator(device=device).manual_seed(seed)
     z = euler_sample(
         head, condition.float().to(device), head.cfg.d_latent, nfe=nfe, sway=sway, generator=g
     )
