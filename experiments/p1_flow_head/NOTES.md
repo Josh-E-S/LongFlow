@@ -182,8 +182,21 @@ cheaper than parent head) matches teacher dispersion exactly; the field is NOT
 collapsed; training/capacity acquitted for the dispersion deficit. Remaining
 gap between teacher-forced 0.85 ratio (shipped sampler) and the 0.56 measured
 in-loop = the drift amplification mechanism (conditions leave distribution).
-E1b (closed loop with heun8) queued: if the fade dies, P1's blocker is solved
-for ~$0 and the 75K question becomes purely about polish, not survival.
+**E1b — closed loop with heun8 (2026-07-08): THE FADE IS DEAD.** 34.7s audio
+for the long paragraph (parent ~39s; yesterday's runaway: 64s), clean
+termination, drift curve 1.03→1.21 around teacher's ~1.16 (yesterday: flat
+0.65). Head cost 30ms/frame (vs parent 67; NFE/solver tradeoff tunable).
+Josh's ears: "definitely gone... full 34 second duration." Residual quality
+gap unchanged and known ("digital cold" = the underfit stepping/ghosting
+texture, 75–85% of teacher) — that's the polish problem, owned by training
+scale/recipe, no longer a survival problem. Watch item: mild upward dispersion
+creep (1.21 by the final quarter) — re-check on 5–10 min generations.
+
+**P1 blocker resolved at ~$0 training cost.** The 75K decision is now purely
+about closing the quality gap: order of attack per reviews = E3 (steps
+continuation + lr tail on existing 10K, one overnight) → capacity probe →
+75K with the upgraded schema (teacher noise + neg_condition + cfg_scale for
+paired map distillation) only if still short.
 
 ## Follow-ups
 
