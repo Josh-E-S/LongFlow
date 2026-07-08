@@ -263,6 +263,43 @@ paired map distillation) only if still short.
   8-segment curve vs [1.10 … 1.57]. The endurance slope after polish is the
   baseline the thermostat probe is queued against.
 
+### E3 verdict: FAIL — steps-scaling on 10K data overfits (2026-07-08, decisive)
+
+Mac analysis of `eval80k_bundle` (Whisper large-v3 + ECAPA, 6 held-out
+speakers; artifacts in the eval bundle + `analysis.json`):
+
+| held-out (teacher-forced) | teacher | 20K ckpt | 80K ckpt |
+|---|---|---|---|
+| mean WER vs text | 0.051 | **0.088** | 0.209 |
+| mean ECAPA sim to teacher | — | **0.743** | 0.716 (1/6 wins) |
+
+- **The 80K head is WORSE than 20K on held-out despite train loss 0.965→0.693.**
+  ~128 additional epochs on the same 478K pairs memorized the training set.
+  The dispersion table's per-cond spread shrink (0.714→0.509) was misread
+  in-session as "learned fine structure" — it is actually **overconfidence on
+  held-out conditions** (sharper conditionals, worse placed). Same
+  self-persuasion trap as N2's mid-experiment retraction; logged accordingly.
+- **Endurance run (9.8 min audio, hit the 4410-frame cap): collapse, not
+  stability.** The flat std≈2.0 curve is a stable NOISE attractor: segment 1
+  has 75 words (61 wpm, degrading), segments 2–8 are non-speech (Whisper
+  hallucinating "Thank you" loops, ~6 words/73s, voiced fraction 0.22–0.34,
+  ECAPA sim-to-prompt ≈ 0). Total transcribed: 117 of 1666 words. Closed-loop
+  35s paragraph: WER 0.222 (vs 20K's near-parity at E1b). The overconfident
+  field compounds errors faster in-loop → collapse within ~90s.
+- **Conclusions:** (1) steps alone on 10K data are ruled out — past ~20K steps
+  the head trades generalization for memorization; the binding constraint is
+  DATA, exactly the pre-registered 75K trigger ("only if still short" — we are
+  short and steps are eliminated); (2) **20K remains the operating checkpoint**
+  for all in-loop work; (3) intermediate checkpoints (every 5–10K, per the
+  review's dispersion-vs-steps ask) were not saved — any steps sweet spot
+  between 20K–80K is unmeasured; save them in ALL future runs; (4) the
+  segment-wise quality-over-time pipeline (words/min, RMS, F0, ECAPA drift
+  per segment) now exists and worked — this IS the C4 machinery, first real
+  exercise; (5) 75K schema requirements stand (teacher noise + neg_condition +
+  cfg_scale for paired-map distillation) and long-context/dialogue capture is
+  now motivated by drift too, not just turn coverage (drift onset ~30–90s ≈
+  where conditions exit the short-utterance training distribution).
+
 - **Queued probe: statistical anchoring ("thermostat")** — inference-time
   feedback controller on latent statistics: track running std over recent
   frames; when it creeps past anchor stats (from the cache), scale residuals

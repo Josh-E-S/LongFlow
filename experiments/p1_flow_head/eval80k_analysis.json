@@ -1,0 +1,267 @@
+{
+  "parity": {
+    "1188__1188_133604_000004_000005": {
+      "teacher": {
+        "wer_vs_text": 0.0
+      },
+      "80k_heun8": {
+        "wer_vs_text": 0.0,
+        "wer_vs_teacher_transcript": 0.0,
+        "sim_to_teacher": 0.7818589210510254
+      },
+      "20k_heun8": {
+        "wer_vs_text": 0.05555555555555555,
+        "wer_vs_teacher_transcript": 0.05555555555555555,
+        "sim_to_teacher": 0.7877722382545471
+      }
+    },
+    "121__121_121726_000025_000001": {
+      "teacher": {
+        "wer_vs_text": 0.21428571428571427
+      },
+      "80k_heun8": {
+        "wer_vs_text": 0.2857142857142857,
+        "wer_vs_teacher_transcript": 0.15384615384615385,
+        "sim_to_teacher": 0.7203500866889954
+      },
+      "20k_heun8": {
+        "wer_vs_text": 0.21428571428571427,
+        "wer_vs_teacher_transcript": 0.07692307692307693,
+        "sim_to_teacher": 0.781299889087677
+      }
+    },
+    "1995__1995_1837_000012_000004": {
+      "teacher": {
+        "wer_vs_text": 0.041666666666666664
+      },
+      "80k_heun8": {
+        "wer_vs_text": 0.16666666666666666,
+        "wer_vs_teacher_transcript": 0.20833333333333334,
+        "sim_to_teacher": 0.8319761753082275
+      },
+      "20k_heun8": {
+        "wer_vs_text": 0.041666666666666664,
+        "wer_vs_teacher_transcript": 0.08333333333333333,
+        "sim_to_teacher": 0.8434584736824036
+      }
+    },
+    "237__237_134493_000002_000003": {
+      "teacher": {
+        "wer_vs_text": 0.0
+      },
+      "80k_heun8": {
+        "wer_vs_text": 0.0,
+        "wer_vs_teacher_transcript": 0.0,
+        "sim_to_teacher": 0.6362470388412476
+      },
+      "20k_heun8": {
+        "wer_vs_text": 0.0,
+        "wer_vs_teacher_transcript": 0.0,
+        "sim_to_teacher": 0.7086681723594666
+      }
+    },
+    "260__260_123286_000005_000001": {
+      "teacher": {
+        "wer_vs_text": 0.05
+      },
+      "80k_heun8": {
+        "wer_vs_text": 0.6,
+        "wer_vs_teacher_transcript": 0.6,
+        "sim_to_teacher": 0.672612190246582
+      },
+      "20k_heun8": {
+        "wer_vs_text": 0.15,
+        "wer_vs_teacher_transcript": 0.15,
+        "sim_to_teacher": 0.6826154589653015
+      }
+    },
+    "2961__2961_961_000004_000007": {
+      "teacher": {
+        "wer_vs_text": 0.0
+      },
+      "80k_heun8": {
+        "wer_vs_text": 0.2,
+        "wer_vs_teacher_transcript": 0.2,
+        "sim_to_teacher": 0.6531851291656494
+      },
+      "20k_heun8": {
+        "wer_vs_text": 0.06666666666666667,
+        "wer_vs_teacher_transcript": 0.06666666666666667,
+        "sim_to_teacher": 0.6517250537872314
+      }
+    }
+  },
+  "closedloop": {
+    "wer": 0.2222222222222222,
+    "transcript": "the library had been closed for nearly a decade but the smell of old papers still filled the entrance hall margaret ran her fingers along the dusty railing and remembered the summers she had spent  in the corner outside the rain kept a steady rhythm against the glass patient and unhurried as if the two were waiting for the door to open again  she climbed the stairs slowly down a two-deep step bushed as a child and paused at the top to catch her breath before  the  the",
+    "f0_mean": 117.59848264269574,
+    "f0_std": 33.61399184482056,
+    "voiced_fraction": 0.38825214899713467,
+    "rms_dbfs": -23.914888381958008,
+    "duration_s": 34.93333333333333
+  },
+  "endurance": {
+    "segments": [
+      {
+        "segment": 1,
+        "words": 75,
+        "words_per_min": 61.224489795918366,
+        "rms_dbfs": -30.36954689025879,
+        "f0_mean": 136.84758636529207,
+        "f0_std": 43.055120297626765,
+        "voiced_fraction": 0.22052817860059898,
+        "sim_to_seg1": 1.0,
+        "sim_to_prompt_speaker": 0.05306707322597504
+      },
+      {
+        "segment": 2,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -24.77473258972168,
+        "f0_mean": 113.56285836124503,
+        "f0_std": 17.545199697688712,
+        "voiced_fraction": 0.24475905254560304,
+        "sim_to_seg1": 0.6044801473617554,
+        "sim_to_prompt_speaker": -0.0940449982881546
+      },
+      {
+        "segment": 3,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -24.052515029907227,
+        "f0_mean": 119.07818107319156,
+        "f0_std": 18.12211130282528,
+        "voiced_fraction": 0.31323169071603596,
+        "sim_to_seg1": 0.5178635716438293,
+        "sim_to_prompt_speaker": -0.10288883000612259
+      },
+      {
+        "segment": 4,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -24.39664077758789,
+        "f0_mean": 121.05801138366033,
+        "f0_std": 20.629745418647534,
+        "voiced_fraction": 0.32983936836373534,
+        "sim_to_seg1": 0.43321681022644043,
+        "sim_to_prompt_speaker": -0.09852616488933563
+      },
+      {
+        "segment": 5,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -24.73794174194336,
+        "f0_mean": 124.69517404318476,
+        "f0_std": 21.60118163170169,
+        "voiced_fraction": 0.3166349033487612,
+        "sim_to_seg1": 0.37079423666000366,
+        "sim_to_prompt_speaker": -0.06784720718860626
+      },
+      {
+        "segment": 6,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -25.017024993896484,
+        "f0_mean": 124.45062481753098,
+        "f0_std": 22.089742555232498,
+        "voiced_fraction": 0.31432071875850803,
+        "sim_to_seg1": 0.39588725566864014,
+        "sim_to_prompt_speaker": -0.07549837231636047
+      },
+      {
+        "segment": 7,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -24.69386863708496,
+        "f0_mean": 123.07179756298598,
+        "f0_std": 20.17465199274686,
+        "voiced_fraction": 0.3362374081132589,
+        "sim_to_seg1": 0.41564205288887024,
+        "sim_to_prompt_speaker": -0.08064807206392288
+      },
+      {
+        "segment": 8,
+        "words": 6,
+        "words_per_min": 4.897959183673469,
+        "rms_dbfs": -24.808372497558594,
+        "f0_mean": 124.17807433545015,
+        "f0_std": 21.08964799507757,
+        "voiced_fraction": 0.3325619384699156,
+        "sim_to_seg1": 0.443485289812088,
+        "sim_to_prompt_speaker": -0.08252917230129242
+      }
+    ],
+    "total_words_transcribed": 117,
+    "script_words": 1666,
+    "last_words": [
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you.",
+      "Thank",
+      "you."
+    ],
+    "first_words": [
+      "My",
+      "parents",
+      "would",
+      "say",
+      "no",
+      "to",
+      "us",
+      "and",
+      "set",
+      "us",
+      "on",
+      "a",
+      "free",
+      "call,",
+      "but",
+      "I",
+      "was",
+      "sort",
+      "of",
+      "in"
+    ]
+  },
+  "parity_aggregate": {
+    "80k_heun8": {
+      "mean_wer_vs_text": 0.20873015873015868,
+      "mean_wer_vs_teacher_transcript": 0.1936965811965812,
+      "mean_sim_to_teacher": 0.7160382568836212,
+      "sim_wins_80k_vs_20k": null
+    },
+    "20k_heun8": {
+      "mean_wer_vs_text": 0.08802910052910053,
+      "mean_wer_vs_teacher_transcript": 0.07207977207977208,
+      "mean_sim_to_teacher": 0.7425898810227712,
+      "sim_wins_80k_vs_20k": null
+    },
+    "teacher_mean_wer_vs_text": 0.050992063492063484,
+    "sim_wins_80k_over_20k": "1/6"
+  }
+}
