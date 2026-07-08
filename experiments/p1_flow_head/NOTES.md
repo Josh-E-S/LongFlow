@@ -151,10 +151,18 @@ wall-clock), then tag `p1-baseline`.
 - **Drift diagnosis:** NOT progressive variance collapse — our latents are
   born ~35% under-dispersed (std ≈0.65 vs teacher ≈1.0, stable across the
   sequence). Mean-regression signature of an underfit few-NFE head; the fade
-  emerges from the loop reacting to persistently muted latents. Cheap
-  inference-time treatment queued: global variance calibration (×~1.6 on
-  normalized latents). If calibration stabilizes the loop, full-run training
-  should shrink the needed correction toward 1.0.
+  emerges from the loop reacting to persistently muted latents.
+- **Variance-calibration band-aid: FAILED, informatively.** Global ×1.79
+  rescaling made it worse (rapid gibberish → loud digital pulsing): it
+  amplified the signal content, not the missing spread — off-manifold latents.
+  Conclusion: the missing 35% is unlearned FINE STRUCTURE, not amplitude;
+  no linear inference-time correction exists. The treatments are (1) train
+  better — full run, more data + steps, shrink under-dispersion at the source —
+  and (2) if drift persists after that, on-policy distillation: drive the loop
+  with the flow head while computing teacher targets from the same conditions
+  (DAgger-style), which attacks exposure bias directly. Synergy note: the
+  energy/quality-over-time curves needed to evaluate this ARE the C4 benchmark
+  machinery — build once, use for both.
 
 ## Follow-ups
 
