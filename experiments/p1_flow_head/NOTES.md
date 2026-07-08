@@ -241,3 +241,11 @@ paired map distillation) only if still short.
   "early termination": the clip likely COMPRESSED the full script by
   accelerating (10 min of words in 5.3), rather than truncating. Runaway in
   the energetic direction, milder dynamics than the old fade.
+- **Queued probe: statistical anchoring ("thermostat")** — inference-time
+  feedback controller on latent statistics: track running std over recent
+  frames; when it creeps past anchor stats (from the cache), scale residuals
+  back a few % per frame. Gentle closed-loop correction, NOT the failed static
+  x1.79 gain. If a dumb controller flattens the drift curve, drift is
+  controllable at inference — P3 preview. Test AFTER the polish run re-baselines
+  the slope. P3 arm order: polish -> thermostat -> C3 speaker anchor ->
+  windowed context; all judged on C4 curves.
