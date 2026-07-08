@@ -128,6 +128,34 @@ wall-clock), then tag `p1-baseline`.
   next eval should hold out utterances across many speakers); listening
   calibration of sim 0.82 pending (Josh).
 
+## Integration findings (2026-07-08, first closed-loop runs)
+
+- **NFE-16 A/B (Josh):** 16 ≈ 4, barely better — the "stepping + light
+  ghosting/doubling" artifact is velocity-field imprecision (underfit), not
+  integration error. Teacher-forced long clips otherwise "great and clear."
+- **First end-to-end generation through our head (FlowHeadPatch replacing
+  sample_speech_tokens live):** audio starts strong then progressively fades to
+  near-silent digital noise by ~60s; generations run long (64s audio vs
+  parent's 39s for the same text — no clean termination). Classic feedback
+  drift / exposure bias: the loop consumes OUR latents for the first time.
+- **Profile (L4, per frame):** parent head 67ms = 35% of ~190ms step; our head
+  **8ms = 6%** of ~129ms step; everything-else ~122ms (LM + 340M acoustic
+  feedback encoder + semantic encoder + loop overhead + CFG negative stream).
+  End-to-end speedup from head swap alone: **1.47×** (Amdahl-capped; matches
+  measurement). cfg_scale=1.0 did NOT disable the negative stream (identical
+  per-frame cost) — real removal needs a deeper patch. Consequences: README's
+  15–20× e2e target needs honest revision (head-cost ×8.4 + a bottleneck map
+  is the defensible claim); P2's e2e wall-clock value is ~6ms/frame — its worth
+  is the scientific claim + first-packet latency, not RTF; the RTF levers are
+  CFG-stream removal, P4 encoder distillation, and batching (5×, built).
+- **Drift diagnosis:** NOT progressive variance collapse — our latents are
+  born ~35% under-dispersed (std ≈0.65 vs teacher ≈1.0, stable across the
+  sequence). Mean-regression signature of an underfit few-NFE head; the fade
+  emerges from the loop reacting to persistently muted latents. Cheap
+  inference-time treatment queued: global variance calibration (×~1.6 on
+  normalized latents). If calibration stabilizes the loop, full-run training
+  should shrink the needed correction toward 1.0.
+
 ## Follow-ups
 
 - ~~Josh: listen/calibrate~~ **DONE (2026-07-08):** Josh rates flow4 vs teacher
