@@ -75,6 +75,15 @@ class SampleCapture:
     def to_utterance(self, utt_id: str, text: str, meta: dict | None = None) -> UtteranceCache:
         if not self.conditions:
             raise ValueError(f"no frames captured for {utt_id!r}")
+        for c, z in zip(self.conditions, self.latents, strict=True):
+            # exactly one frame row per call: a multi-row condition (e.g. a fork
+            # update stacking pos+neg streams) would otherwise be silently
+            # flattened into one [1, k*d] row (pre-75K audit finding 3)
+            if c.numel() != c.shape[-1] or z.numel() != z.shape[-1]:
+                raise ValueError(
+                    f"{utt_id!r}: multi-row capture call (cond {tuple(c.shape)}, "
+                    f"latent {tuple(z.shape)}) — unbatched capture expects one frame per call"
+                )
         hidden = torch.cat([c.reshape(1, -1) for c in self.conditions]).unsqueeze(0)  # [1, T, dm]
         latent = torch.cat([z.reshape(1, -1) for z in self.latents]).unsqueeze(0)  # [1, T, dl]
         assert_frame_aligned(hidden.float(), latent.float())

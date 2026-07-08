@@ -98,6 +98,12 @@ class FlowHead(nn.Module):
                 f"dim mismatch: x_t {tuple(x_t.shape)}, cond {tuple(condition.shape)} "
                 f"vs config d_latent={self.cfg.d_latent}, d_model={self.cfg.d_model}"
             )
+        if x_t.ndim != 2 or condition.ndim != 2:
+            # a [B, 1, d] condition would silently broadcast through AdaLN into
+            # wrong-shaped garbage (pre-75K audit finding 3) — refuse loudly
+            raise ValueError(
+                f"expected 2-D [B, d] inputs: x_t {tuple(x_t.shape)}, cond {tuple(condition.shape)}"
+            )
         cond = self.cond_proj(condition) + self.time_mlp(timestep_embedding(t, self.cfg.width))
         h = self.in_proj(x_t)
         for block in self.blocks:

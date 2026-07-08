@@ -130,3 +130,16 @@ def test_heun_sample_shape_determinism_and_tracks_targets():
     err = (s1 - target).pow(2).mean()
     null = (s1 - target[torch.randperm(16)]).pow(2).mean()
     assert err < null
+
+
+def test_forward_rejects_3d_condition():
+    """A [B, 1, d] condition must raise, not broadcast (pre-75K audit finding 3)."""
+    import pytest
+
+    head = FlowHead(FlowHeadConfig(d_model=24, d_latent=8, width=16, layers=1))
+    x_t = torch.randn(4, 8)
+    t = torch.rand(4)
+    with pytest.raises(ValueError, match="2-D"):
+        head(x_t, t, torch.randn(4, 1, 24))
+    with pytest.raises(ValueError, match="2-D"):
+        head(torch.randn(4, 1, 8), t, torch.randn(4, 24))

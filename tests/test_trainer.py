@@ -17,12 +17,21 @@ from src.flow_head.trainer import (
 DM, DL = 24, 8
 
 
+# Non-trivial latent mean/std and non-N(0,1) hiddens: with these, any
+# standardization asymmetry (standardizing hidden too, mean/std swapped in
+# de-standardization, wrong-checkpoint stats) fails the e2e test instead of
+# hiding behind identity stats (pre-75K audit finding 1).
+LAT_SCALE, LAT_SHIFT = 5.0, 3.0
+HID_SCALE, HID_SHIFT = 4.0, 2.0
+
+
 class StubModel:
     def __init__(self, w):
         self.w = w
 
     def sample_speech_tokens(self, condition, neg_condition=None, cfg_scale=3.0):
-        return (condition.float() @ self.w).to(condition.dtype)
+        z = condition.float() @ self.w * LAT_SCALE + LAT_SHIFT
+        return z.to(condition.dtype)
 
 
 def write_cache(tmp_path, n_utts=6, frames=20, seed=0):
@@ -33,8 +42,8 @@ def write_cache(tmp_path, n_utts=6, frames=20, seed=0):
     for u in range(n_utts):
         with SampleCapture(model) as cap:
             for _f in range(frames):
-                cond = torch.randn(1, DM, generator=g).to(torch.bfloat16)
-                model.sample_speech_tokens(cond)
+                cond = torch.randn(1, DM, generator=g) * HID_SCALE + HID_SHIFT
+                model.sample_speech_tokens(cond.to(torch.bfloat16))
             utt = cap.to_utterance(f"u{u}", f"text {u}")
         save_utterance(utt, tmp_path / f"u{u:03d}.pt")
     return w
@@ -46,6 +55,8 @@ def test_load_pairs_flattens_and_standardizes(tmp_path):
     assert data.hidden.shape == (120, DM) and data.latent.shape == (120, DL)
     assert data.latent.mean(dim=0).abs().max() < 1e-3
     assert (data.latent.std(dim=0) - 1).abs().max() < 1e-2
+    # hidden must pass through UN-standardized (train/inference symmetry)
+    assert data.hidden.mean().abs() > 1.0
     assert load_pairs(tmp_path, limit=2).hidden.shape[0] == 40
 
 
@@ -88,8 +99,8 @@ def test_end_to_end_overfit_and_checkpoint_roundtrip(tmp_path):
     head2, mean, std = load_checkpoint(ckpt)
     assert head2.cfg.d_model == DM and head2.cfg.d_latent == DL
 
-    cond = torch.randn(64, DM)
-    target = cond @ w  # true head-space latents
+    cond = torch.randn(64, DM) * HID_SCALE + HID_SHIFT
+    target = cond @ w * LAT_SCALE + LAT_SHIFT  # true head-space latents
     sample = sample_latents(head2, cond, mean, std, nfe=8, seed=1)
     err = (sample - target).pow(2).mean()
     null = (sample - target[torch.randperm(64)]).pow(2).mean()

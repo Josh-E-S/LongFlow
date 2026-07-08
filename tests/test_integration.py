@@ -55,3 +55,20 @@ def test_latent_stats_drift_curve():
     assert len(stats["std_segments"]) == 4
     assert all(s > 0 for s in stats["std_segments"])
     assert len(patch.latent_stats(segments=8)["std_segments"]) == 8
+
+
+def test_patch_nests_inside_sample_capture():
+    """DAgger shape: capture wraps patch; patch exit must restore capture's wrapper,
+    and capture exit must restore the class method (audit finding 4)."""
+    from src.cache.capture import SampleCapture
+
+    model = StubModel()
+    cond = torch.randn(1, DM)
+    with SampleCapture(model) as cap:
+        with make_patch(model):
+            model.sample_speech_tokens(cond)
+        assert cap.num_frames == 0  # patch REPLACES the sampler; capture sees nothing
+        model.sample_speech_tokens(cond)
+        assert cap.num_frames == 1  # capture wrapper restored by patch exit
+    assert "sample_speech_tokens" not in vars(model)
+    assert model.sample_speech_tokens(cond).shape == (1, DL)

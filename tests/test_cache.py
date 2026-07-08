@@ -116,3 +116,17 @@ def test_nan_condition_refused():
         model.sample_speech_tokens(bad, None, 1.3)
     with pytest.raises(ValueError, match="non-finite"):
         cap.to_utterance("u1", "t")
+
+
+def test_to_utterance_rejects_multi_row_calls():
+    """A [2, d] condition per call must raise, not flatten to [1, 2d] (audit finding 3)."""
+    import pytest
+
+    class MultiRowStub:
+        def sample_speech_tokens(self, condition, neg_condition=None, cfg_scale=3.0):
+            return condition[..., :4]
+
+    with SampleCapture(MultiRowStub()) as cap:
+        cap.model.sample_speech_tokens(torch.randn(2, 16))
+    with pytest.raises(ValueError, match="multi-row"):
+        cap.to_utterance("u0", "text")

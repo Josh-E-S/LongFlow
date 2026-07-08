@@ -49,6 +49,10 @@ class FlowHeadPatch:
         self.latents: list[torch.Tensor] = []
 
     def __enter__(self):
+        # mirror SampleCapture's semantics so the two context managers nest
+        # (the DAgger probe wraps capture around the patch — audit finding 4)
+        self._was_instance_attr = "sample_speech_tokens" in vars(self.model)
+        self._orig = getattr(self.model, "sample_speech_tokens", None)
         patch = self
 
         def flow_sample(condition, neg_condition=None, cfg_scale=None):
@@ -71,8 +75,11 @@ class FlowHeadPatch:
         return self
 
     def __exit__(self, *exc):
-        if "sample_speech_tokens" in vars(self.model):
+        if self._was_instance_attr:
+            self.model.sample_speech_tokens = self._orig  # restore outer wrapper
+        elif "sample_speech_tokens" in vars(self.model):
             del self.model.sample_speech_tokens  # restore class-method lookup
+        self._orig = None
         return False
 
     def latent_stats(self, segments: int = 4) -> dict:

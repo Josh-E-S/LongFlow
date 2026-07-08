@@ -198,6 +198,20 @@ continuation + lr tail on existing 10K, one overnight) → capacity probe →
 75K with the upgraded schema (teacher noise + neg_condition + cfg_scale for
 paired map distillation) only if still short.
 
+## Pre-75K review round 2 (2026-07-08, post-E3)
+
+Three clean-context reviewers (code audit / design gaps / data strategy) —
+full distillation + merged plan: **`review-pre75k-2.md`**. Headlines: no code
+bug pollutes existing results (audit fixes landed same day: shape guards,
+patch-nesting restoration, standardization-proof tests); ~7–9 GPU-h of
+BLOCKING gates before the big cache (teacher determinism + teacher-reseed
+metric floor → 1K gate on the NEW recipe → val machinery + retro-validation →
+scaling curve from cache subsets → context-length OOD spec); capture mix
+rebudgeted by FRAMES: 30% short read / 30% long monologue (2–20 min) / 25%
+dialogue / 15% conversational (75K-from-clean.360-as-written would reproduce
+the OOD failure). cfg_scale covariate flagged (cache 1.3 vs shipped default
+3.0 — decide and be consistent).
+
 ## Follow-ups
 
 - ~~Josh: listen/calibrate~~ **DONE (2026-07-08):** Josh rates flow4 vs teacher
