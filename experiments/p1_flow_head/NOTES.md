@@ -279,13 +279,26 @@ speakers; artifacts in the eval bundle + `analysis.json`):
   in-session as "learned fine structure" — it is actually **overconfidence on
   held-out conditions** (sharper conditionals, worse placed). Same
   self-persuasion trap as N2's mid-experiment retraction; logged accordingly.
-- **Endurance run (9.8 min audio, hit the 4410-frame cap): collapse, not
-  stability.** The flat std≈2.0 curve is a stable NOISE attractor: segment 1
-  has 75 words (61 wpm, degrading), segments 2–8 are non-speech (Whisper
-  hallucinating "Thank you" loops, ~6 words/73s, voiced fraction 0.22–0.34,
-  ECAPA sim-to-prompt ≈ 0). Total transcribed: 117 of 1666 words. Closed-loop
-  35s paragraph: WER 0.222 (vs 20K's near-parity at E1b). The overconfident
-  field compounds errors faster in-loop → collapse within ~90s.
+- **Endurance run (9.8 min audio, hit the 4410-frame cap): collapse FROM FRAME
+  ZERO, not stability.** The flat std≈2.0 curve is a stable NOISE attractor.
+  Josh's ears (tier-3): zero intelligible speech from the very start — the
+  "75 words" my segment-1 Whisper pass found were hallucinated too (61 wpm,
+  sim-to-prompt 0.05; segments 2–8 hallucinate "Thank you" loops, voiced
+  fraction 0.22–0.34). Metrics missed it, a human caught it — April 7 lesson
+  re-confirmed. Closed-loop 35s paragraph: WER 0.222 (vs 20K near-parity at
+  E1b).
+- **Why parity clips work, 35s closed loop degrades, endurance is instant
+  garbage (same ckpt):** conditioning distance. Parity = cached teacher states
+  (training distribution). Short closed loop = self-generated conditions from
+  a short prompt (near-distribution). Endurance = the full 1,666-word script
+  in the LM context BEFORE frame one — hidden states from a text prefix ~10×
+  longer than any training sample, OOD from the first frame. The overfit 80K
+  head maps unfamiliar conditions straight off-manifold; the 20K head on the
+  SAME script (2026-07-08) degraded gracefully for 5+ min. Overfitting cost
+  robustness-to-OOD-conditions — the property a closed loop lives or dies by.
+  Corollaries: long-context capture is near-mandatory in the 75K schema
+  (else 90-min conditions are permanently OOD), and P3 windowed context gains
+  a second mechanism (keeps conditioning stats inside the trained regime).
 - **Conclusions:** (1) steps alone on 10K data are ruled out — past ~20K steps
   the head trades generalization for memorization; the binding constraint is
   DATA, exactly the pre-registered 75K trigger ("only if still short" — we are
