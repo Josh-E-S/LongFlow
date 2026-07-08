@@ -164,6 +164,27 @@ wall-clock), then tag `p1-baseline`.
   energy/quality-over-time curves needed to evaluate this ARE the C4 benchmark
   machinery — build once, use for both.
 
+## E1 — teacher-forced dispersion audit (2026-07-08, decisive)
+
+228 held-out frames, teacher std in normalized space 0.937:
+
+| sampler | marginal std | per-cond spread |
+|---|---|---|
+| euler4 sway−1 (shipped) | 0.798 | 0.420 |
+| euler4 sway0 | 0.824 | 0.462 |
+| euler16 sway0 | 0.906 | 0.584 |
+| euler64 sway0 | 0.932 | 0.619 |
+| **heun8 sway0** | **0.941** | 0.631 |
+
+**Verdict: the sampler was the thief — reviewer-2's perfect-field simulation
+confirmed almost to the decimal.** Heun-8 (16 evals, ~16ms/frame, still 4×
+cheaper than parent head) matches teacher dispersion exactly; the field is NOT
+collapsed; training/capacity acquitted for the dispersion deficit. Remaining
+gap between teacher-forced 0.85 ratio (shipped sampler) and the 0.56 measured
+in-loop = the drift amplification mechanism (conditions leave distribution).
+E1b (closed loop with heun8) queued: if the fade dies, P1's blocker is solved
+for ~$0 and the 75K question becomes purely about polish, not survival.
+
 ## Follow-ups
 
 - ~~Josh: listen/calibrate~~ **DONE (2026-07-08):** Josh rates flow4 vs teacher

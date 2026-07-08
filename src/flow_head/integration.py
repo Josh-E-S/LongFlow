@@ -10,7 +10,7 @@ import time
 
 import torch
 
-from src.flow_head.cfm import euler_sample
+# sampler injected via constructor (default heun_sample per E1 audit)
 from src.flow_head.model import FlowHead
 
 
@@ -28,9 +28,12 @@ class FlowHeadPatch:
         head: FlowHead,
         latent_mean: torch.Tensor,
         latent_std: torch.Tensor,
-        nfe: int = 4,
+        nfe: int = 8,
         sway: float = 0.0,
+        sampler=None,
     ):
+        from src.flow_head.cfm import heun_sample
+
         self.model = model
         self.head = head
         device = next(head.parameters()).device
@@ -38,6 +41,9 @@ class FlowHeadPatch:
         self.std = latent_std.to(device)
         self.nfe = nfe
         self.sway = sway
+        # default heun_sample per the E1 audit: euler4/sway-1 under-disperses
+        # even a perfect field; heun8 matches teacher dispersion exactly
+        self.sampler = sampler or heun_sample
         self.calls = 0
         self.time_s = 0.0
         self.latents: list[torch.Tensor] = []
@@ -48,7 +54,7 @@ class FlowHeadPatch:
         def flow_sample(condition, neg_condition=None, cfg_scale=None):
             t0 = time.time()
             patch.calls += 1
-            z = euler_sample(
+            z = patch.sampler(
                 patch.head,
                 condition.float(),
                 patch.head.cfg.d_latent,
