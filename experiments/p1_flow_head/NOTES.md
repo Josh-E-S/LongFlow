@@ -104,8 +104,36 @@ wall-clock), then tag `p1-baseline`.
 - Not done (deliberate): length-bucketing batches to cut padding waste — note
   for the 75K run if it happens; ~5h for 10K doesn't justify the complexity.
 
+## 10K scaling run (2026-07-08)
+
+- Caching: 10,000 utts complete overnight (~18 skipped batches ≈1.4%, all the
+  known edge case, fixed in `3bac875` for future runs). 478,191 frame pairs.
+- Training: 20K steps, bs 1024, EMA 0.9995 — loss 2.00 → 0.965, smooth, **still
+  declining at stop** (~0.004/1K steps) → undertrained; longer run warranted.
+  NB: the 800-run's final loss 0.29 is a memorization artifact, NOT comparable —
+  ~0.97 is the honest population-level CFM loss with this conditioning.
+- **First held-out (generalization) evaluation** — 5 never-trained sentences,
+  teacher-forcing parity (`eval10k_metrics.json`, `ab_scaling_metrics.json`):
+
+| model | held-out WER | held-out sim | wins |
+|---|---|---|---|
+| 10K-utts | **0.105** | **0.824** | **5/5** |
+| 800-utts (gate ckpt) | 0.146 | 0.677 | 0/5 |
+
+- **Conclusions:** (1) the gate's 0.984 train-set sim was partly memorization —
+  held-out is the metric that matters from now on; (2) data scaling decisively
+  works and is not saturated at 10K; (3) full P1 run should scale BOTH data
+  (→75K per the original plan) and steps (≥50K), with the fixed batched capture.
+- Caveats logged: n=5, single held-out speaker (consecutive sorted files —
+  next eval should hold out utterances across many speakers); listening
+  calibration of sim 0.82 pending (Josh).
+
 ## Follow-ups
 
-- 10K overnight caching run → retrain → compare vs 800-utt gate metrics →
-  decide whether 75K buys anything (data-scaling curve).
+- Josh: listen to held-out teacher vs 10K-flow pairs — calibrate what sim 0.824
+  sounds like before committing full-run budget.
+- Full P1 run: 75K cache (~35 GPU-h with batching — exceeds Colab sessions →
+  Vast.ai onboarding, or chunked Colab) + dialogue caching (turn-boundary
+  coverage per data plan) + ≥50K-step training + proper multi-speaker held-out
+  eval + wall-clock vs DDPM baseline → tag `p1-baseline`.
 - Then P2 (MeanFlow 1–2 NFE) — timeline priority per dots.tts (docs/related-work.md).
