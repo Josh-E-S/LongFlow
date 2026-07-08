@@ -81,6 +81,26 @@ def test_frame_total_mismatch_refuses():
         cap.split_utterances([[FRAME, FRAME]], frame_id=FRAME)  # stream claims fewer
 
 
+def test_final_unrendered_frame_step_tolerated():
+    """The observed ~1% edge case: a frame token at the very last step never
+    gets its sample_speech_tokens call. Exactly one trailing orphan step is
+    dropped; the affected element's expected count adjusts; data still exact."""
+    streams = [[FRAME, FRAME, END], [FRAME, FRAME, FRAME]]  # e1 ends on a frame
+    cap = simulate(streams)
+    cap.calls.pop()  # simulate generation stopping before the final frame's call
+    parts = cap.split_utterances(streams, frame_id=FRAME)
+    assert parts[0][0].shape == (2, DM)
+    assert parts[1][0].shape == (2, DM)  # 3 frame tokens, last unrendered -> 2
+    for i in range(2):
+        assert float(parts[1][0][i, 0]) == 100 + i  # order preserved exactly
+    # two missing calls is NOT attributable — must still abort
+    cap2 = simulate(streams)
+    cap2.calls.pop()
+    cap2.calls.pop()
+    with pytest.raises(RuntimeError, match="call/step mismatch"):
+        cap2.split_utterances(streams, frame_id=FRAME)
+
+
 def test_method_restored_after_exit():
     model = StubModel()
     with BatchedSampleCapture(model):

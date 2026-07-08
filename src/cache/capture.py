@@ -150,6 +150,14 @@ class BatchedSampleCapture:
             for t in range(n_steps)
         ]
         frame_steps = [a for a in active_per_step if a]
+        # End-of-generation edge case (observed ~1% of batches, 2026-07-07 run):
+        # a frame token emitted at the very final step is never rendered —
+        # generation stops before its sample_speech_tokens call. Exactly one
+        # trailing frame-step with no call is therefore attributable and safe
+        # to drop; anything else stays a hard abort.
+        dropped_final = None
+        if len(frame_steps) == len(self.calls) + 1:
+            dropped_final = frame_steps.pop()
         if len(frame_steps) != len(self.calls):
             raise RuntimeError(
                 f"call/step mismatch: {len(self.calls)} capture calls vs "
@@ -169,6 +177,8 @@ class BatchedSampleCapture:
         out = []
         for b, stream in enumerate(token_streams):
             expected = sum(1 for tok in stream if tok == frame_id)
+            if dropped_final is not None and b in dropped_final:
+                expected -= 1  # this element's final frame token was never rendered
             got = len(per_b[b])
             if got != expected:
                 raise RuntimeError(f"element {b}: {got} frames assigned vs {expected} frame tokens")
