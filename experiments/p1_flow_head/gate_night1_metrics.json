@@ -1,0 +1,224 @@
+{
+  "summary": {
+    "n_utterances": 6,
+    "reseed_floor_wer": 0.07592592592592594,
+    "reseed_floor_sim": 0.7343238393465678,
+    "teacher_wer_vs_text": 0.052248677248677246,
+    "sampler": {
+      "heun8": {
+        "wer": 0.23756224712107066,
+        "sim_vs_teacher": 0.5753853271404902
+      },
+      "euler4": {
+        "wer": 0.07876984126984127,
+        "sim_vs_teacher": 0.5831592082977295
+      },
+      "euler16": {
+        "wer": 0.0809173669467787,
+        "sim_vs_teacher": 0.5957931280136108
+      }
+    }
+  },
+  "per_utterance": [
+    {
+      "tag": "1188__1188_133604_000004_000005",
+      "reseedA_wer": 0.0,
+      "reseedB_wer": 0.05555555555555555,
+      "reseed_pair_wer": 0.05555555555555555,
+      "reseed_pair_sim": 0.6845835447311401,
+      "heun8_wer": 0.05555555555555555,
+      "heun8_sim_vs_teacher": 0.6391763687133789,
+      "euler4_wer": 0.0,
+      "euler4_sim_vs_teacher": 0.5825710296630859,
+      "euler16_wer": 0.0,
+      "euler16_sim_vs_teacher": 0.6206770539283752
+    },
+    {
+      "tag": "121__121_121726_000025_000001",
+      "reseedA_wer": 0.42857142857142855,
+      "reseedB_wer": 0.14285714285714285,
+      "reseed_pair_wer": 0.4,
+      "reseed_pair_sim": 0.7655023336410522,
+      "heun8_wer": 0.14285714285714285,
+      "heun8_sim_vs_teacher": 0.6902748346328735,
+      "euler4_wer": 0.21428571428571427,
+      "euler4_sim_vs_teacher": 0.6342076063156128,
+      "euler16_wer": 0.14285714285714285,
+      "euler16_sim_vs_teacher": 0.642091691493988
+    },
+    {
+      "tag": "1995__1995_1837_000012_000004",
+      "reseedA_wer": 0.0,
+      "reseedB_wer": 0.0,
+      "reseed_pair_wer": 0.0,
+      "reseed_pair_sim": 0.8352603316307068,
+      "heun8_wer": 0.125,
+      "heun8_sim_vs_teacher": 0.8009580969810486,
+      "euler4_wer": 0.041666666666666664,
+      "euler4_sim_vs_teacher": 0.8194907307624817,
+      "euler16_wer": 0.041666666666666664,
+      "euler16_sim_vs_teacher": 0.8152047395706177
+    },
+    {
+      "tag": "237__237_134493_000002_000003",
+      "reseedA_wer": 0.0,
+      "reseedB_wer": 0.0,
+      "reseed_pair_wer": 0.0,
+      "reseed_pair_sim": 0.7698941230773926,
+      "heun8_wer": 0.23529411764705882,
+      "heun8_sim_vs_teacher": 0.6261095404624939,
+      "euler4_wer": 0.0,
+      "euler4_sim_vs_teacher": 0.682650625705719,
+      "euler16_wer": 0.11764705882352941,
+      "euler16_sim_vs_teacher": 0.6922599077224731
+    },
+    {
+      "tag": "260__260_123286_000005_000001",
+      "reseedA_wer": 0.0,
+      "reseedB_wer": 0.0,
+      "reseed_pair_wer": 0.0,
+      "reseed_pair_sim": 0.6915966272354126,
+      "heun8_wer": 0.4,
+      "heun8_sim_vs_teacher": 0.13240984082221985,
+      "euler4_wer": 0.15,
+      "euler4_sim_vs_teacher": 0.2222691774368286,
+      "euler16_wer": 0.05,
+      "euler16_sim_vs_teacher": 0.23971796035766602
+    },
+    {
+      "tag": "2961__2961_961_000004_000007",
+      "reseedA_wer": 0.0,
+      "reseedB_wer": 0.0,
+      "reseed_pair_wer": 0.0,
+      "reseed_pair_sim": 0.6591060757637024,
+      "heun8_wer": 0.4666666666666667,
+      "heun8_sim_vs_teacher": 0.5633832812309265,
+      "euler4_wer": 0.06666666666666667,
+      "euler4_sim_vs_teacher": 0.5577660799026489,
+      "euler16_wer": 0.13333333333333333,
+      "euler16_sim_vs_teacher": 0.5648074150085449
+    }
+  ],
+  "transcripts": {
+    "1188__1188_133604_000004_000005_reseedA": {
+      "wer": 0.0,
+      "transcript": "You see how doubly, how intimately opposed the ideas are yet, how difficult to explain  without apparent contradiction."
+    },
+    "1188__1188_133604_000004_000005_reseedB": {
+      "wer": 0.05555555555555555,
+      "transcript": "You see how doubly, how infinitely opposed the ideas are,  yet how difficult to explain without apparent contradiction."
+    },
+    "1188__1188_133604_000004_000005_20k_heun8": {
+      "wer": 0.05555555555555555,
+      "transcript": "See how doubly, how intimately opposed the ideas are, yet how difficult to explain without apparent contradiction."
+    },
+    "1188__1188_133604_000004_000005_20k_euler4": {
+      "wer": 0.0,
+      "transcript": "you see how doubly how intimately opposed the ideas are yet how difficult to explain without apparent contradiction"
+    },
+    "1188__1188_133604_000004_000005_20k_euler16": {
+      "wer": 0.0,
+      "transcript": "You see how doubly, how intimately opposed the ideas are, yet how difficult to explain without apparent contradiction."
+    },
+    "121__121_121726_000025_000001_reseedA": {
+      "wer": 0.42857142857142855,
+      "transcript": "Once held by Hobson and Dewey, next to it by Mother Eddie, a brother dally."
+    },
+    "121__121_121726_000025_000001_reseedB": {
+      "wer": 0.14285714285714285,
+      "transcript": "one held by Hobson and Dewey, now carried by Mother Eddie and Brother Dowie."
+    },
+    "121__121_121726_000025_000001_20k_heun8": {
+      "wer": 0.14285714285714285,
+      "transcript": "Once held by Hobson and Dewey,  Neff carried by Mother Eddie and Brother Dowie."
+    },
+    "121__121_121726_000025_000001_20k_euler4": {
+      "wer": 0.21428571428571427,
+      "transcript": "Once held by Hobson and Dewey, Neferi by Mother Eddie and Brother Dowie."
+    },
+    "121__121_121726_000025_000001_20k_euler16": {
+      "wer": 0.14285714285714285,
+      "transcript": "once held by Hobson and Dewey,  now buried by Mother Eddie and Brother Dowie."
+    },
+    "1995__1995_1837_000012_000004_reseedA": {
+      "wer": 0.0,
+      "transcript": "He splashed and stamped along farther and farther onward until he neared the rampart of the clearing  and put foot upon the tree bridge."
+    },
+    "1995__1995_1837_000012_000004_reseedB": {
+      "wer": 0.0,
+      "transcript": "He splashed and stamped along farther and farther onward  until he neared the rampart of the clearing and put foot upon the tree bridge."
+    },
+    "1995__1995_1837_000012_000004_20k_heun8": {
+      "wer": 0.125,
+      "transcript": "He splashed and stepped along farther and farther onward until he heard the rampart of the clearing and then put foot upon the tree bridge."
+    },
+    "1995__1995_1837_000012_000004_20k_euler4": {
+      "wer": 0.041666666666666664,
+      "transcript": "He splashed and stamped along farther and farther onward until he neared the rampart of the clearing and then put foot upon the tree bridge."
+    },
+    "1995__1995_1837_000012_000004_20k_euler16": {
+      "wer": 0.041666666666666664,
+      "transcript": "He splashed and stamped along farther and farther onward till he neared the rampart of the clearing and put foot upon the tree bridge."
+    },
+    "237__237_134493_000002_000003_reseedA": {
+      "wer": 0.0,
+      "transcript": "The shaggy coat of the prairie, which they lifted to make him a bed, has vanished forever."
+    },
+    "237__237_134493_000002_000003_reseedB": {
+      "wer": 0.0,
+      "transcript": "The shaggy coat of the prairie which they lifted to make him a bed has vanished forever."
+    },
+    "237__237_134493_000002_000003_20k_heun8": {
+      "wer": 0.23529411764705882,
+      "transcript": "The shaggy coat of the prairie which they lifted became a bed and has vanished forever."
+    },
+    "237__237_134493_000002_000003_20k_euler4": {
+      "wer": 0.0,
+      "transcript": "The shaggy coat of the prairie, which they lifted to make him a bed, has vanished forever."
+    },
+    "237__237_134493_000002_000003_20k_euler16": {
+      "wer": 0.11764705882352941,
+      "transcript": "The shaggy coat of the prairie, which they lifted make him a bend, has vanished forever."
+    },
+    "260__260_123286_000005_000001_reseedA": {
+      "wer": 0.0,
+      "transcript": "He examines the horizon all round with his glass, and folds his arms with the air of an injured man."
+    },
+    "260__260_123286_000005_000001_reseedB": {
+      "wer": 0.0,
+      "transcript": "He examines the horizon all round with his glass and folds his arms with the air of an injured man."
+    },
+    "260__260_123286_000005_000001_20k_heun8": {
+      "wer": 0.4,
+      "transcript": "He has got a horizon all round this glass, and can force his arms with the air an injured man."
+    },
+    "260__260_123286_000005_000001_20k_euler4": {
+      "wer": 0.15,
+      "transcript": "He looks at the horizon all round with his glass, folds his arms with the air of an injured man."
+    },
+    "260__260_123286_000005_000001_20k_euler16": {
+      "wer": 0.05,
+      "transcript": "He framens the horizon all round with his glass, and folds his arms with the air of an injured man."
+    },
+    "2961__2961_961_000004_000007_reseedA": {
+      "wer": 0.0,
+      "transcript": "And what was the subject of the poem, said the person who made the remark?"
+    },
+    "2961__2961_961_000004_000007_reseedB": {
+      "wer": 0.0,
+      "transcript": "And what was the subject of the poem, said the person who made the remark?"
+    },
+    "2961__2961_961_000004_000007_20k_heun8": {
+      "wer": 0.4666666666666667,
+      "transcript": "a notable subject of Moab, and the person who made the remark."
+    },
+    "2961__2961_961_000004_000007_20k_euler4": {
+      "wer": 0.06666666666666667,
+      "transcript": "And what was the subject of the poem, and the person who made the remark?"
+    },
+    "2961__2961_961_000004_000007_20k_euler16": {
+      "wer": 0.13333333333333333,
+      "transcript": "And that was the subject of the poem, of the person who made the remark."
+    }
+  }
+}

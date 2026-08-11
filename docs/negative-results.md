@@ -88,6 +88,23 @@ The April 8 training crash (epoch 16, `_pin_memory_loop` file-descriptor failure
 
 ---
 
+## N8 — VibeVoice inflates speaking rate ~1.5× on long-form input (teacher defect, inherited by anything distilled from it)
+
+**Finding (Gate Night 1, 2026-08-10/11).** Handed a single 3229-word script (~20 min at natural pace), frozen VibeVoice-1.5B renders the **entire** script in 13.35 min at **252 wpm** — against **168 wpm** on short scripts from the same model, same voice prompt, same session. The inflation is present in the first 30 s (194 wpm), saturates by ~min 2, then holds flat. It is an immediate context-length effect, **not** progressive drift.
+
+**Evidence.** One continuous `generate()` call, 200 sentences joined, `cfg_scale=1.3`, `max_new_tokens=12000`; 6009 frames at 7.5 Hz = 801 s. Whisper-large-v3 transcribes **3365 words** against the script's 3229 (the excess is contraction/hyphen tokenization), so coverage is complete — nothing was skipped. Generation stopped on its own at 6009 of 12000 available tokens, i.e. the model correctly detected end-of-script. Short-clip control: 12 teacher renders (6 utterances × 2 seeds), 77 s total, **168.1 wpm** — squarely natural (140–170). Ratio **1.50×**. Local rate by 30 s bin never returns to baseline after minute 1. Data: `experiments/p1_flow_head/endurance_transcript.json`.
+
+**Implication.** Four consequences, in order of cost to LongFlow:
+
+1. **Long-context captures carry the defect.** Training the flow head on long-form cached pairs distills 1.5× pacing into the student. This directly qualifies the 2026-08-10 review's amendment 3 (bias the data mix toward long context): long context is still the right axis, but the source captures need rate correction or the defect propagates.
+2. **Invisible to utterance-level evaluation** — which is the entire published literature. C4's durational WER is the metric that catches it; the metric was specified before this finding existed.
+3. **Argues for windowed context (review amendment 2).** If the inflation is driven by effective context length, a sink+window mechanism that holds effective context short may avoid it. Testable, and it is a claim the video-distillation lineage cannot supply — no video analog of durational distortion.
+4. **Partially exonerates the student head.** Rushed character in LongFlow renders conditioned on long-context captures may be inherited rather than a head defect.
+
+**Caveat.** n=1 long script, one voice prompt, one CFG scale. Before this goes in a paper it needs a rate-vs-script-length sweep (e.g. 100/500/1500/3229 words) across ≥3 voice prompts to establish the curve and rule out prompt-specific behavior. Cheap — teacher-only, no training.
+
+---
+
 ## Rejected alternative architectures
 
 See README § "Rejected alternatives." Summary: Mamba-Flow-TTS (from-scratch AR-MSE backbone + flow head = N1/N2 recipe with a Mamba swap; no dialogue data; unsupervised VAD controller), Endurance v2 (sound, but single-speaker by design — retained as follow-on work).

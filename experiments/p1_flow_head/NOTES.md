@@ -362,10 +362,156 @@ Decisions affecting this experiment line:
   Recipe-alignment table: review §4.
 - README/CLAUDE.md stale claims (15–20× e2e, Interspeech 2026, C2-as-live,
   private-repo rule) struck through with dated corrections in the same commit.
-- **Speed-claim sampler discipline (added 2026-08-11).** The 8.4× head-level /
+- ~~**Speed-claim sampler discipline (added 2026-08-11).** The 8.4× head-level /
   1.47× e2e pair (line ~141 above) is **euler4**, which E1/E1b showed is
   dispersion-incorrect. The shippable sampler is heun8: head ~30ms/frame →
   **2.2× head-level, ~1.24× e2e**. Always name the sampler next to the number;
-  the heun8 pair is the headline. This is the strongest argument that **P2
-  MeanFlow is load-bearing** — it is the only route to a large head-level
-  number *at correct dispersion*.
+  the heun8 pair is the headline.~~ **[RETRACTED same day by Gate Night 1 cell 5
+  — heun8 costs 3× WER and is not shippable. See the Gate Night 1 entry below;
+  the headline-sampler question is OPEN.]** The surviving half: always name the
+  sampler next to the number, and **P2 MeanFlow is load-bearing** — it is the
+  only route to a large head-level number at correct dispersion.
+
+## 2026-08-11 — GATE NIGHT 1 RESULTS (Colab L4 generate; Mac-side scoring)
+
+Notebook `gate_night1_colab.ipynb`, built 2026-07-09, finally run. ~$2, 1122 s
+wall for the endurance cell alone. Bundle `gate_night1_bundle.zip` (33 files)
+extracted to `audio/gate_night1/` (git-ignored). Machine-readable results:
+`gate_night1_metrics.json`, `endurance_episode_map.json`,
+`endurance_transcript.json`.
+
+| cell | check | result | verdict |
+|---|---|---|---|
+| 2 | 20K/80K standardization stats equality | mean & std maxdiff **0.0** | **PASS** — E3 dispersion table was a fair comparison; overfit verdict stands |
+| 3 | teacher determinism given RNG state | same seed 0.0 / diff seed 2.81 | **PASS** — paired noise→latent 75K schema is viable |
+| 4 | teacher-vs-teacher reseed floor | mean 0.076 WER, **median 0.000** | **UNUSABLE at n=6** — recalibrate before the scaling curve |
+| 5 | sampler A/B on the 20K head | heun8 0.238 / euler4 0.079 / euler16 0.081 | **BLOCKING** — no sampler is clean; see below |
+| 6 | batched-vs-unbatched condition parity | mean shift 0.20–0.50σ, frame counts diverge | **BLOCKING** — do not cache 75K at batch-8 until resolved |
+| 7 | 20-min teacher endurance | rate inflation 1.5×; voice sim decline in back half | **NEW FINDING N8** + harvest-cap constraint |
+
+### Cell 5 — the sampler dilemma (blocking, and it reframes the speed story)
+
+Answers the question NOTES never recorded: **0.088 was euler4** (0.079 measured
+here on 6 held-out utterances). But the A/B exposes a trap:
+
+- **euler4** — WER 0.079, intelligible; under-dispersed (std ≈0.65 vs teacher
+  ≈1.0), and that under-dispersion is the closed-loop fade of E1/E1b.
+- **heun8** — matches teacher dispersion and cures the fade, but WER **0.238**,
+  worse in **5 of 6** utterances (median 0.235). Not fuzzy edges — semantic
+  corruption: *"And what was the subject of the poem?"* → *"a notable subject of
+  Moab."*
+- **euler16** — 0.081, no better than euler4 for 4× the NFE.
+
+**There is no sampler setting that is both intelligible and dispersion-correct.**
+This is not a sampler-selection problem; it is the underfit velocity field
+surfacing through whichever error the integrator accumulates. Consistent with
+the NFE-16 A/B (16≈4) and the "digital cold" texture — all three point at
+underfit, not integration error.
+
+Consequence: **P2 MeanFlow is load-bearing for correctness, not merely speed**
+— a stronger claim than the 2026-08-10 amendment 1 made. The headline-sampler
+question is **open**: we cannot quote heun8 (unintelligible) or euler4
+(under-dispersed, fades in closed loop) as "the shipped configuration". Resolve
+by fixing the head, not by picking a sampler.
+
+Speaker sim vs teacher was ~0.575–0.596 for all three samplers, against a
+teacher-vs-itself ECAPA of **0.734** — see cell 4 caveat before reading anything
+into that gap.
+
+### Cell 4 — the floor is bimodal and unusable at n=6
+
+Mean pair-WER 0.076 matches the review's "~0.07 → 20K is at the ceiling"
+prediction, but the **median is 0.000**: 4 of 6 utterances transcribe
+identically across seeds. The mean is carried by one utterance (121, pair-WER
+0.400) whose text is dense with proper nouns (*"Mother Eddy and Brother
+Dowie"*) that Whisper mangles — so part of the "floor" is ASR unreliability,
+not generation variance. Teacher-vs-itself ECAPA is only 0.734 on clips this
+short, so the similarity floor is noisy too.
+
+**The noise band is not a smooth band — it is usually zero with occasional
+catastrophe.** The data-scaling curve cannot be judged against it, and the curve
+is the venue scope gate. **Blocking action: rerun the reseed floor at n=30–50,
+report median and IQR (not mean), and either exclude or separately bucket
+proper-noun-heavy texts.** Teacher-only, no training, cheap.
+
+### Cell 6 — batched capture parity (blocking)
+
+Per-dim mean shift 0.20–0.50 with std ratio 0.97–1.14: spread preserved, mean
+moved. Worse, frame counts diverge (1995: **124 unbatched vs 53 batched**);
+6 of 8 shorter when batched, which is not the symmetric pattern pure stochastic
+divergence would give. The one equal-length case has per-frame cosine 0.288.
+The check cannot separate "left-padding pollutes conditioning" from "generation
+diverged" by construction — but this is the pollute-everything signature the
+cell was built to catch, for $0.30. **Do not capture the 75K cache at batch-8
+left-padded until this is resolved** (suggested: fixed-seed batched-vs-unbatched
+on identical conditions, or capture unbatched and eat the 4.9× cost).
+
+### Cell 7 — endurance: N8 rate inflation + a real back-half voice decline
+
+Full write-up as **finding N8** in `docs/negative-results.md`. Headline: the
+teacher renders a 3229-word script complete (3365 Whisper words) in 13.35 min at
+**252 wpm** vs **168 wpm** on short clips — **1.50× rate inflation**, present
+from the first 30 s, saturating by ~min 2. It stopped at 6009/12000 tokens on its
+own, so this is a pacing defect, not truncation or a lost-place failure.
+
+Separately and genuinely progressive: per-4s-window ECAPA vs the run's median
+identity declines in the back half — segment means 0.759 / 0.801 / 0.833 / 0.846
+/ **0.852** (min 6:40–8:20) → 0.797 → 0.775 → **0.735**, worst-window 0.612.
+This tracks the latent-std climb (1.224 → 1.58 over the same span). Four of the
+five flagged voice episodes fall in the final 100 s. One early outlier at
+**0:54** (sim 0.573) is the largest single anomaly in the run and the
+segment-averaged std curve rates that segment as normal — **latent std is the
+wrong detector for episodic defects; use per-window ECAPA + rate.** Relevant
+because latent std was the candidate automated quality filter for the 75K cache.
+
+**Harvest-cap constraint:** long captures are usable for *long-context
+conditioning* research but carry N8's pacing defect; they are not clean
+prosody targets. Josh listening (13.35 min, full): "overall sounds pretty
+good", voice changes noted ~min 1, 8, 9 that recover — consistent with the
+0:54 episode and the seg-5→6 transition (8:20) where the decline begins.
+
+**0:54 confirmed by ear (Josh, 2026-08-11): "it sounds like an anomaly."**
+Two independent detectors agree on it — Josh unprompted during full-length
+listening, and per-window ECAPA (sim 0.573, z−3.9) — while the segment-averaged
+latent std rates that segment (1.137) as the *cleanest* in the run. That is the
+decisive evidence for **replacing latent std with per-window ECAPA + speaking
+rate as the 75K cache quality filter** (blocking item 3): the std filter would
+have passed the single worst audible defect in 13 minutes of teacher audio.
+
+### Retractions from this session (kept visible per the strike convention)
+
+Three claims made and withdrawn on 2026-08-11 while analyzing this bundle:
+
+1. ~~heun8 is the shippable/headline sampler~~ — cell 5: 3× WER. Retracted in
+   README, CLAUDE.md, review §3.1 and above.
+2. ~~The teacher dropped ~1/3 of the script~~ — transcript is 3365 words vs a
+   3229-word script; coverage complete. The 13.35-vs-20 min gap is entirely the
+   1.5× rate.
+3. ~~The teacher lost its place / failed text-audio alignment~~ — it completed
+   the script and terminated correctly at 6009/12000 tokens.
+
+Also **withdrawn: the 9 "speed-up" episode timestamps** in
+`endurance_episode_map.json` (1:22, 2:00, 2:22, 2:38, 4:54, 6:20, 7:58, 8:12,
+10:48). The onset-rate proxy measured articulation density, not speaking rate —
+local wpm at those points is at or near the 252 average, while the one real rate
+outlier (**350 wpm at 3:00**) went unflagged. The `voice` flags (ECAPA-based)
+stand; the `fast` flags do not. Treat that file's fast column as invalid.
+
+### Blocking list before any 75K spend
+
+1. Reseed floor at n=30–50, median+IQR (gates the scaling curve → gates venue).
+2. Batched-capture parity resolved, or capture unbatched.
+3. Cache quality filter switched from latent std to per-window ECAPA + rate.
+4. Rate-correction decision for long-context captures (N8).
+
+Not blocking but queued: rate-vs-script-length sweep (N8 caveat: n=1 script,
+1 prompt, 1 CFG scale), and the capacity probe (width-960 + shallow
+local-attention 2–4 frames).
+
+### Venue read (updates review §5)
+
+The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
+**unreadable until the floor is recalibrated**. With three blocking items ahead
+of it and ICASSP 2027's 2026-09-16 deadline five weeks out, **ICASSP is off the
+table on schedule grounds** — not on results. Target **Interspeech 2027
+(~Mar 2027)** at full scope, arXiv when ready.
