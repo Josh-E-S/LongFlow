@@ -508,7 +508,54 @@ Not blocking but queued: rate-vs-script-length sweep (N8 caveat: n=1 script,
 1 prompt, 1 CFG scale), and the capacity probe (width-960 + shallow
 local-attention 2–4 frames).
 
-### Venue read (updates review §5)
+## 2026-08-11 — GATE NIGHT 2 PRE-REGISTRATION (teacher-only; not yet run)
+
+Notebook: `gate_night2_colab.ipynb`. Mac scorer: `score_gate_night2.py`.
+Teacher-only — touches nothing on the 75K blocking list; runs in parallel with
+it. L4, ~90–120 min, ~$2–3. Motivated by N8 and the windowed-context promotion
+(review §3.2): before building KV-cache eviction, establish (a) that upcoming-
+text length is the pacing driver and (b) whether naive text windowing already
+cures it.
+
+### Hypotheses
+
+- **H1 (dose-response):** VibeVoice's speaking rate is driven by the length of
+  the *visible upcoming script*, not rollout history. Design: nested prefix
+  scripts (100/500/1500/~3229 words) sharing the identical first ~100 words,
+  2 voice prompts, seed=0, cfg 1.3 — rate measured on the shared segment, so
+  text ahead is the only variable. (N8 predicts this: inflation present in the
+  first 30 s, before any audio accumulates.)
+- **H2 (text windowing cures pacing):** rendering the same full script in
+  ~320-word chunks (same original voice prompt each chunk, identity held
+  constant) restores near-natural rate. Seam identity cost is measured, not
+  assumed away.
+
+### Gate criteria — written before the run
+
+| Verdict | Condition |
+|---|---|
+| H1 CONFIRMED | shared-segment wpm(full)/wpm(100) ≥ 1.2 on both prompts |
+| H1 REFUTED | ratio ≤ 1.05 on both prompts → pacing driver is elsewhere (cfg? sampler steps?); windowed context loses its N8 justification but keeps the drift one |
+| H1 AMBIGUOUS | mixed/between → add prompts before concluding |
+| H2 pacing CURED | chunked wpm ≤ 1.10× standalone-500 AND ≤ 0.85× full-script |
+| H2 seams ACCEPTABLE | mean seam ECAPA ≥ within-chunk adjacent-window baseline − 0.10 |
+| H2 seams FAIL | below that → naive chunking unusable; proceed to KV-cache sink+window (position re-indexing work) |
+
+Automated checks: `score_gate_night2.py` (shared-segment wpm via Whisper word
+timestamps; seam-vs-within-chunk ECAPA). Listening step (never skipped): Josh
+listens to `chunked_full.wav` for seam audibility and one full sweep clip
+against the Gate Night 1 endurance render.
+
+Also banked by this run for free: seeded replication of the N8 full-script
+condition (N8 was unseeded, n=1); teacher hidden-state captures at 4 context
+lengths × 2 prompts → E4 context-length-OOD probe conditions; N8's robustness
+caveat (1 prompt → 2 prompts) partially discharged.
+
+### Results
+
+(pending run)
+
+## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
 **unreadable until the floor is recalibrated**. With three blocking items ahead
