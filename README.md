@@ -2,7 +2,10 @@
 
 **Fast, controllable, drift-free long-form multi-speaker TTS — built on a frozen VibeVoice.**
 
-Target venue: Interspeech 2026 (fallback: ICASSP 2027 / ASRU) · arXiv preprint + demo page regardless of venue.
+~~Target venue: Interspeech 2026 (fallback: ICASSP 2027 / ASRU) · arXiv preprint + demo page regardless of venue.~~
+**[2026-08-10]** Interspeech 2026 has passed. Target venue: **ICASSP 2027 (submission deadline 2026-09-16)** for a reduced-scope paper if this week's gates say the data budget is small, else **Interspeech 2027 (~Mar 2027)** for full scope. arXiv preprint + demo page regardless. Scope decision gate: see `docs/review-2026-08-10.md` §5.
+
+> **Status (2026-08-10):** Project reviewed after a month dormant. P1 gate PASSED; 10K scaling PASSED; E3 steps-scaling FAILED (overfit — data is the binding constraint); closed-loop fade CURED (sampler, not field). Stale claims below are struck through, not deleted. Full audit, field re-check, and the video-distillation recipe alignment: **`docs/review-2026-08-10.md`**. Next action: run `experiments/p1_flow_head/gate_night1_colab.ipynb` + data-scaling curve (~5 GPU-h).
 
 ---
 
@@ -12,8 +15,8 @@ VibeVoice is the only open system that generates 90 minutes of 4-speaker dialogu
 
 **We keep the entire VibeVoice stack frozen and change only what touches those hidden states:**
 
-1. **Replace** the DDPM head with a 1–2 step flow-matching head (MeanFlow objective) → 15–20× faster generation.
-2. **Steer** the frozen backbone's activations per-speaker, time-localized, along continuous valence/arousal axes → training-free emotion control mid-conversation.
+1. **Replace** the DDPM head with a 1–2 step flow-matching head (MeanFlow objective) ~~→ 15–20× faster generation~~. **[2026-08-10]** Own profiling (NOTES, Integration findings 2026-07-08): head is 35% of per-step cost → head swap alone is **1.47× end-to-end** (measured, 190→129ms/frame; Amdahl-capped). Honest claims: **8.4× head-level** (67→8ms euler4; 2.2× at dispersion-correct heun8). **Quote the heun8 figures as the headline** — heun8 is the sampler that matches teacher dispersion (E1/E1b), and at heun8 the head is ~30ms/frame → **~1.24× e2e**. The 8.4×/1.47× pair is euler4, which is dispersion-incorrect. Also: first-packet latency, and a measured bottleneck map (CFG negative stream + 340M feedback encoder own the rest). RTF levers are CFG-stream removal, P4 encoder distillation, batching (5×, built).
+2. ~~**Steer** the frozen backbone's activations per-speaker, time-localized, along continuous valence/arousal axes → training-free emotion control mid-conversation.~~ **[descoped 2026-07-07, P0 verdict PARTIAL — finding N7]** Steering localizes cleanly but VibeVoice's affect ceiling caps perception. Now a paper-appendix negative result; injection machinery retained in `src/steering/`.
 3. **Anchor** speaker identity at inference with an acoustic memory buffer → measured, mitigated long-horizon drift.
 4. **Measure** all of it with the first long-horizon consistency benchmark (drift curves, durational WER, windowed UTMOS at 30s → 90min).
 
@@ -21,14 +24,14 @@ No backbone training. No tokenizer training. Every contribution is a bolt-on to 
 
 ## Why this wins (positioning)
 
-Every corner of the requirements exists somewhere in 2026 — long-form (VibeVoice), streaming dialogue (FireRedTTS-2), nonverbals (Dia2/SoulX-Podcast), one-step flow (ZipVoice-Distill/DSFlow/MeanFlow) — but **no system is simultaneously fast + 90-minute + 4-speaker + emotion-controllable + consistency-measured.** All one-step flow work to date is single-speaker short-form. All steering work (EmoSteer-TTS) is single-utterance. Nobody reports WER or speaker similarity at the 5–90 minute horizon.
+Every corner of the requirements exists somewhere in 2026 — long-form (VibeVoice), streaming dialogue (FireRedTTS-2), nonverbals (Dia2/SoulX-Podcast), one-step flow (ZipVoice-Distill/DSFlow/MeanFlow) — but **no system is simultaneously fast + 90-minute + 4-speaker + ~~emotion-controllable +~~ consistency-measured.** All one-step flow work to date is single-speaker short-form. All steering work (EmoSteer-TTS) is single-utterance. Nobody reports WER or speaker similarity at the 5–90 minute horizon.
 
 ## Novel contributions
 
 | # | Contribution | Status of prior art |
 |---|---|---|
-| C1 | First flow-matching (MeanFlow, 1–2 NFE) replacement of VibeVoice's DDPM head; CFG eliminated via KD | One-step FM exists only for short-form single-speaker |
-| C2 | Per-speaker, time-localized activation steering along continuous VAD axes in a frozen dialogue backbone | EmoSteer: single utterance, single speaker, discrete emotions |
+| C1 | First flow-matching (MeanFlow, 1–2 NFE) replacement of VibeVoice's DDPM head; CFG eliminated via KD **[2026-08-10: phrase as first *offline head-distillation of a frozen third-party long-form system from its own cached inference states* + the N1/N2-vs-P1 conditioning-provenance contrast — NOT "first few-step flow head for TTS" (dots.tts 2606.07080 holds that)]** | ~~One-step FM exists only for short-form single-speaker~~ dots.tts (Jun 2026): MeanFlow head on own 2B AR backbone; lane "accelerate frozen third-party system" still unclaimed (verified 2026-08-10) |
+| ~~C2~~ | ~~Per-speaker, time-localized activation steering along continuous VAD axes in a frozen dialogue backbone~~ **[descoped 2026-07-07 → negative-result appendix, N7]** | EmoSteer: single utterance, single speaker, discrete emotions |
 | C3 | Inference-time speaker anchoring (anchor embedding + acoustic memory buffer blend) | Proposed heuristically; never implemented or evaluated |
 | C4 | Long-horizon consistency benchmark: drift curves, durational WER, windowed UTMOS, nonverbal event P/R | Nobody evaluates beyond ~1 min |
 | — | Negative-results appendix (TransplantTTS: MSE representation lock-in, cross-tokenizer ceiling) | Independently publishable findings |
@@ -136,4 +139,4 @@ LongFlow/
 └── samples/                   # audio for the demo page (git-lfs)
 ```
 
-Visibility: **private until P0 + P1 gate checks pass and the arXiv preprint is up, then public.** Priority date comes from arXiv, not the repo; the steering mechanism (C2) is the scoop-able idea, so don't publish the code before the preprint. Tag a release at each phase gate so paper numbers are reproducible.
+~~Visibility: **private until P0 + P1 gate checks pass and the arXiv preprint is up, then public.**~~ **[2026-08-10]** Repo flipped public (P0+P1 gates passed; C2 — the scoop-able idea — is descoped, so pre-preprint exposure risk is materially lower than when this rule was written). Priority date comes from arXiv, not the repo. ~~The steering mechanism (C2) is the scoop-able idea, so don't publish the code before the preprint.~~ **[2026-08-10]** Superseded by the line above — C2 is descoped and the repo is already public. The scoop-able asset is now the *recipe instantiation* (stages 2–3 on speech, review §4), which lives in the paper, not the code. Tag a release at each phase gate so paper numbers are reproducible.

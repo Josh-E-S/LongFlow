@@ -6,19 +6,31 @@ Project context for Claude Code. Read this fully before writing any code.
 
 LongFlow makes VibeVoice — the only open 90-minute, 4-speaker TTS system — fast, emotion-controllable, and drift-free **without training the backbone or tokenizers**. Four contributions, each a bolt-on to a frozen VibeVoice:
 
-- **C1** — Replace the 10-step DDPM diffusion head with a ~15M-param flow-matching head (OT-CFM 4-NFE baseline → MeanFlow 1–2 NFE), trained on cached hidden states. Target 15–20× end-to-end speedup.
+- **C1** — Replace the 10-step DDPM diffusion head with a ~15M-param flow-matching head (OT-CFM 4-NFE baseline → MeanFlow 1–2 NFE), trained on cached hidden states. ~~Target 15–20× end-to-end speedup.~~ **[2026-08-10]** Measured: head swap = **1.47× e2e** at euler4 (190→129ms/frame; Amdahl-capped, head is 35% of step cost). But euler4 is dispersion-incorrect — **at the dispersion-correct heun8 sampler it is 2.2× head-level / ~1.24× e2e, and those are the numbers to quote.** Claim = head-level speedup + first-packet latency + bottleneck map, not RTF. See README thesis note.
 - **C2** — ~~Training-free per-speaker emotion control~~ **DESCOPED 2026-07-07 (P0 verdict: PARTIAL)** — steering localizes cleanly but the backbone's affect ceiling caps perception; now a paper-appendix negative result (finding N7). The turn-localized injection machinery (`src/steering/`) is retained for possible reuse (e.g. anti-jingle suppression).
 - **C3** — Inference-time speaker anchoring: blend immutable reference embedding with a running buffer of the speaker's generated turns.
 - **C4** — Long-horizon consistency benchmark: speaker-drift curves, durational WER, windowed UTMOS at 30s → 90min.
 
-Full scope, positioning, data plan, and phases: `README.md`. Paper target: Interspeech 2026 / arXiv.
+Full scope, positioning, data plan, and phases: `README.md`. ~~Paper target: Interspeech 2026 / arXiv.~~ **[2026-08-10]** Paper target: ICASSP 2027 (deadline 2026-09-16, reduced scope) or Interspeech 2027 (full scope) — decision gated on this week's data-scaling curve; arXiv regardless. See `docs/review-2026-08-10.md`.
 
-## Current state (July 2026)
+## Current state (July 2026) — see August addendum below
 
 - Repo contains README, `docs/` (architecture, negative results incl. **N7**, **`resources.md` — pinned repos/weights/datasets/eval stack, verified 2026-07-05, read it before touching any external dependency**), the package scaffold (uv-managed Python 3.11 env, ruff + pre-commit), working `src/steering/` (capture + extraction + injection, retained post-descope), `src/eval/metrics.py` (WER/ECAPA/prosody, exercised on real sweeps), and `src/cache/alignment.py`.
 - **P0 complete (2026-07-07, verdict PARTIAL, C2 descoped — see `experiments/p0_steering/NOTES.md` and finding N7).** Paper scope is now C1+C3+C4.
-- **Next task is P1: the flow-head baseline** — caching pipeline (`src/cache/`, reuse the positive-stream logic from `src/steering/contrast_pairs.py`), then OT-CFM 4-NFE head with the mandatory 1K/5K gate check before the full 75K run.
-- Phase order: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.
+- ~~**Next task is P1: the flow-head baseline** — caching pipeline (`src/cache/`, reuse the positive-stream logic from `src/steering/contrast_pairs.py`), then OT-CFM 4-NFE head with the mandatory 1K/5K gate check before the full 75K run.~~ **[2026-08-10]** P1 is mid-flight, not pending: caching pipeline built (batched, 4.9×), gate PASSED, 10K scaling PASSED, E3 steps-scaling FAILED. See the August addendum for the actual next action.
+- ~~Phase order: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.~~ **[2026-08-10]** See revised ordering in the August addendum.
+
+## Current state (2026-08-10 addendum)
+
+Written after the 2026-08-10 project review (`docs/review-2026-08-10.md`). The July 7–9 sprint is fully logged in `experiments/p1_flow_head/NOTES.md`; headlines:
+
+- **P1 gate PASS** (roundtrip clean; flow4 0.030 WER / 0.984 sim vs teacher on train set) → **10K scaling PASS** (held-out 0.105 WER / 0.824 sim, beats 800-utt 5/5) → **E3 steps-scaling FAIL** (80K ckpt overfits 10K cache: held-out WER 0.209 vs 20K's 0.088; endurance collapses frame-zero on long-prefix OOD). **20K ckpt is the operating checkpoint. Data, not steps, is the binding constraint.**
+- **Closed-loop fade CURED** (E1/E1b): sampler was the thief — heun8 matches teacher dispersion; clean termination. Residual "digital cold" texture = underfit polish problem.
+- **Dominant failure axis = context-length OOD** (text prefix ≫ training samples → hidden states off-distribution from frame one). Consequence: windowed/anchored context (StreamingLLM-style sink) is promoted from P3 side-arm toward core contribution; C3 embedding-blend anchoring demoted to ablation arm.
+- **Recipe alignment (2026-08-10):** our roadmap independently reconstructed the 2025–26 video causal-distillation recipe — offline teacher-forcing head distillation (=our P1; cf. CausVid/TMD 2601.09881) → on-policy self-forcing/DAgger stage (Huang et al. 2025; Causal-rCM 2606.25473) → attention-sink context management for long rollouts (DySink 2605.21028, TetherCache 2606.13035). **Nobody has instantiated this in speech.** Import the recipes; cite the lineage; see `docs/review-2026-08-10.md` §4.
+- **Revised phase order:** P1 finish (blocking gates → scaling curve → cache sized by the curve → ≥50K-step train w/ val machinery, intermediate ckpts every 5–10K) → P2 MeanFlow 1–2 NFE (now load-bearing for the speed story) → P3 windowed context + on-policy distillation (recipe stages 2–3) + C4 benchmark → P4 encoder distillation (stretch) → P5 paper.
+- **Immediate next action (unchanged since 2026-07-09):** run `experiments/p1_flow_head/gate_night1_colab.ipynb` (stats equality, teacher determinism, reseed floor, heun8-vs-euler4 A/B) + the data-scaling curve on the existing 10K cache (~5 GPU-h total). The curve decides ICASSP-vs-Interspeech scope.
+- **Process rules now in force:** commit every training invocation (steps/lr/ema/seed/bundle commit) per run; save intermediate checkpoints in ALL runs; held-out sets stratified by speaker AND context length.
 
 ## Hard constraints — never violate these
 

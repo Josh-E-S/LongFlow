@@ -335,3 +335,37 @@ speakers; artifacts in the eval bundle + `analysis.json`):
   controllable at inference — P3 preview. Test AFTER the polish run re-baselines
   the slope. P3 arm order: polish -> thermostat -> C3 speaker anchor ->
   windowed context; all judged on C4 curves.
+
+## 2026-08-10 — project review session (no new experiments)
+
+First session after ~1 month dormant. Full audit + field re-check + first-
+principles re-derivation of the approach: **`docs/review-2026-08-10.md`**.
+No experimental results to log; state entering the review = state at the
+2026-07-09 "Gate Night 1 notebook" commit (notebook built, never run).
+
+Decisions affecting this experiment line:
+- **Next run is unchanged: Gate Night 1** (stats equality, teacher
+  determinism, reseed floor, heun8-vs-euler4 held-out A/B) **+ the data-
+  scaling curve** (2.5K/5K subsets of the existing cache). ~5 GPU-h combined.
+  The curve is now also the **venue scope gate**: 5K≈10K within the reseed
+  noise band → compact ICASSP 2027 paper (deadline 2026-09-16); data still
+  binding → skip ICASSP, pace toward Interspeech 2027 (see review §5).
+- Capacity probe scope widened: width-960 AND a shallow local-attention
+  variant (2–4 frames) — conditioning is acquitted, so constraint 5's
+  rationale no longer bars it (review §3.4).
+- Held-out design rule added: stratify by **context length** as well as
+  speaker (E3 showed prefix-length OOD is the dominant failure axis; the
+  current eval would not catch a long-prefix regression).
+- On-policy ("DAgger-style") follow-up formally identified as **Self Forcing**
+  (Huang et al. 2025) / Causal-rCM (2606.25473) — import the recipe rather
+  than invent it; windowed-context idea = DySink (2605.21028) family.
+  Recipe-alignment table: review §4.
+- README/CLAUDE.md stale claims (15–20× e2e, Interspeech 2026, C2-as-live,
+  private-repo rule) struck through with dated corrections in the same commit.
+- **Speed-claim sampler discipline (added 2026-08-11).** The 8.4× head-level /
+  1.47× e2e pair (line ~141 above) is **euler4**, which E1/E1b showed is
+  dispersion-incorrect. The shippable sampler is heun8: head ~30ms/frame →
+  **2.2× head-level, ~1.24× e2e**. Always name the sampler next to the number;
+  the heun8 pair is the headline. This is the strongest argument that **P2
+  MeanFlow is load-bearing** — it is the only route to a large head-level
+  number *at correct dispersion*.
