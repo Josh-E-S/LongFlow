@@ -1,0 +1,113 @@
+{
+  "sweep": [
+    {
+      "words": 121,
+      "audio_s": 36.4,
+      "wpm": 199.5,
+      "shared_seg_wpm": 202.6,
+      "tag": "p0_100",
+      "condition": "100",
+      "prompt": "1188__1188_133604_000004_000005_prompt.wav",
+      "script_words": 119,
+      "near_cap": false
+    },
+    {
+      "words": 518,
+      "audio_s": 132.5,
+      "wpm": 234.5,
+      "shared_seg_wpm": 223.1,
+      "tag": "p0_500",
+      "condition": "500",
+      "prompt": "1188__1188_133604_000004_000005_prompt.wav",
+      "script_words": 514,
+      "near_cap": false
+    },
+    {
+      "words": 1532,
+      "audio_s": 380.9,
+      "wpm": 241.3,
+      "shared_seg_wpm": 217.9,
+      "tag": "p0_1500",
+      "condition": "1500",
+      "prompt": "1188__1188_133604_000004_000005_prompt.wav",
+      "script_words": 1500,
+      "near_cap": false
+    },
+    {
+      "words": 3282,
+      "audio_s": 853.7,
+      "wpm": 230.7,
+      "shared_seg_wpm": 208.4,
+      "tag": "p0_full",
+      "condition": "full",
+      "prompt": "1188__1188_133604_000004_000005_prompt.wav",
+      "script_words": 3229,
+      "near_cap": false
+    },
+    {
+      "words": 120,
+      "audio_s": 43.2,
+      "wpm": 166.7,
+      "shared_seg_wpm": 169.0,
+      "tag": "p1_100",
+      "condition": "100",
+      "prompt": "121__121_121726_000025_000001_prompt.wav",
+      "script_words": 119,
+      "near_cap": false
+    },
+    {
+      "words": 532,
+      "audio_s": 167.9,
+      "wpm": 190.2,
+      "shared_seg_wpm": 158.2,
+      "tag": "p1_500",
+      "condition": "500",
+      "prompt": "121__121_121726_000025_000001_prompt.wav",
+      "script_words": 514,
+      "near_cap": false
+    },
+    {
+      "words": 1535,
+      "audio_s": 386.5,
+      "wpm": 238.3,
+      "shared_seg_wpm": 197.7,
+      "tag": "p1_1500",
+      "condition": "1500",
+      "prompt": "121__121_121726_000025_000001_prompt.wav",
+      "script_words": 1500,
+      "near_cap": false
+    },
+    {
+      "words": 3422,
+      "audio_s": 880.1,
+      "wpm": 233.3,
+      "shared_seg_wpm": 179.8,
+      "tag": "p1_full",
+      "condition": "full",
+      "prompt": "121__121_121726_000025_000001_prompt.wav",
+      "script_words": 3229,
+      "near_cap": false
+    }
+  ],
+  "chunked": {
+    "overall": {
+      "words": 3442,
+      "audio_s": 871.1,
+      "wpm": 237.1,
+      "shared_seg_wpm": 223.3
+    },
+    "ref_500_wpm": 234.5,
+    "ref_full_wpm": 230.7,
+    "seam_ecapa_mean": 0.456,
+    "within_chunk_baseline": 0.72
+  },
+  "verdicts": {
+    "H1_ratios_full_over_100": [
+      1.029,
+      1.064
+    ],
+    "H1": "AMBIGUOUS (add prompts)",
+    "H2_pacing": "NOT CURED",
+    "H2_seams": "NEEDS KV-CACHE VERSION"
+  }
+}

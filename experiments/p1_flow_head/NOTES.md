@@ -551,9 +551,75 @@ condition (N8 was unseeded, n=1); teacher hidden-state captures at 4 context
 lengths × 2 prompts → E4 context-length-OOD probe conditions; N8's robustness
 caveat (1 prompt → 2 prompts) partially discharged.
 
-### Results
+### Results (2026-08-11 — run and scored same day; ~$3, L4, ~100 min)
 
-(pending run)
+Whisper-scored (`gate_night2_metrics.json`); raw report in
+`audio/gate_night2/gate_night2_report.json`.
+
+- **Sweep, whole-clip wpm** (119/514/1500/3229 words): p0 199.5 / 234.5 /
+  241.3 / 230.7; p1 166.7 / 190.2 / 238.3 / 233.3. Monotone-to-saturation on
+  both prompts; ceiling ~230–240 by 1500 words. Onset is prompt-dependent:
+  p0 is already elevated at 119 words (~200 vs its ~158 natural), p1 still
+  natural at 119 (167 vs ~164).
+- **H1 on the registered metric (shared first 119 words):** full/100 ratios
+  **1.03 (p0), 1.06 (p1)** → **AMBIGUOUS** per pre-registration. The criteria
+  were mis-designed, said plainly per the template's escape clause rather than
+  bent: whole-clip ≫ shared-opening in every long condition, i.e. **the
+  inflation ramps with position over the first ~1–2 min of a render** — the
+  shared opening is the *least*-affected segment, so the registered isolator
+  measured where the effect is smallest. The dose-response itself is
+  unambiguous in whole-clip rates and replicated that of N8.
+- **H2 pacing: NOT CURED.** chunked_full **237.1 wpm** vs standalone-500 234.5
+  vs full 230.7 (cure required ≤196.1). Consistent with the dose curve — a
+  single ~320-word chunk from a cold start renders at 237; practical chunk
+  sizes are already fully inside the fast register.
+- **H2 seams: metric-fail, ears-pass.** Seam ECAPA **0.456** vs within-chunk
+  baseline 0.72 → formally NEEDS KV-CACHE VERSION. Josh listened *before*
+  seeing the metric: "the stitch is barely noticeable." Dissociation noted:
+  the seam windows compare end-of-chunk wind-down prosody against fresh-onset
+  prosody (3 s windows; cf. GN1's 0.734 teacher-self-sim floor on short
+  clips), so the embedding gap is likely mostly prosodic, not identity. Ears
+  are the tier-3 authority: treat as **PARTIAL — listenable, metrically
+  flagged**.
+- **Prior art found the same day** (full citations in N8): the *symptom* is in
+  Microsoft's own docs ("if the generated voice speaks too fast, try
+  chunking...") and open issue microsoft/VibeVoice#85; the dominant ComfyUI
+  wrapper auto-chunks >250 words by default "to prevent audio acceleration
+  issues". No quantification exists anywhere. GN2 is the first measurement —
+  and it shows the folk remedy (which is also the official tip and the
+  wrapper's silent default) does **not** restore natural rate.
+
+### Verdict
+
+**H1: AMBIGUOUS on the registered metric; the dose-response is nevertheless
+established** by whole-clip rates on both prompts (criteria flaw acknowledged,
+not bent — the opening-segment design assumed a constant rate offset; the data
+show an early positional ramp instead). **H2: FAIL on pacing, PARTIAL on
+seams.** Consequences:
+
+1. **The pacing fix is now an open research question.** Text windowing at any
+   practical size does not work; the fast register triggers at low hundreds of
+   words and ramps within the first minutes. Candidate directions (unscheduled):
+   rate/duration conditioning, prompt-side pacing exemplars, CFG-scale arm.
+   **Found in the wild (Josh, 2026-08-11):** VibeVoice-ComfyUI v1.5.0
+   (discussion #142) ships `voice_speed_factor` — **time-stretching the
+   reference audio steers output rate** (pitch-preserved; ±20% range, ±5%
+   recommended; voice-cloning only; unmeasured, zero replies). Implies the
+   model partly mimics the prompt's pace → direct support for the prompt-side
+   direction. Cheap probe (Gate Night 3 candidate): 0.8×-stretched prompt on
+   the full script, measure output wpm + ECAPA identity cost. Note the gap:
+   canceling the ~1.4× register needs ~0.7×, well past their recommended
+   band — the question is whether prompt-rate transfer holds on *long*
+   scripts at all, and how much identity it costs.
+2. **Windowed context keeps its promotion (review §3.2) but on narrower
+   grounds:** back-half drift mitigation + bounding conditioning stats — not
+   pacing.
+3. **N8 upgraded:** prior-art citations + folk-remedy refutation; claim is now
+   "first quantification of a community-worked-around defect, and the standard
+   workaround does not restore natural rate."
+4. Follow-up for H1 disambiguation (cheap, queued): ≥3 prompts + position-
+   resolved rate curves (wpm vs position within each condition) — the scorer
+   already extracts word timestamps, so this is analysis, not new generation.
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
