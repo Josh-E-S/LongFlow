@@ -779,6 +779,19 @@ same line (wall < audio), but batch unlocks the parallel-segment lever:
    on turn-shaped usage (conversations, chunking tools, his app), which never
    audibly drifted. If T1 audio holds flat where monolithic declined, the
    windowed-context mechanism demotes toward bonus/ablation.
+   **VERDICT (same day, GN3 T1 audio, per-window ECAPA vs run median): BET
+   CONFIRMED, both voices.** Position-matched against GN1's monolithic
+   segments: where mono declined 0.852→0.797→0.775→0.735 (seg 5→8), turn-split
+   holds 0.841→0.853→0.849→**0.860** (p0; final segment is the run's BEST) and
+   0.825→0.790→0.813→0.817 (p1). Back half ≥ front half on both (0.848/0.839;
+   0.811/0.806); final 3 min at run average; flat through 19.2/19.6 min — 6+
+   min past mono's audible deterioration. **Pacing and drift were ONE disease:
+   the monolithic operating mode.** Windowed context demotes to
+   bonus/ablation; P3's KV-cache engineering is no longer load-bearing.
+   Caveats: two isolated one-window dips need ears (p0 0:12 — early prompt
+   settling, same as GN1; p1 **9:40**, sim 0.241 — likely a pause/silence
+   ECAPA artifact, LISTEN to rule out a real glitch); claim bounded at ~20 min
+   until a 90-min render exists. Curves: `t1_drift_curves.json`.
 3. **GN4 candidate — THE high-stakes cheap test: our 20K head under
    turn-split conditions.** Everything that condemned the head on long-form
    (E3 frame-zero collapse on long prompts, endurance fade) was measured under
