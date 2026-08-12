@@ -657,6 +657,51 @@ seams.** Consequences:
    resolved rate curves (wpm vs position within each condition) — the scorer
    already extracts word timestamps, so this is analysis, not new generation.
 
+## 2026-08-11 — GATE NIGHT 3 PRE-REGISTRATION (teacher-only; not yet run)
+
+Notebook: `gate_night3_colab.ipynb`. Mac scorer: `score_gate_night3.py`.
+Teacher-only, parallel to the 75K blocking list. L4 (~$3–5, ~2–2.5 h); the 7B
+cell may need A100. Baselines reused from GN2 (same stack, seeded): natural
+165–169 wpm, monolithic-full 230.7/233.3, 119w 199.5/166.7, 1500w 241.3.
+Rate-steering (candidate (a)) deliberately deferred — needs its own build.
+
+### Hypotheses and gate criteria — written before the run
+
+- **T1 — turn-split within one call** (Microsoft's actual remedy; the shape
+  Josh's conference app runs daily without audible rushing). Same 3229 words,
+  one generate call, ~60-word `Speaker 1:` turns, both prompts.
+  | Verdict | Condition |
+  |---|---|
+  | CURED | wpm ≤ 185 on both prompts → pace is **per-turn scoped**; N8 localizes to single-speaker long-form narration; multi-speaker dialogue naturally immune |
+  | PARTIAL | 185–215 |
+  | FAIL | > 215 → the official tip is as unverified-and-wrong as the wrapper default; mechanism stays total-length |
+- **T2 — stretched-prompt transfer** (ComfyUI v1.5.0 `voice_speed_factor`
+  trick, measured at long context). Prompt time-stretched 0.8×/0.9×
+  (pitch-preserved), monolithic full script.
+  | Verdict | Condition |
+  |---|---|
+  | TRANSFERS | monotone wpm(0.8×) < wpm(0.9×) < 230.7 AND wpm(0.8×) ≤ 208 |
+  | WEAK/PARTIAL | monotone but shallower |
+  | NO TRANSFER | not monotone |
+  Identity cost reported (whole-clip ECAPA vs the GN2 unstretched render),
+  judged by ear as the authority (GN1/GN2 lesson: short-window ECAPA
+  over-flags prosody).
+- **T3 — 7B replication** (mirror weights `vibevoice/VibeVoice-7B`; all
+  N8/GN2 evidence is 1.5B; Josh's null experience is confounded by his app's
+  turn-split shape). 119w + 1500w monolithic, prompt p0.
+  | Verdict | Condition |
+  |---|---|
+  | DEFECT PRESENT | wpm(1500)/wpm(119) ≥ 1.2 |
+  | DEFECT ABSENT | ≤ 1.05 → N8 is 1.5B-specific; hunt for what 7B does differently |
+  | AMBIGUOUS | between |
+
+Listening step (never skipped): `t1_turnsplit_p0.wav` (naturalness, per-turn
+seam artifacts) and `t2_stretch80.wav` (does the voice still sound like p0?).
+
+### Results
+
+(pending run)
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
