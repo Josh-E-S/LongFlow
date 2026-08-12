@@ -877,9 +877,51 @@ throughput claim and batch-8 cache capture.
 Listening step (never skipped): euler4 render vs the GN3 teacher render,
 same script same prompt — texture ("digital cold"?), fade, seam naturalness.
 
-### Results
+### Results — Arm A euler4 (partial; bundle + scorer pending)
 
-(pending run)
+Run vitals: 1184.0 s audio / 1144 s wall (**first faster-than-realtime render
+in the project**), 8880 head calls at 7.7 ms = 6.0% of wall — July's profile
+reproduced exactly. Full-length generation, no truncation.
+latent_std_8seg [0.503, 0.767, 0.894, 1.019, 1.125, 0.823, 0.95, 1.262],
+overall 0.943 — looks like "recovery to teacher dispersion" and is NOT: it is
+the E3 stable-noise-attractor illusion again (second catch; the listening
+rule pays again).
+
+**Verdict by ear (Josh, 2026-08-12): FAIL — E3-style collapse, faster.**
+Intelligible (grainy) speech only to ~**0:14** ("I have found the diary of
+Mrs. Gilroy" — less than one turn), then, verbatim: silence for a long time,
+then random noise "like an alien noise reverberating through a microphone,"
+fading in and out "seemingly randomly with silence in between, sounding more
+different as time goes on, like a helicopter coming in and out with a voice
+in the wind... toward the last 20% really creepy louder alien noises but much
+slower reverberation, to ultimately a swinging reverb with weird low hums and
+random cat-meow-like sounds."
+
+**Reading:** classic unstable-feedback resonance. First ~14 s ride the clean
+voice-prompt acoustic context; as self-generated latents fill the context the
+backbone leaves the speech manifold and the loop settles into quasi-periodic
+attractor states (the in/out swells and "swinging reverb" = the loop's
+ringing modes; the escalating std = energy accumulating in them).
+
+**Diagnosis sharpened: the head's disease is feedback-OOD, not register-OOD
+and not prompt-length.** Turn-split did not help and death was FASTER than
+E1's ~60 s fade horizon (< one 25 s turn). Text re-anchoring cannot fix a
+poisoned acoustic channel. Register-OOD (GN4 bet 1) and turn-reset (bet 2):
+both REFUTED for the head.
+
+**Consequence — the single most important redirect of the training budget:**
+offline distillation provably cannot survive its own rollout regardless of
+data scale; a naive 75K retrain of the same recipe would improve texture and
+still collapse at ~second 20. **The on-policy stage (Self Forcing / DAgger —
+queued in July, named via the video recipe in the August review) is
+MANDATORY, not optional.** P2/75K planning must include self-generated
+rollout context in the training distribution. The capture-wraps-patch
+nesting (integration audit finding 4) was built for exactly this collection.
+
+What survives untouched: all teacher-side findings (N8, turn-split pacing +
+drift cure, 7B scale result); the head's teacher-forced quality (July: 0.030
+WER / 0.984 sim); the speed ledger (6% head share, faster-than-realtime
+loop). heun8 arm + B (profile) + C (parity) verdicts pending bundle.
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
