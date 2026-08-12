@@ -1,0 +1,42 @@
+{
+  "runs": {
+    "t1_turnsplit_p0": {
+      "wpm": 176.7,
+      "words": 3391,
+      "audio_s": 1151.6
+    },
+    "t1_turnsplit_p1": {
+      "wpm": 159.9,
+      "words": 3135,
+      "audio_s": 1176.5
+    },
+    "t2_stretch80": {
+      "wpm": 228.1,
+      "words": 3013,
+      "audio_s": 792.4,
+      "sim_vs_gn2_full": 0.492
+    },
+    "t2_stretch90": {
+      "wpm": 226.8,
+      "words": 3314,
+      "audio_s": 876.5,
+      "sim_vs_gn2_full": 0.633
+    },
+    "t3_7b_119": {
+      "wpm": 189.6,
+      "words": 118,
+      "audio_s": 37.3
+    },
+    "t3_7b_1500": {
+      "wpm": 248.4,
+      "words": 1570,
+      "audio_s": 379.2
+    }
+  },
+  "verdicts": {
+    "T1": "CURED \u2014 pace is per-turn scoped",
+    "T2_pace": "NO TRANSFER",
+    "T3_ratio": 1.31,
+    "T3": "DEFECT PRESENT AT 7B"
+  }
+}

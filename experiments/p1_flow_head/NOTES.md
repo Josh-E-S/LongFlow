@@ -713,8 +713,14 @@ same day: every wav now mirrors to Drive immediately + runs are resume-safe
 |---|---|---|---|
 | t1_turnsplit_p0 | 1176.8 | **164.6** | **CURED** (bar ≤185) |
 | t1_turnsplit_p1 | 1176.8 | **164.6** | **CURED** |
-| t2_stretch80 | 952.1 | **203.5** | ≤208 ✓ |
-| t2_stretch90 | 843.3 | **229.7** | monotone ✓ → **TRANSFERS** |
+| t2_stretch80 | 952.1 | **203.5** | ~~≤208 ✓~~ did not replicate — see below |
+| t2_stretch90 | 843.3 | **229.7** | ~~monotone ✓ → TRANSFERS~~ overturned |
+
+**OFFICIAL (rerun bundle, Whisper-scored 2026-08-12):** T1 **CURED** — 176.7
+wpm (p0, 3391 words = full coverage) / 159.9 (p1, 3135 = 97%, consistent with
+the 9:40 babble); T2 **NO TRANSFER** — 228.1 / 226.8 ≈ baseline 230.7; T3
+**DEFECT PRESENT AT 7B** — 189.6 (119w) → 248.4 wpm (1500w), ratio **1.31**.
+Machine-readable: `gate_night3_metrics.json`.
 
 - **T1 CURED, provisionally — the headline.** The same 3229 words that render
   monolithically at 230.7/233.3 wpm come out at **exactly natural rate
@@ -726,10 +732,15 @@ same day: every wav now mirrors to Drive immediately + runs are resume-safe
   ever chased the defect: their flagship demo format hides it.
   Curious detail: both prompts produced *identical* durations (1176.8 s) —
   consistent with seeded, text-driven termination.
-- **T2 TRANSFERS, sub-linearly:** 0.8× prompt → 0.88× output rate; 0.9× →
-  ~no effect. The mimicry channel is real at long context but lossy; alone it
-  cannot cancel the register (would need <0.7× stretch, identity cost
-  unknown), but it composes with T1.
+- ~~**T2 TRANSFERS, sub-linearly:** 0.8× prompt → 0.88× output rate; 0.9× →
+  ~no effect.~~ **[OVERTURNED by the official rerun + Whisper scoring,
+  2026-08-12: T2 = NO TRANSFER.]** Rerun renders: stretch80 **228.1 wpm**,
+  stretch90 **226.8** — statistically the baseline (230.7). The airport log's
+  apparent effect did not replicate (same nominal seed, different session);
+  the prompt-pace channel is noise-dominated at long context. The
+  `voice_speed_factor` lever is dead for our purposes (may still work on
+  short clips — untested, not our problem). Turn-split stands alone as the
+  cure, which is fine: it is complete on its own.
 - **Pending the rerun:** Whisper coverage confirmation (did it speak all 3229
   words), Josh's listening steps (turn seams; stretch80 identity), and all of
   T3. Seeded determinism means the rerun reproduces last night's audio
