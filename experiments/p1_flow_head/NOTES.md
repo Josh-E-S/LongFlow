@@ -735,6 +735,23 @@ same day: every wav now mirrors to Drive immediately + runs are resume-safe
   T3. Seeded determinism means the rerun reproduces last night's audio
   exactly, so provisional numbers should confirm bit-for-bit.
 
+### The throughput reframe (2026-08-12, Josh)
+
+Goal restated: **not streaming realtime — beat wall-clock on a 90-min batch
+job** ("a 90-minute script in under 90 minutes"). Sequentially those are the
+same line (wall < audio), but batch unlocks the parallel-segment lever:
+- 90 min = 40,500 frames. Sequential: original ~190ms/frame → **128 min
+  (FAILS the goal)**; our head ~129ms → **87 min (passes)**; +CFG removal
+  ~69ms → ~47 min.
+- **Parallel-segment generation:** split the script into ~8 segments, each
+  internally turn-split (GN3 pacing cure), same voice prompt per segment
+  (GN2 seams: ears-pass), generate as one batch (batch-8 ≈ 4.9× throughput,
+  measured July). → **~18 min wall today; ~10 min with CFG removal ≈ 9–13×
+  effective**, system-level and honest. Segmenting also dodges the >8-min
+  drift zone and the KV-growth per-frame slowdown.
+- **Load-bearing prerequisite:** blocking item 2 (batch parity) now gates the
+  headline speed claim, not just caching. Plus a seam listen at 90-min scale.
+
 ### Feedback into the main line (2026-08-12)
 
 1. **T1 likely RESOLVES blocking item 4** (rate-correction for long-context
