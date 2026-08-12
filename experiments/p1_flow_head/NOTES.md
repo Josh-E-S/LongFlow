@@ -823,6 +823,53 @@ same line (wall < audio), but batch unlocks the parallel-segment lever:
    OOD refuted, long-biased mix and windowed context stay. The teacher's GN3
    T1 renders are the direct A/B reference (same script, seeds, conditions).
 
+## 2026-08-12 — GATE NIGHT 4 PRE-REGISTRATION (the head's re-baseline; not yet run)
+
+Notebook: `gate_night4_colab.ipynb`. Mac scorer: `score_gate_night4.py`.
+L4, ~1.5 h, ~$2–3. The critical-path night: the 20K head's first-ever run in
+the turn-split operating mode. Direct A/B reference: GN3's
+`t1_turnsplit_p0.wav` (same script recipe, same prompt, teacher head).
+
+### Arm A — 20K head via FlowHeadPatch, turn-split full script, euler4 + heun8
+
+Two pre-registered bets collide:
+- **Register OOD** (E3 reframe): the head's long-form collapse came from
+  out-of-register hidden states, not context length per se. Turn-split keeps
+  the backbone in the register the cache trained on → the head should hold.
+- **Turn-reset** (new): E1's closed-loop fade accumulated over ~60 s of the
+  head consuming its own latents; a 60-word turn is ~25 s, so each turn
+  boundary re-anchors on text *before* the fade horizon → euler4 may survive
+  turn-split despite fading monolithically.
+Also expected: pacing should match the teacher's turn-split rate (~165–168
+wpm) regardless of head — frame count is decided by the LM, not the head; a
+big wpm deviation would itself be a finding.
+
+| Verdict (per sampler) | Condition |
+|---|---|
+| PASS | Whisper coverage ≥95% of 3229 words AND no fade (back-half RMS ≥ front − 3 dB) AND identity flat (back-half ECAPA ≥ front − 0.05) |
+| PARTIAL | intelligible but fades or drifts |
+| FAIL | coverage <60% / E3-style collapse → register-OOD refuted; long-biased data mix and windowed context re-promote |
+
+### Arm B — per-module latency profile (measurement, no gate)
+
+Timer hooks on every top-level child of `model.model`, ~60 s generation,
+teacher head vs flow head. Splits the ~122 ms non-head lump; becomes the
+paper's measured bottleneck map.
+
+### Arm C — batch parity at the audio level (blocking item 2)
+
+4 held-out texts, solo vs one padded batch-4, teacher head, seed 0. Per-utt
+solo-vs-batched WER/sim. PARITY OK if mean pair-WER ≤ 1.5× the GN1 reseed
+floor (0.076 — noisy at n=6, noted); DEGRADED otherwise. Gates both the 4.9×
+throughput claim and batch-8 cache capture.
+
+Listening step (never skipped): euler4 render vs the GN3 teacher render,
+same script same prompt — texture ("digital cold"?), fade, seam naturalness.
+
+### Results
+
+(pending run)
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
