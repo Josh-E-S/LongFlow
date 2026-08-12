@@ -959,6 +959,61 @@ gate — pacing, drift, parity. It is shippable with the stock model today.**
 (2) batch parity — CLEARED; (3) cache filter — settled (ECAPA+rate);
 (4) rate correction — settled (turn-split capture).
 
+## 2026-08-12 — GATE NIGHT 5 PRE-REGISTRATION (not yet run)
+
+Notebook: `gate_night5_colab.ipynb`. Scorer: `score_gate_night5.py`. L4,
+~1.5 h, ~$2–3. Merges the external handoff docs' best proposals with our
+queue; assessment of those docs (what was adopted vs corrected) is in the
+2026-08-12 session log. **Venue decision reaffirmed by Josh: ICASSP stays
+dead; Interspeech 2027.** Literature basis verified: Causal Forcing
+(2602.02214, ICML 2026 — AR-teacher init + DMD stage 2) and Causal Forcing++
+(2605.15141 — causal consistency distillation, frame-wise 1–2 step, no cached
+trajectories; our regime exactly). Reading of dots.tts + CF++ happens
+off-GPU in parallel; stage-2 method decision follows it.
+
+### Arms and gate criteria — written before the run
+
+- **F — feedback-path ablation** (the night's headline; dots.tts hypothesis).
+  euler4 closed loop (most sensitive assay), 5-min turn-split script, acoustic
+  connector output: base / zeroed / running-mean (the fair in-distribution
+  null) / noised (σ=0.5·running std).
+  | Verdict | Condition |
+  |---|---|
+  | ACOUSTIC CHANNEL CONFIRMED | any non-base condition survives ≥3× base's horizon → an inference-time (plumbing) fix exists; windowed/anchored context re-promotes as co-headline |
+  | NO PLUMBING RESCUE | nothing reaches 3× → Self Forcing–family training confirmed as the only path |
+  Note: if *noise* collapses like base while *mean/zero* survive, corruption
+  (not absence) of acoustic feedback is the poison — cleanest possible
+  mechanism statement.
+- **D — Fréchet-distance backfill.** σ-VAE re-encode of GN4 renders + GN3
+  teacher; per-10s-window FD vs the teacher's first-half distribution.
+  Deliverable, not a gate: the euler4/heun8/teacher dose-response figure with
+  an honest metric (scalar std retired after two failures: E3, GN4).
+- **R — reseed floor, n≤40** (blocking item 1). Teacher, seeds 0/1 per
+  held-out utt. Deliverable: **median + IQR** pair-WER (GN1's n=6 mean was
+  carried by one proper-noun utterance). Floor is usable if IQR width <
+  ~2× median.
+- **S — chunked-parallel seam test** (product path). 2-speaker ~750-word
+  dialogue, 4 chunks split at turn boundaries, rendered as ONE batch, 0.25 s
+  crossfade. Teacher head. Metric: seam ECAPA vs within-chunk baseline;
+  **Josh listens to the 3 seams — ears are the authority** (GN2 lesson:
+  short-window ECAPA over-flags prosody at boundaries).
+- **H — batch hygiene: the [A,A] test.** Two identical rows in one batch,
+  same seed — a FAIR determinism criterion (unlike solo-vs-batch
+  bit-equality, which floating-point batching cannot satisfy). Identical
+  outputs → masking clean, Arm C's PARITY OK stands untouched; divergent →
+  genuine cross-contamination, investigate masks. Pre-registered position:
+  the handoff docs' "determinism bug / do not score parity" framing is
+  rejected — parity was validly scored at the audio level (WER
+  0.000/0.071/0.000/0.000) and stochastic path divergence is expected
+  behavior.
+
+Listening steps (never skipped): `s_chunked_stitched.wav` seams; the
+best-surviving `f_abl_*` render (is "survives" actually speech?).
+
+### Results
+
+(pending run)
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
