@@ -765,6 +765,13 @@ same day: every wav now mirrors to Drive immediately + runs are resume-safe
    the C4 story simplifies to an operating-mode finding. The short-clip
    underfit verdict (sampler dilemma) is untouched either way — that was
    measured in-distribution and still needs P2 + data.
+   **Sequencing (agreed 2026-08-12): GN4 runs BEFORE any retraining spend.**
+   It re-baselines the head under the corrected operating mode, and its
+   outcome sets the 75K cache design: head holds → amendment 3's long-context
+   bias partially unwinds (mostly short/medium clips + turn-split long
+   captures — cheaper, already-proven pipeline); head collapses → register
+   OOD refuted, long-biased mix and windowed context stay. The teacher's GN3
+   T1 renders are the direct A/B reference (same script, seeds, conditions).
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
