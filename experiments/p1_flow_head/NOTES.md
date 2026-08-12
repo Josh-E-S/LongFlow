@@ -633,6 +633,20 @@ seams.** Consequences:
    context and the model matches its own accelerating pace (same
    exposure-bias family as E1/E3; and the mimicry channel is exactly what
    voice_speed_factor exploits).
+   **(c) The untested third condition — turn-splitting within ONE call
+   (2026-08-11, from Josh's conference-generator app).** GN2 tested monolithic
+   blocks (sweep) and separate calls (chunked arm). Microsoft's official
+   remedy is neither: many short `Speaker N:` turns inside a single call.
+   Josh's own app has run exactly that shape for months (e.g. 1,097 words as
+   18 turns averaging 58 words, one generate call, 1.5B AND 7B) with no
+   audible rushing — informal evidence the remedy works even though the full
+   script sits in context. If a measured test confirms it, the mechanism
+   refines from "total-script-length register" to **per-turn pace scoping**,
+   which would also mean multi-speaker dialogue is naturally immune and N8
+   bites hardest on single-speaker long-form narration. GN3 cell: the same
+   3,229 words in one call split as ~60-word same-speaker turns, measure wpm.
+   Also explains "never heard it on the 7B": the app never hands either model
+   the trigger condition — usage was accidentally self-immunizing.
 2. **Windowed context keeps its promotion (review §3.2) but on narrower
    grounds:** back-half drift mitigation + bounding conditioning stats — not
    pacing.
