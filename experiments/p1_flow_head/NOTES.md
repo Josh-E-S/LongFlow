@@ -747,6 +747,24 @@ same day: every wav now mirrors to Drive immediately + runs are resume-safe
    does the back-half identity decline (0.85→0.73 after ~min 8, GN1) persist
    when pacing is cured? Distinguishes "drift is independent of the fast
    register" from "the two defects share a cause." Free analysis, no GPU.
+   **Josh's bet (2026-08-12, pre-registered before the analysis): turn-split
+   fixes likeness too** — reasoning: the model's long-form reputation rests
+   on turn-shaped usage (conversations, chunking tools, his app), which never
+   audibly drifted. If T1 audio holds flat where monolithic declined, the
+   windowed-context mechanism demotes toward bonus/ablation.
+3. **GN4 candidate — THE high-stakes cheap test: our 20K head under
+   turn-split conditions.** Everything that condemned the head on long-form
+   (E3 frame-zero collapse on long prompts, endurance fade) was measured under
+   **monolithic** long prompts — which we now know flip the backbone into a
+   register the training cache (short utterances, natural register) contains
+   zero samples of. The head's long-form failures may be largely **register
+   OOD, not context-length OOD**. Test: FlowHeadPatch + 20K ckpt, turn-split
+   full script end-to-end, listen + score vs the July endurance collapse.
+   One cell, ~$1–2. If the head holds up: long-form works TODAY with the
+   current checkpoint, "context-length OOD" reframes as "register OOD", and
+   the C4 story simplifies to an operating-mode finding. The short-clip
+   underfit verdict (sampler dilemma) is untouched either way — that was
+   measured in-distribution and still needs P2 + data.
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
