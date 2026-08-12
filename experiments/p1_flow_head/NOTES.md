@@ -792,6 +792,16 @@ same line (wall < audio), but batch unlocks the parallel-segment lever:
    settling, same as GN1; p1 **9:40**, sim 0.241 — likely a pause/silence
    ECAPA artifact, LISTEN to rule out a real glitch); claim bounded at ~20 min
    until a 90-min render exists. Curves: `t1_drift_curves.json`.
+   **Listening verdicts (Josh, 2026-08-12):** overall turn-split audio "sounds
+   good"; p1 9:40 is a REAL glitch — ~2 s of babble ("decided to speak in
+   tongues"), which he has also seen occasionally in his HF space (turn-shaped
+   usage) → a third, rare defect class: **transient babble**, stochastic,
+   pre-existing, NOT turn-split-induced and not cured by it (~1 event / 39 min
+   here). Detector scorecard: per-window ECAPA has now caught both confirmed
+   audible defects (GN1 0:54, this) that latent-std missed — it is the cache
+   quality filter, settled. Cache implication: filter must EXCISE babble
+   windows or the head learns babble; C4 should report a glitch-rate-per-hour
+   metric alongside drift curves.
 3. **GN4 candidate — THE high-stakes cheap test: our 20K head under
    turn-split conditions.** Everything that condemned the head on long-form
    (E3 frame-zero collapse on long prompts, endurance fade) was measured under
