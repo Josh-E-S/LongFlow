@@ -698,9 +698,42 @@ Rate-steering (candidate (a)) deliberately deferred — needs its own build.
 Listening step (never skipped): `t1_turnsplit_p0.wav` (naturalness, per-turn
 seam artifacts) and `t2_stretch80.wav` (does the voice still sound like p0?).
 
-### Results
+### Results — PROVISIONAL from the run log (2026-08-12; audio lost to a runtime
+### disconnect before bundling — see incident note)
 
-(pending run)
+**Incident:** Josh's machine slept after T2; the Colab runtime recycled before
+the bundle cell ran. GN3 v1 did not mirror to Drive (GN1/GN2 saved captures to
+Drive; GN3 was built lean — a mistake). The printed run log survives and words
+÷ audio_s gives the primary metric directly (script word count known = 3229;
+coverage assumption per N8, unverified until the rerun). Notebook patched
+same day: every wav now mirrors to Drive immediately + runs are resume-safe
+(re-running skips anything already on Drive). T3 (7B) never ran.
+
+| run | audio_s | wpm (3229 words) | pre-registered verdict |
+|---|---|---|---|
+| t1_turnsplit_p0 | 1176.8 | **164.6** | **CURED** (bar ≤185) |
+| t1_turnsplit_p1 | 1176.8 | **164.6** | **CURED** |
+| t2_stretch80 | 952.1 | **203.5** | ≤208 ✓ |
+| t2_stretch90 | 843.3 | **229.7** | monotone ✓ → **TRANSFERS** |
+
+- **T1 CURED, provisionally — the headline.** The same 3229 words that render
+  monolithically at 230.7/233.3 wpm come out at **exactly natural rate
+  (164.6)** on both prompts when split into ~60-word same-speaker turns in ONE
+  call. Microsoft's un-verified official tip works; **pace is per-turn
+  scoped**, not total-script; N8 localizes to single-speaker continuous
+  narration (the exact use case long-form TTS exists for), and multi-speaker
+  dialogue is naturally immune — explaining why nobody, Microsoft included,
+  ever chased the defect: their flagship demo format hides it.
+  Curious detail: both prompts produced *identical* durations (1176.8 s) —
+  consistent with seeded, text-driven termination.
+- **T2 TRANSFERS, sub-linearly:** 0.8× prompt → 0.88× output rate; 0.9× →
+  ~no effect. The mimicry channel is real at long context but lossy; alone it
+  cannot cancel the register (would need <0.7× stretch, identity cost
+  unknown), but it composes with T1.
+- **Pending the rerun:** Whisper coverage confirmation (did it speak all 3229
+  words), Josh's listening steps (turn seams; stretch80 identity), and all of
+  T3. Seeded determinism means the rerun reproduces last night's audio
+  exactly, so provisional numbers should confirm bit-for-bit.
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
