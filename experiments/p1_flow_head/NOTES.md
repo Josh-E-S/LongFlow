@@ -923,6 +923,42 @@ drift cure, 7B scale result); the head's teacher-forced quality (July: 0.030
 WER / 0.984 sim); the speed ledger (6% head share, faster-than-realtime
 loop). heun8 arm + B (profile) + C (parity) verdicts pending bundle.
 
+### OFFICIAL CLOSE-OUT (scored 2026-08-12; `gate_night4_metrics.json`)
+
+**Arm A — both samplers FAIL, with a materially different failure depth:**
+| | euler4 | heun8 |
+|---|---|---|
+| Whisper coverage | 95 words (**2.9%**) | 1711 words (**53.0%**) |
+| last voice-like window (vs teacher ref) | 0:14 | 0:52 |
+| post-collapse character | quiet unstable resonance (−30..−60 dB) | loud garbled speech throughout (−11..−17 dB) |
+| closed-loop latent std | 0.503→1.262 (under→noise) | 1.274→1.302 (over, stable) |
+
+The loop is an amplifier of whatever bias the head injects: under-dispersion
+(euler4) spirals to near-silent resonance; heun8's dispersion-correct field
+*degrades* rather than dies — half the script survives as garbled speech.
+Collapse horizons + decile curves: `gn4_collapse_horizons.json`. For the
+Self Forcing stage this is the starting line: on-policy fine-tuning begins
+from 53% in-loop intelligibility (heun8), not zero.
+
+**Arm B — bottleneck map (measured, L4, ms/frame):** teacher 187.2 = LM 63.8
++ DDPM head 50.7 + connectors 0.6 + unhooked glue/tokenizers ~72. Flow head
+127.5 = LM 64.2 + head 7.7 + connectors 0.6 + glue ~55. Ratio **1.468×
+measured** (July's estimate confirmed per-module). Biggest remaining targets:
+the LM's 64 ms (carries the CFG double stream) and the ~55–72 ms glue bucket.
+
+**Arm C — PARITY OK. Blocking item 2 CLEARED.** Solo-vs-batch-4 WER per utt:
+0.000 / 0.071 / 0.000 / 0.000 (mean 0.018, well inside 1.5× reseed floor);
+sim 0.639–0.717 ≈ the teacher's own reseed band (0.734). The frame-count
+divergence (audio lengths ±16–35%) is different-but-valid renditions, not
+degradation. Batch throughput measured ~2.9× at batch-4 (35 s solo → 12 s
+batched). **Consequence: the teacher-side product pipeline (turn-split ×
+batch × [optionally our head for the 1.47×]) has now passed every quality
+gate — pacing, drift, parity. It is shippable with the stock model today.**
+
+**Blocking-list state after GN4:** (1) reseed floor n=30–50 — OPEN, → GN5;
+(2) batch parity — CLEARED; (3) cache filter — settled (ECAPA+rate);
+(4) rate correction — settled (turn-split capture).
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

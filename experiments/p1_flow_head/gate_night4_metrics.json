@@ -1,0 +1,86 @@
+{
+  "armA": {
+    "a_head20_turnsplit_euler4": {
+      "audio_min": 19.73,
+      "wpm": 4.8,
+      "coverage_words": 95,
+      "coverage_pct": 2.9,
+      "ecapa_front": 0.599,
+      "ecapa_back": 0.547,
+      "rms_front_db": -33.3,
+      "rms_back_db": -34.0,
+      "fade": false,
+      "identity_flat": false,
+      "coverage_ok": false
+    },
+    "a_head20_turnsplit_heun8": {
+      "audio_min": 19.67,
+      "wpm": 87.0,
+      "coverage_words": 1711,
+      "coverage_pct": 53.0,
+      "ecapa_front": 0.536,
+      "ecapa_back": 0.503,
+      "rms_front_db": -11.7,
+      "rms_back_db": -17.1,
+      "fade": true,
+      "identity_flat": true,
+      "coverage_ok": false
+    }
+  },
+  "armB": [
+    {
+      "label": "teacher_head",
+      "frames": 328,
+      "wall_s": 61.4,
+      "ms_per_frame_total": 187.2,
+      "per_module_ms": {
+        "language_model": 63.8,
+        "prediction_head": 50.7,
+        "acoustic_connector": 0.3,
+        "semantic_connector": 0.3
+      }
+    },
+    {
+      "label": "flow_head_euler4",
+      "frames": 518,
+      "wall_s": 66.0,
+      "ms_per_frame_total": 127.5,
+      "per_module_ms": {
+        "language_model": 64.2,
+        "acoustic_connector": 0.3,
+        "semantic_connector": 0.3,
+        "flow_head_direct": 7.7
+      }
+    }
+  ],
+  "armC": {
+    "pairs": [
+      {
+        "tag": "1188__1188_133604_000004_000005",
+        "solo_vs_batch_wer": 0.0,
+        "solo_vs_batch_sim": 0.639
+      },
+      {
+        "tag": "121__121_121726_000025_000001",
+        "solo_vs_batch_wer": 0.071,
+        "solo_vs_batch_sim": 0.665
+      },
+      {
+        "tag": "1995__1995_1837_000012_000004",
+        "solo_vs_batch_wer": 0.0,
+        "solo_vs_batch_sim": 0.706
+      },
+      {
+        "tag": "237__237_134493_000002_000003",
+        "solo_vs_batch_wer": 0.0,
+        "solo_vs_batch_sim": 0.717
+      }
+    ],
+    "mean_wer": 0.018
+  },
+  "verdicts": {
+    "a_head20_turnsplit_euler4": "FAIL (E3-style collapse)",
+    "a_head20_turnsplit_heun8": "FAIL (E3-style collapse)",
+    "armC": "PARITY OK (within ~reseed noise)"
+  }
+}

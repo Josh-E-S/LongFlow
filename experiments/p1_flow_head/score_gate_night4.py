@@ -56,7 +56,7 @@ def ecapa_curve(path, win=4.0, hop=2.0):
 def rms_halves(path):
     x, _ = sf.read(path, dtype="float32")
     h = len(x) // 2
-    db = lambda a: 20 * np.log10(np.sqrt((a**2).mean()) + 1e-9)  # noqa: E731
+    db = lambda a: float(20 * np.log10(np.sqrt((a**2).mean()) + 1e-9))  # noqa: E731
     return round(db(x[:h]), 1), round(db(x[h:]), 1)
 
 
