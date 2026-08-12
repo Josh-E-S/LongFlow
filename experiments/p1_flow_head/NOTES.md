@@ -751,6 +751,16 @@ same line (wall < audio), but batch unlocks the parallel-segment lever:
   drift zone and the KV-growth per-frame slowdown.
 - **Load-bearing prerequisite:** blocking item 2 (batch parity) now gates the
   headline speed claim, not just caching. Plus a seam listen at 90-min scale.
+- **Quant lever (queued behind GN4, 2026-08-12):** weight-only int8/int4 on
+  the frozen backbone is the only lever touching the non-head 65% (sequential
+  decode is bandwidth-bound → quant ≈ direct speedup; also KV-cache quant for
+  the 90-min memory growth). Rule-#1-legal (compression, not training). Risk
+  is OURS specifically: the flow head conditions on bf16-captured stats, and
+  quant shifts hidden-state distributions — the N1/N2 failure axis in
+  miniature. Test = GN1 cell-6 parity methodology verbatim (same seeds, quant
+  vs bf16, conditioning stats + rendered WER/sim). Fallback if it hurts:
+  re-capture the cache from the quantized backbone. Stacked projection with
+  segments+batch+CFG removal: 90-min job in ~6–10 min.
 
 ### Feedback into the main line (2026-08-12)
 
