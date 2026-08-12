@@ -611,6 +611,28 @@ seams.** Consequences:
    canceling the ~1.4× register needs ~0.7×, well past their recommended
    band — the question is whether prompt-rate transfer holds on *long*
    scripts at all, and how much identity it costs.
+   **Two further candidates (2026-08-11 discussion):**
+   (a) **Rate steering via the retained `src/steering/` machinery.** N7 killed
+   affect steering because the backbone lacks affect range; but the backbone
+   demonstrably HAS rate range (165→240 wpm, GN2-measured), so the ceiling
+   argument does not apply. Extract fast-vs-slow contrast pairs (same text,
+   register forced via script length — we now know how to trigger both
+   registers on demand), find the rate direction, steer negatively during long
+   renders. Training-free; a principled fix, not a prompt bandaid; would also
+   resurrect the C2 machinery as a live contribution.
+   (b) **7B replication arm.** All N8/GN2 evidence is VibeVoice-1.5B; the 7B
+   is untested (and docs recommend it "for stability"). Same sweep on 7B =
+   cheap GN3 arm; "defect scales with size" and "defect vanishes at 7B" are
+   both paper sentences. Also explains why Josh has not heard it on his 7B
+   only if his tooling chunks silently — check how the 7B is being invoked.
+   **Mechanism hypothesis (unproven, consistent with all GN2 data):** pace is
+   an unsupervised free variable (no duration model, no loss penalty); long
+   text prefixes match the long-form/podcast register in training data
+   (~200–240 wpm is normal podcast pace, hence the ceiling); the early ramp is
+   self-reinforcing prompt-pace mimicry — generated audio re-enters the
+   context and the model matches its own accelerating pace (same
+   exposure-bias family as E1/E3; and the mimicry channel is exactly what
+   voice_speed_factor exploits).
 2. **Windowed context keeps its promotion (review §3.2) but on narrower
    grounds:** back-half drift mitigation + bounding conditioning stats — not
    pacing.
