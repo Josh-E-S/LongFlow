@@ -735,6 +735,19 @@ same day: every wav now mirrors to Drive immediately + runs are resume-safe
   T3. Seeded determinism means the rerun reproduces last night's audio
   exactly, so provisional numbers should confirm bit-for-bit.
 
+### Feedback into the main line (2026-08-12)
+
+1. **T1 likely RESOLVES blocking item 4** (rate-correction for long-context
+   captures): capture long-context training data as **turn-split scripts** —
+   natural pace by construction, no post-hoc correction, long context
+   preserved. The N8 detour pays back into the 75K cache design. Confirm on
+   the rerun audio (coverage + seams by ear), then mark item 4 closed.
+2. **The 19.6-min T1 renders double as a drift probe at natural pace.** Run
+   the per-window ECAPA episode map (GN1 tooling) on `t1_turnsplit_p0.wav`:
+   does the back-half identity decline (0.85→0.73 after ~min 8, GN1) persist
+   when pacing is cured? Distinguishes "drift is independent of the fast
+   register" from "the two defects share a cause." Free analysis, no GPU.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
