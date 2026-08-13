@@ -55,10 +55,12 @@ results = {"armF": {}, "armR": {}, "armS": {}, "verdicts": {}}
 ref_E, _, _ = win_embs(TEACHER)
 ref = ref_E.median(0).values
 
-# ---- Arm F: horizons per condition ----
+# ---- Arm F: horizons per condition (prefer v2 — v1 corrupted the prompt path) ----
 horizons = {}
 for mode in ("base", "zero", "mean", "noise"):
-    p = AUD / f"f_abl_{mode}.wav"
+    p = AUD / f"f2_abl_{mode}.wav"
+    if not p.exists():
+        p = AUD / f"f_abl_{mode}.wav"
     if not p.exists():
         continue
     E, ts, dur = win_embs(p)

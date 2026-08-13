@@ -1010,9 +1010,39 @@ off-GPU in parallel; stage-2 method decision follows it.
 Listening steps (never skipped): `s_chunked_stitched.wav` seams; the
 best-surviving `f_abl_*` render (is "survives" actually speech?).
 
-### Results
+### Results — partial (2026-08-13; disconnect after Arm F; D/R/S/H pending rerun)
 
-(pending run)
+**Arm F v1: INVALID as a feedback ablation — design error, caught by ear.**
+Josh: `f_abl_zero` has "no voice at all, just millisecond artifacts" from
+second one → the acoustic connector carries the **voice-prompt encoding**;
+v1's hook fired during prompt processing and erased the speaker rather than
+isolating feedback. All four v1 conditions corrupt input conditioning.
+v1 wavs kept as evidence. **v2 shipped same day** (`f2_abl_*` tags): the
+intervention gates on `patch.calls > 0` so the prompt is encoded untouched
+and only per-frame feedback traffic is modified.
+
+**New mechanism findings from the v1 run (valid despite the design error):**
+1. **Bit-identical frame counts across all four conditions (2296)** —
+   pacing and stop timing are **text-anchored**: the LM marches through the
+   script on schedule regardless of acoustic-channel chaos. (Also the
+   base render's collapse boundary is a *clean stop* after "diary of Mrs
+   Gilroy" — phrase-aligned, not a drift-out.)
+2. **Speech RE-EMERGES mid-collapse.** Josh, base render: at ~0:32,
+   oscillating noise gives way to intelligible *later script content* ("will
+   that be honorable... she knew too much about the murder") before washing
+   away again. GN4's "voice in the wind" was this same phenomenon. The
+   collapse is **bistable orbiting of the speech manifold, not divergence**
+   — the system keeps re-approaching the speech attractor (plausibly at turn
+   boundaries) even deep in collapse. Encouraging for the training path:
+   Self Forcing needs to widen a basin the loop already re-enters, not drag
+   the system back from infinity. The FD curves (Arm D, pending) should show
+   these re-entries as transient dips.
+
+Latent stds (v1: base 0.942 = GN4's 0.943 ✓ consistency): zero 0.821, mean
+0.857, noise 1.101 — different conditioning did change head output, but with
+the prompt path corrupted no feedback conclusion can be drawn.
+
+(remaining arms pending rerun)
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
