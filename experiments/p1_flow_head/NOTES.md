@@ -1089,7 +1089,23 @@ per Causal Forcing / CF++). This is the certainty the gate-night program was
 built to buy before training spend. Next: dots.tts + CF++ reading → stage-2
 method decision → implementation.
 
-(D FD curves / R floor / S seam-listen verdicts pending bundle + Josh's ears)
+**Arm S verdict by ear (Josh, 2026-08-14): PASS.** "Sounds fine and clear,
+stitching is good, paced between them" — seams inaudible. One transient at
+**1:10–1:15**: Speaker 2 "moans and then sounds like she's throwing up," a
+one-time artifact. Placement analysis: chunks run ~65–70 s, first seam ≈1:07 —
+the event sits a few seconds INTO chunk 2's fresh generation, i.e. the known
+early-generation-settling window, and the character matches the
+**transient-babble defect class** (third confirmed sighting: GN3 p1 9:40,
+Josh's HF space, now here). Not a stitching failure.
+**Product consequence — detect-and-reroll:** chunked architecture converts
+transient babble from a 90-min-take catastrophe into a ~70 s chunk re-roll
+with a different seed; the ECAPA+rate filter is the detector (2-for-2 on this
+class by machine + 3 sightings by ear). At GN3's observed rate (~1 event /
+40 min), a 90-min render needs ~2–3 re-rolls ≈ minutes of extra compute.
+**The product path is now validated end to end by ear: pacing ✓ drift ✓
+batch parity ✓ seams ✓ glitch-repair story ✓.**
+
+(D FD curves / R floor official numbers pending bundle + scorer)
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
