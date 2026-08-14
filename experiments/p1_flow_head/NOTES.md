@@ -1217,6 +1217,70 @@ at batch-1 — "slow and good", never monolithic on long scripts). Lesson for
 the paper's engineering section: OOM-retry logic is worthless unless the
 failed attempt's references are actually severed.
 
+**Session close-out (2026-08-14, late) — the production evening, full log.**
+Everything below shipped to Josh's public Conference-Generator Space (HF) +
+its Modal backend, all synced to the Space repo:
+
+- **Features shipped:** paste/upload full-script loader (parses `Speaker N:`
+  + named tags through the app's existing turn pipeline); script cap raised
+  1,500 → 20,000 words; chunked-parallel rendering (whole-turn chunks ~200
+  words, batched waves, 0.25 s crossfades, timing report with cold/warm flag
+  + ×realtime + mode line); gradio pinned <6 (unpinned requirements had let a
+  rebuild pull breaking Gradio 6); voice presets restored (GitHub zip had
+  shipped 131-byte LFS pointers, not audio — real files pulled from Space LFS,
+  converted mp3→wav for soundfile).
+- **Benchmarks (all measured in production):** 7B 2.67× realtime (batch-4);
+  1.5B 3.29× (cold-start job); 1.5B **4.44×** (batch-12, 2 waves) on the
+  30.5-min render — believed longest publicly timed TTS render (~6× anything
+  documented). Projections: 90 min ≈ 20 min; 120 min ≈ 27 min.
+- **OOM saga (two rounds, instructive):** Round 1: backoff cascade
+  12→6→3→2→dead with ~38 GB pinned — root cause: worker thread stored the OOM
+  *exception object*, whose traceback pinned every tensor of the failed
+  attempt (empty_cache useless against live references). Fixes: store message
+  not exception; per-wave gc+empty_cache; expandable_segments allocator;
+  fallback redesigned **sequential per-chunk** (the old monolithic fallback
+  re-triggered N8 on long scripts by construction). Round 2: retry cascaded
+  identically — traceback proved it ran the OLD code on a **warm container
+  poisoned by the cancelled run's zombie generation thread** (Python threads
+  survive client cancellation; zombie kept generating, ate the GPU). Fixes:
+  **recycle-on-cancel** (GeneratorExit → container exits, zombies impossible)
+  + **VRAM health check** at request start vs post-load baseline (poisoned
+  container announces itself and recycles). Status: all round-1+2 fixes
+  deployed together but **UNTESTED** — the 50-min render retry is the first
+  order of business next session.
+- **Scripts written:** 989-word 4-speaker test (validated); 5,466-word "Long
+  Groove" audio-history documentary (the 30.5-min record render); 8,276-word
+  extended cut (~50 min, render pending). True 120-min needs ~7 more acts
+  (~1,400 quality words/act is the realistic authoring yield).
+- **End-of-session Q&A worth keeping (Josh's questions, sharp ones):**
+  (1) *"If we stitch, why is VibeVoice special?"* — because chunks are
+  four-voice cloned conversation SCENES, not utterances; the 90-min training
+  regime built the discourse-level prosody we harvest at 80 s (marathon
+  runner in short races); and per-provider field check shows **everyone
+  stitches**: OpenAI TTS caps at 4,096 chars/request, Deepgram Aura 2,000,
+  ElevenLabs' multi-speaker dialogue endpoint recommends ≤2,000 (~2 min) —
+  the industry leader's conversation mode uses OUR chunk size. Cost: ~90-min
+  episode ≈ $15–25 at ElevenLabs rates vs ~$1.50 of self-hosted A100.
+  (2) *"Surely someone's done batching/quant?"* — quant yes but for low-VRAM
+  access, never throughput (community 4/8-bit 7B exists incl. a selective-Q8
+  keeping audio-critical parts fp — the ear-safe candidate for our quant A/B);
+  "batch generation" appears once in the wild as job-queue batching; timed
+  chunked-parallel single-episode remains unclaimed.
+  (3) *Why batching is nearly free:* AR decode is weight-haul-bound; a batch
+  shares one weight read across N streams (truck/packages). Sublinear
+  (2.9×@4, 4.44×@12) via stragglers + KV growth.
+  (4) *Quant-7B projection:* freed VRAM lifts 7B cap 6→~12 → ~3.5–4.5×
+  realtime ≈ "Large quality at small-model speed"; gate = one ear A/B.
+  (5) *The two GPU bills:* weights (fixed; what quant shrinks; why 7B needs
+  beefy cards) vs per-second work (what 7.5 Hz makes tiny — 7.5 passes/sec
+  instead of 75+; why 90 min fits context, why batch-12 caches fit, why the
+  133 ms/frame realtime budget exists). Big orchestra, compact sheet music.
+- **Next-session queue:** (1) verify 50-min render on the new code (first
+  true test of all OOM fixes); (2) stage-2 reading (dots.tts, CF++) + method
+  decision incl. GameNGen-style noise-augmented option; (3) σ sweep; (4)
+  quant-7B ear A/B via the community selective-Q8; (5) multi-container
+  fan-out; (6) remaining ~7 acts for the 120-min record.
+
 **Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
 TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
 microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both

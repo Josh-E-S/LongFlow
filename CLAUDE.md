@@ -64,6 +64,20 @@ proposing anything. Where things stand:
   running); every artifact mirrors to Drive per-run; reruns skip completed
   work via Drive; experimental revisions get NEW artifact tags (f_→f2_→f3_).
 - **Venue: Interspeech 2027 (~Mar). ICASSP is dead (Josh's call, twice).**
+- **PRODUCTION (2026-08-14 evening):** the chunked-parallel pipeline is
+  DEPLOYED on Josh's public Conference-Generator Space (HF) + Modal backend.
+  Measured: 7B 2.67× realtime, 1.5B **4.44×** (batch-12); a 30.5-min render —
+  believed the longest publicly timed TTS render anywhere. Two OOM incidents
+  taught: exception tracebacks pin GPU memory (store messages, not
+  exceptions); cancelled runs leave zombie generation threads in warm
+  containers (fix: recycle-on-cancel + VRAM health check vs post-load
+  baseline); long-script fallback must be sequential per-chunk, NEVER
+  monolithic (N8). Those fixes are deployed but UNTESTED — first task next
+  session: rerun the 50-min "extended" script and verify. Full log: NOTES
+  "Session close-out (2026-08-14, late)". Field checks: every commercial TTS
+  chunks (ElevenLabs dialogue ≤2k chars); community quants of 7B exist for
+  VRAM access (selective-Q8 = ear-safe candidate); timed chunked-parallel
+  long-form remains unclaimed territory.
 
 ## Current state (2026-08-10 addendum)
 
