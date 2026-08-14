@@ -1205,6 +1205,18 @@ of 12 (raised cap held, no backoff)** → **412.1 s for 1828.1 s of audio =
 publicly documented timed render. Updated projections: 90 min ≈ 20 min wall;
 120 min ≈ 27 min.
 
+**Production incident + fix (2026-08-14, 50-min render attempt):** wave 3 of 4
+OOMed; backoff cascade 12→6→3→2 all failed with 37.85 GiB still allocated —
+root cause: the worker thread stored the OOM *exception object*, whose
+traceback pinned every tensor of the failed attempt, making empty_cache()
+powerless. Second design flaw exposed: the monolithic fallback on a 50-min
+script re-triggers N8 by construction. Fixes deployed same hour: store error
+message not exception; per-wave gc+cache release; expandable_segments
+allocator; fallback redesigned to sequential per-chunk (turn-split preserved
+at batch-1 — "slow and good", never monolithic on long scripts). Lesson for
+the paper's engineering section: OOM-retry logic is worthless unless the
+failed attempt's references are actually severed.
+
 **Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
 TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
 microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both
