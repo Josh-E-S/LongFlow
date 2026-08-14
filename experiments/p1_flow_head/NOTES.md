@@ -1227,6 +1227,12 @@ night's ceiling was leaked memory, not batch size. Scaling is FLAT (4.44× @
 Pacing 178 wpm (natural) at 46 min. New longest-timed-render mark. Listening
 (seams + back half + babble scan) pending.
 
+**Ear certification of the 46-min render (Josh, 2026-08-15): "Sounds amazing
+all the way through to the end."** Seams, back half (min 40+, deepest audio
+the pipeline has produced), full pass. Zero babble events in 46 min — the
+transient-glitch rate estimate improves below the prior ~1/40 min. Pipeline
+is ear-certified at every scale tested: 5, 30, and 46 minutes.
+
 **Session close-out (2026-08-14, late) — the production evening, full log.**
 Everything below shipped to Josh's public Conference-Generator Space (HF) +
 its Modal backend, all synced to the Space repo:
