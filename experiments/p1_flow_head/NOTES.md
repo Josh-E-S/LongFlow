@@ -1217,6 +1217,16 @@ at batch-1 — "slow and good", never monolithic on long scripts). Lesson for
 the paper's engineering section: OOM-retry logic is worthless unless the
 failed attempt's references are actually severed.
 
+**Fourth benchmark — fixes verified live (2026-08-15 morning):** the 50-min
+"extended" render, first run on the repaired code: **624.7 s for 2786.8 s
+(46.4 min) of audio = 4.46× realtime**, 34 chunks in 3 waves of 12 on a WARM
+(reused) container, **zero OOM, backoff never needed** — the per-wave
+gc+empty_cache + expandable_segments fixes pass their first live test; last
+night's ceiling was leaked memory, not batch size. Scaling is FLAT (4.44× @
+2 waves → 4.46× @ 3), so projections harden: 90 min ≈ 20 min, 120 min ≈ 27.
+Pacing 178 wpm (natural) at 46 min. New longest-timed-render mark. Listening
+(seams + back half + babble scan) pending.
+
 **Session close-out (2026-08-14, late) — the production evening, full log.**
 Everything below shipped to Josh's public Conference-Generator Space (HF) +
 its Modal backend, all synced to the Space repo:
