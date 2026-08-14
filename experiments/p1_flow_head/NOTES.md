@@ -1071,7 +1071,25 @@ targets the measured amplifier mechanism: no per-frame bias left to compound.
 | horizon ≫ 14 s | inference-time stabilization exists; also strong evidence Self Forcing will work (same principle, learned) |
 | ≈ 14 s | the compounding error is structural (content/direction, not frame statistics) → training path only, and stage-2 must fix more than dispersion |
 
-(D/R/S/H still pending rerun)
+**f3_renorm verdict by ear (Josh, 2026-08-14): WORSE than base — ~3 s of
+speech, slow fade into a STEADY white-noise/hum with slight reverb, constant
+to the end (306.1 s, full length, text-anchoring again).** The steady-hum
+signature is self-diagnosing: per-frame whitening forces silence-class frames
+up to speech-level statistics → constant-energy noise floor; and destroying
+legitimate per-frame structure killed even the early good frames (3 s vs
+base's 14 s). Second-worst branch of the pre-registered table →
+
+**GATE NIGHT 5 HEADLINE VERDICT: NO PLUMBING RESCUE — the plumbing era is
+closed by elimination.** Removal of feedback: instant death (channel is
+load-bearing). Statistical correction of feedback: worse than nothing (the
+poison is not in the summary statistics). Conclusion: the compounding error
+lives in the CONTENT of the head's latents; the only remaining road is
+training the head on its own rollout context (Self Forcing family / stage-2
+per Causal Forcing / CF++). This is the certainty the gate-night program was
+built to buy before training spend. Next: dots.tts + CF++ reading → stage-2
+method decision → implementation.
+
+(D FD curves / R floor / S seam-listen verdicts pending bundle + Josh's ears)
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
