@@ -20,6 +20,51 @@ Full scope, positioning, data plan, and phases: `README.md`. ~~Paper target: Int
 - ~~**Next task is P1: the flow-head baseline** — caching pipeline (`src/cache/`, reuse the positive-stream logic from `src/steering/contrast_pairs.py`), then OT-CFM 4-NFE head with the mandatory 1K/5K gate check before the full 75K run.~~ **[2026-08-10]** P1 is mid-flight, not pending: caching pipeline built (batched, 4.9×), gate PASSED, 10K scaling PASSED, E3 steps-scaling FAILED. See the August addendum for the actual next action.
 - ~~Phase order: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.~~ **[2026-08-10]** See revised ordering in the August addendum.
 
+## Current state (2026-08-14 — READ THIS FIRST; supersedes the addenda below)
+
+Five gate nights (GN1–GN5, 2026-08-11→14, ~$15 total) are fully logged in
+`experiments/p1_flow_head/NOTES.md` — read the Gate Night entries before
+proposing anything. Where things stand:
+
+- **Teacher operating mode SOLVED — finding N8 + the turn-split cure**
+  (`docs/negative-results.md` N8): VibeVoice inflates speaking rate 1.5× on
+  monolithic long scripts (1.5B AND 7B, ratio 1.31) and drifts identity after
+  ~8 min. **Both defects share one cause and one cure: same-speaker
+  turn-splitting (~60-word turns) within ONE generate call** → natural rate
+  (165–177 wpm, 3 replications) AND flat identity through 19+ min. Chunking
+  between calls does NOT cure pacing; prompt time-stretching does not
+  transfer. Never generate monolithic long-form.
+- **Product path VALIDATED end to end** (stock teacher, no training):
+  turn-split × parallel chunk batching (audio-level parity PASSED, ~2.9× at
+  batch-4) × 0.25 s crossfade seams (ears-pass) × detect-and-reroll for the
+  rare transient-babble glitch (ECAPA+rate filter is the detector). 90-min /
+  4-speaker renders in ~20–30 min today; head + CFG later → single digits.
+- **The 20K flow head: fast and correct teacher-forced, DIES in closed loop**
+  (GN4: euler4 collapses at 0:14, heun8 degrades to 53% coverage). Cause
+  isolated by GN5 ablations: **feedback-OOD — the loop amplifies the
+  CORRELATED component of the head's error.** Feedback removal = instant
+  death (channel is load-bearing); per-frame statistical renorm = worse than
+  nothing; **σ=0.5 feedback noise = content survives the FULL render (14 s →
+  5 min, WER 0.296 vs teacher rendition) at the cost of voice identity
+  (raspy whisper).** Register-OOD and turn-reset hypotheses: refuted.
+- **Consequences:** (a) stage-2 on-policy training (Self Forcing family) is
+  the only road to shippable closed-loop quality — read Causal Forcing
+  2602.02214 + CF++ 2605.15141 (verified real; CF++ = frame-wise 1–2 step,
+  no cached trajectories) before choosing the method; (b) GN6 candidate: the
+  feedback-noise σ sweep (0.1–0.5) hunting a listenable sweet spot; (c) the
+  75K offline scale-up stays DEFERRED until the stage-2 method is chosen.
+- **Instruments:** collapse metric = per-window latent Fréchet distance
+  (scalar std lied twice — never use it as a collapse metric); reseed floor
+  = median 0.000, IQR [0, 0.062], n=20 (differences >0.06 WER are real;
+  exclude proper-noun-heavy texts); no bitwise batch-determinism tests
+  (stochastic AR — distributional parity is the only valid instrument);
+  quality filter = per-window ECAPA + speaking rate. **Josh listens to
+  everything; his ear has beaten the metrics four times.**
+- **Process:** notebooks carry a `NOTEBOOK_VERSION` banner (verify before
+  running); every artifact mirrors to Drive per-run; reruns skip completed
+  work via Drive; experimental revisions get NEW artifact tags (f_→f2_→f3_).
+- **Venue: Interspeech 2027 (~Mar). ICASSP is dead (Josh's call, twice).**
+
 ## Current state (2026-08-10 addendum)
 
 Written after the 2026-08-10 project review (`docs/review-2026-08-10.md`). The July 7–9 sprint is fully logged in `experiments/p1_flow_head/NOTES.md`; headlines:

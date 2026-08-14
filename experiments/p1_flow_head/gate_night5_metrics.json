@@ -1,0 +1,196 @@
+{
+  "armF": {
+    "base": {
+      "duration_s": 306.1,
+      "horizon_s": 8.0,
+      "pct_voice": 1.3,
+      "whisper_words": 82
+    },
+    "zero": {
+      "duration_s": 306.1,
+      "horizon_s": 0.0,
+      "pct_voice": 0.0,
+      "whisper_words": 20
+    },
+    "mean": {
+      "duration_s": 306.1,
+      "horizon_s": 0.0,
+      "pct_voice": 0.0,
+      "whisper_words": 20
+    },
+    "noise": {
+      "duration_s": 304.0,
+      "horizon_s": 0.0,
+      "pct_voice": 0.0,
+      "whisper_words": 747
+    }
+  },
+  "armR": {
+    "n": 20,
+    "median": 0.0,
+    "iqr": [
+      0.0,
+      0.062
+    ],
+    "pairs": [
+      {
+        "uid": "1188__1188_133604_000004_000005",
+        "pair_wer": 0.056
+      },
+      {
+        "uid": "121__121_121726_000025_000001",
+        "pair_wer": 0.357
+      },
+      {
+        "uid": "1995__1995_1837_000012_000004",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "237__237_134493_000002_000003",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "260__260_123286_000005_000001",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "2961__2961_961_000004_000007",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "3575__3575_170457_000010_000001",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "3729__3729_6852_000003_000004",
+        "pair_wer": 0.062
+      },
+      {
+        "uid": "4446__4446_2275_000002_000009",
+        "pair_wer": 0.053
+      },
+      {
+        "uid": "4507__4507_16021_000021_000002",
+        "pair_wer": 0.174
+      },
+      {
+        "uid": "4992__4992_41797_000014_000003",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "5142__5142_33396_000039_000001",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "5683__5683_32865_000005_000001",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "6930__6930_81414_000014_000003",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "7127__7127_75946_000002_000001",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "7729__7729_102255_000002_000001",
+        "pair_wer": 0.167
+      },
+      {
+        "uid": "8224__8224_274384_000000_000001",
+        "pair_wer": 0.2
+      },
+      {
+        "uid": "8230__8230_279154_000003_000007",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "8455__8455_210777_000003_000000",
+        "pair_wer": 0.0
+      },
+      {
+        "uid": "8555__8555_284449_000007_000000",
+        "pair_wer": 0.056
+      }
+    ]
+  },
+  "armS": {
+    "seam_mean": 0.15,
+    "within_mean": 0.607
+  },
+  "verdicts": {
+    "armF": "NO PLUMBING RESCUE (best zero 0.0x) \u2014 training path confirmed",
+    "armR": "FLOOR: median 0.000, IQR [0.000,0.062], n=20",
+    "armS": "metric-flag (ears are the authority)",
+    "armH": "CONTAMINATION \u2014 batched rows diverge; investigate masking"
+  },
+  "armH": {
+    "same_length": false,
+    "len_a": 240000,
+    "len_b": 188800,
+    "maxdiff": 1.2373046875
+  },
+  "armD_fd_summary": {
+    "teacher_self": {
+      "first": 552.6,
+      "median": 549.5,
+      "last": 538.3
+    },
+    "a_head20_turnsplit_euler4": {
+      "first": 675.5,
+      "median": 1578.0,
+      "last": 1545.9
+    },
+    "a_head20_turnsplit_heun8": {
+      "first": 506.2,
+      "median": 1667.4,
+      "last": 1713.3
+    },
+    "f2_abl_base": {
+      "first": 627.3,
+      "median": 1821.1,
+      "last": 2006.3
+    },
+    "f_abl_base": {
+      "first": 627.4,
+      "median": 1845.5,
+      "last": 2010.3
+    },
+    "f2_abl_zero": {
+      "first": 1322.6,
+      "median": 1494.9,
+      "last": 1482.9
+    },
+    "f_abl_zero": {
+      "first": 1301.9,
+      "median": 1545.2,
+      "last": 1559.9
+    },
+    "f2_abl_mean": {
+      "first": 1301.6,
+      "median": 1529.1,
+      "last": 1551.2
+    },
+    "f_abl_mean": {
+      "first": 1278.1,
+      "median": 1500.5,
+      "last": 1503.1
+    },
+    "f2_abl_noise": {
+      "first": 673.4,
+      "median": 990.5,
+      "last": 1289.5
+    },
+    "f_abl_noise": {
+      "first": 751.5,
+      "median": 2045.9,
+      "last": 2053.5
+    },
+    "f3_renorm": {
+      "first": 1580.5,
+      "median": 4169.9,
+      "last": 4193.3
+    }
+  }
+}

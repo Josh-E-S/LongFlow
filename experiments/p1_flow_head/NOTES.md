@@ -1079,15 +1079,56 @@ up to speech-level statistics → constant-energy noise floor; and destroying
 legitimate per-frame structure killed even the early good frames (3 s vs
 base's 14 s). Second-worst branch of the pre-registered table →
 
-**GATE NIGHT 5 HEADLINE VERDICT: NO PLUMBING RESCUE — the plumbing era is
-closed by elimination.** Removal of feedback: instant death (channel is
-load-bearing). Statistical correction of feedback: worse than nothing (the
-poison is not in the summary statistics). Conclusion: the compounding error
-lives in the CONTENT of the head's latents; the only remaining road is
-training the head on its own rollout context (Self Forcing family / stage-2
-per Causal Forcing / CF++). This is the certainty the gate-night program was
-built to buy before training spend. Next: dots.tts + CF++ reading → stage-2
-method decision → implementation.
+~~**GATE NIGHT 5 HEADLINE VERDICT: NO PLUMBING RESCUE — the plumbing era is
+closed by elimination.**~~ **[AMENDED hours later, 2026-08-14, by the noise
+condition — the criteria measured the wrong axis.]** The verdict splits:
+
+- **Identity axis (what the pre-registered ECAPA criterion measured): NO
+  RESCUE stands.** No condition keeps the reference voice: zero/mean die
+  instantly, renorm is worst-of-program (FD med 4170), noise never clears
+  voice-likeness 0.5.
+- **Content axis: `f2_abl_noise` is a MASSIVE partial rescue.** Whisper
+  recovers **747/~803 words (93%)** vs base's 82 (10%); FD climbs slowly
+  (673 → med 990 → 1289) instead of jumping. **Josh, by ear (2026-08-14,
+  verbatim):** "starts a little muddy like normal... voice is still there...
+  goes into like a raspy deep creepy voice... gradually into a sort of loud
+  whisper... like when someone loses their voice, **I can understand it**...
+  by minute four more raspy, and between speech pauses a digital breath,
+  almost like a record pulled in reverse for a split second... but speech
+  resumes. **It actually makes it full 5 minutes.**"
+
+**Mechanism nailed: the loop's killer is specifically the CORRELATED
+component of the head's error.** σ=0.5 feedback noise decorrelates the
+systematic bias → compounding never takes hold → content survives the full
+render (14 s → 5 min, >20×, zero training); the cost is gradual erosion of
+fine acoustic identity (clean → raspy → whisper), i.e. the two things the
+feedback carries — content and identity — fail on different axes. Contrast
+completes the picture: v1 noise (prompt+feedback noised) was WORSE than base
+(FD med 2046) — the prompt must stay clean; only the feedback tolerates
+(benefits from!) noising.
+
+**Consequences:**
+1. **GN6 candidate — the σ sweep** (0.1/0.2/0.3/0.5 + maybe a schedule): does
+   a sweet spot exist that breaks compounding AND keeps the voice listenable?
+   If yes → deployable inference-time stabilizer for the fast head TODAY. If
+   no → the content-vs-identity-vs-σ tradeoff curve is a novel figure anyway.
+2. **Stage-2 de-risked:** noise-augmented rollout context demonstrably keeps
+   this system on-manifold — direct pre-evidence the Self Forcing family will
+   bite. Training's precise job is now: achieve what σ-noise achieves
+   (decorrelate the error) without paying the identity cost (make the head's
+   residual error small AND isotropic).
+3. ~~Whisper-vs-teacher WER verification of the 747 words pending~~
+   **VERIFIED (2026-08-14): real script, not hallucination.** Transcripts
+   open word-for-word identically ("fancy said lucy running to meet
+   coniston..."); full 803 words attempted; **WER 0.296 vs the teacher's own
+   rendition** — the raspy register costs ~30% word accuracy but the content
+   is unambiguously the script. Three-tier confirmation: FD curve, transcript
+   WER, Josh's ear.
+
+Prior conclusion that survives intact: training (stage-2) remains the road to
+SHIPPABLE closed-loop quality — noise plumbing rescues content, not the
+voice. Next: dots.tts + CF++ reading → stage-2 method decision; σ sweep as
+the cheap parallel probe.
 
 **Arm S verdict by ear (Josh, 2026-08-14): PASS.** "Sounds fine and clear,
 stitching is good, paced between them" — seams inaudible. One transient at
