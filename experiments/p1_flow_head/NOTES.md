@@ -1174,6 +1174,23 @@ slower on a bigger GPU. Chunked-parallel pipeline live in production;
 projections: 90-min 4-speaker ≈ 34 min at 7B quality, likely <20 min on
 1.5B/batch-8. Seam/quality listen on 7B pending (parity was gated on 1.5B).
 
+**7B production ear-pass + a FOURTH cured symptom (Josh, 2026-08-14):**
+"Quality was amazing, stitching not even noticeable, perfect pacing" — 7B
+chunked-parallel parity confirmed by ear in production. AND a new
+observation: the old monolithic app renders would sometimes "slowly get
+quieter and quieter and maybe come back" — an **energy-fade drift** in the
+stock teacher over long rollouts, never formally measured, gone under
+chunking. That makes the monolithic-accumulation symptom family: (1) rate
+inflation [N8], (2) identity drift, (3) energy fade [this], (4) transient
+babble [reroll-able] — 1–3 all cured simultaneously by bounding rollout
+length, because they are one disease. The fade-and-recover character echoes
+the bistable orbiting measured in the student collapse — same dynamics,
+gentler, in the teacher. Jingle caveat: podcast-heritage intro music may
+still spawn (chunk starts are intro-like; possibly more opportunities), but
+now confined to one chunk and caught by the ECAPA detect-and-reroll filter
+(music vs voice reference scores near zero); steering machinery remains the
+anti-jingle fallback per CLAUDE.md.
+
 **Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
 TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
 microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both
