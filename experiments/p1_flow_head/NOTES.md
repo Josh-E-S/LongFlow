@@ -1042,7 +1042,30 @@ Latent stds (v1: base 0.942 = GN4's 0.943 ✓ consistency): zero 0.821, mean
 0.857, noise 1.101 — different conditioning did change head output, but with
 the prompt path corrupted no feedback conclusion can be drawn.
 
-(remaining arms pending rerun)
+**Arm F v2 zero — verdict by ear (Josh, 2026-08-13): WORSE than base. ~3
+millisecond blips in the first seconds, then nothing.** With the prompt
+untouched and only per-frame feedback zeroed, speech dies essentially at
+frame one. Ranked by what the model hears in its feedback channel:
+teacher-real → 19+ min clean; head-imperfect → 14 s + bistable flicker;
+**absent → instant permanent silence. Imperfect ≫ absent: the acoustic
+feedback channel is load-bearing by training** (VibeVoice never saw a
+position without real acoustic context; a zeroed embedding is maximal OOD,
+not "silence"). The dots.tts semantic-only wiring works for them because
+they TRAINED that way — it cannot be retrofitted at inference. **Amputation-
+style plumbing fixes are dead.** (mean/noise ear-verdicts + FD pending;
+noise is the interesting residual — mild corruption of REAL feedback.)
+
+**v3 shipped (`f3_renorm`): the one gentle plumbing candidate left.** Don't
+remove the feedback — CORRECT it: per-frame whiten the head's latent and
+re-color to the cache's per-dim teacher stats before it re-enters the loop
+(also emitted as audio → doubles as post-hoc dispersion correction). Directly
+targets the measured amplifier mechanism: no per-frame bias left to compound.
+| f3 outcome | meaning |
+|---|---|
+| horizon ≫ 14 s | inference-time stabilization exists; also strong evidence Self Forcing will work (same principle, learned) |
+| ≈ 14 s | the compounding error is structural (content/direction, not frame statistics) → training path only, and stage-2 must fix more than dispersion |
+
+(D/R/S/H still pending rerun)
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
