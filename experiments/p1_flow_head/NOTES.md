@@ -997,15 +997,21 @@ off-GPU in parallel; stage-2 method decision follows it.
   crossfade. Teacher head. Metric: seam ECAPA vs within-chunk baseline;
   **Josh listens to the 3 seams — ears are the authority** (GN2 lesson:
   short-window ECAPA over-flags prosody at boundaries).
-- **H — batch hygiene: the [A,A] test.** Two identical rows in one batch,
+- ~~**H — batch hygiene: the [A,A] test.** Two identical rows in one batch,
   same seed — a FAIR determinism criterion (unlike solo-vs-batch
   bit-equality, which floating-point batching cannot satisfy). Identical
-  outputs → masking clean, Arm C's PARITY OK stands untouched; divergent →
-  genuine cross-contamination, investigate masks. Pre-registered position:
-  the handoff docs' "determinism bug / do not score parity" framing is
-  rejected — parity was validly scored at the audio level (WER
-  0.000/0.071/0.000/0.000) and stochastic path divergence is expected
-  behavior.
+  outputs → masking clean; divergent → genuine cross-contamination.~~
+  **[CRITERION RETRACTED 2026-08-14, before scoring, on first sight of the
+  result (rows 10.0 s vs 7.9 s).]** The test is flawed by the same disease it
+  was meant to cure: sampling noise is drawn as one stream across the batch,
+  so identical rows receive DIFFERENT noise slices by construction —
+  divergence is expected, not evidence of leakage. No bitwise criterion can
+  separate benign numeric jitter from mask leakage in a stochastic AR system,
+  because any infinitesimal difference amplifies. **The correct and only
+  instrument is distributional quality parity — GN4 Arm C — which PASSED.**
+  The scorer's "CONTAMINATION" verdict for arm H is void. Both the handoff
+  docs' bit-determinism demand and this "fairer" variant fail the same way;
+  retiring the entire determinism-test genre for this system.
 
 Listening steps (never skipped): `s_chunked_stitched.wav` seams; the
 best-surviving `f_abl_*` render (is "survives" actually speech?).
