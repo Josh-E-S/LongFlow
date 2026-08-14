@@ -1130,6 +1130,25 @@ SHIPPABLE closed-loop quality — noise plumbing rescues content, not the
 voice. Next: dots.tts + CF++ reading → stage-2 method decision; σ sweep as
 the cheap parallel probe.
 
+**Novelty calibration + third stage-2 candidate (2026-08-14 discussion).**
+Honest positioning of the noise finding: the *principle* (noisy history
+fights AR drift) has video precedent — Diffusion Forcing trains under
+per-frame noise; GameNGen fought world-model drift with training-time noise
+augmentation of context frames (verify both citations in the reading pass).
+What is OURS: (1) the **inference-time causal isolation** — noise injected
+into a frozen system + untrained head, no training confound, proving the
+collapse driver is the CORRELATED error component (renorm-fails-worse is the
+matched control: same statistics, wrong structure, opposite outcome);
+(2) the **content/identity axis split** — speech feedback carries two
+streams that fail independently (words survive σ-noise, voice does not); no
+video analog; (3) first documentation on TTS. Consequence for stage-2: the
+method menu is now THREE options — full Self Forcing/CF++ distribution
+matching (heavyweight), DAgger-style teacher labeling (2024-vintage), and
+**GameNGen-style noise-augmented-feedback training** (lightweight, closest
+to existing infra, and the GN5 noise result is direct evidence it targets
+the right mechanism). The reading pass decides; the σ sweep informs the
+noise-augmentation schedule either way.
+
 **Arm S verdict by ear (Josh, 2026-08-14): PASS.** "Sounds fine and clear,
 stitching is good, paced between them" — seams inaudible. One transient at
 **1:10–1:15**: Speaker 2 "moans and then sounds like she's throwing up," a
