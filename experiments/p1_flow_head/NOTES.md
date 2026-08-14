@@ -1198,6 +1198,13 @@ start). OOM backoff deployed (waves split in half and retry; unit-tested
 overshoot now costs one halving, never the job. Next calibration: a ~2.5k-word
 script to test 12-chunks-in-one-wave on the A100.
 
+**Third benchmark — longest timed TTS render on public record (2026-08-14):**
+1.5B, 4 speakers, 65-turn 5,466-word documentary script → 23 chunks, **2 waves
+of 12 (raised cap held, no backoff)** → **412.1 s for 1828.1 s of audio =
+4.44× realtime**, warm container. 30.5 min of audio ≈ 6× longer than any
+publicly documented timed render. Updated projections: 90 min ≈ 20 min wall;
+120 min ≈ 27 min.
+
 **Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
 TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
 microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both
