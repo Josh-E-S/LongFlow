@@ -1313,6 +1313,77 @@ no-drift, seam ear-pass, batch parity) that nobody else has.
 
 (D FD curves / R floor official numbers pending bundle + scorer)
 
+## 2026-08-14 — STAGE-2 READING PASS COMPLETE (off-GPU; no experiments)
+
+Full digest + method decision: `docs/reading-2026-08-14-stage2.md`. Headlines:
+**not scooped** (dots.tts's "self-corrective" stage is a within-patch solver
+fix on ground-truth prefixes — never faces closed-loop drift; option-3
+noise-augmented training has no speech descendant; N8 unmeasured anywhere;
+render record uncontested). Decision sequence: (1) GN6 σ sweep; (2) causal-CD
+loss swap on the existing 20K cache (cheap stage-1.5, from CF++ — theory
+predicts collapse→graceful drift); (3) GameNGen-style noise-augmented feedback
+training **with σ-bucket conditioning** (GameNGen tells the model the noise
+level via a learned embedding — the ingredient our inference hack lacked and
+the likely reason identity eroded); (4) head-v2 question: windowed
+acoustic-history conditioning (the dots.tts identity lever); (5) reserve:
+short asymmetric DMD (frozen DDPM head = real score) only on a healthy init —
+CF++'s own warning: DMD is mode-seeking and amplifies accumulated history
+error on weak inits. 75K stays deferred until 2–3 report.
+
+## 2026-08-14 — GATE NIGHT 6 PRE-REGISTRATION (the σ sweep; not yet run)
+
+Notebook: `gate_night6_colab.ipynb`. Scorer: `score_gate_night6.py`. L4,
+~45–60 min, ~$2. Single arm, seven renders. Everything held identical to
+GN5 Arm F for comparability: 20K head, euler4 (most sensitive assay), the
+same ~800-word 5-min turn-split script, seed 0, cfg 1.3, noise applied to
+the acoustic connector output gated on `patch.calls > 0` (prompt untouched),
+running-std EMA mechanism unchanged — only the σ multiplier varies.
+
+### Hypotheses
+
+- **H1 (sweet spot):** some σ < 0.5 decorrelates enough to stop compounding
+  while staying gentle enough that voice identity survives. GN5 proved the
+  content axis saturates by σ=0.5; identity cost may fall faster than
+  content rescue as σ drops.
+- **H2 (threshold, competing):** decorrelation needs to exceed the head's
+  own correlated-error magnitude to break the amplifier — below that σ,
+  collapse returns abruptly (base-like death), and no sweet spot exists;
+  the tradeoff is a cliff, not a curve.
+- **H3 (schedule):** the head's early frames are clean (collapse takes ~14 s
+  to seed); ramping σ in over the first minute preserves early identity at
+  no content cost vs constant σ.
+
+### Conditions (tags)
+
+| tag | σ (× running std) |
+|---|---|
+| `g6_sig000` | 0 (base control, re-rendered this night) |
+| `g6_sig010` / `g6_sig020` / `g6_sig030` / `g6_sig040` | 0.1 / 0.2 / 0.3 / 0.4 |
+| `g6_sig050` | 0.5 — **replication of GN5 `f2_abl_noise`** (consistency check) |
+| `g6_ramp050` | linear 0→0.5 over the first 450 frames (~60 s), then hold |
+
+### Gate criteria — written before the run
+
+Per render: Whisper transcript → **WER vs the script text** (primary content
+metric; script stored in the report JSON) + word coverage; per-window ECAPA
+vs the GN3 teacher reference → voice fraction (sim ≥ 0.5) and horizon;
+per-window FD curves for all seven (the dose-response figure). Reseed-floor
+context: differences > 0.06 WER are real.
+
+| Verdict | Condition |
+|---|---|
+| **SWEET SPOT** | some condition has WER ≤ 0.15 AND voice fraction ≥ 90% AND Josh rates it listenable → deployable inference-time stabilizer TODAY; it becomes the head's default inference config while stage-2 trains; training noise schedule centers on it |
+| **TRADEOFF CURVE ONLY** | content is rescuable (coverage ≥ 90% at some σ) but no condition passes both axes → publish the σ vs content-vs-identity curve; stage-2 training carries the full burden; GameNGen-style training samples σ up to the lowest content-saving level |
+| **CLIFF (H2)** | σ ≤ 0.3 all die base-like (horizon < 60 s) and only 0.4–0.5 save content → decorrelation threshold ≈ head's error scale; report the threshold; training should sample σ across it |
+| replication check | `g6_sig050` must land within reseed-floor distance of GN5's f2_abl_noise (WER 0.296, full-length survival); if not, flag before trusting anything else this night |
+
+H3 read: `g6_ramp050` vs `g6_sig050` — better early-window ECAPA at equal
+coverage = schedule wins; equal = constant σ is fine; worse coverage = early
+noise is load-bearing (the compounding seeds earlier than 14 s suggests).
+
+**Josh listens to all seven.** Ear verdicts recorded verbatim here; the
+listenability half of the SWEET SPOT gate is his call, never the metrics'.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
