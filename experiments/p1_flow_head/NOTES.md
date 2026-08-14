@@ -1384,6 +1384,70 @@ noise is load-bearing (the compounding seeds earlier than 14 s suggests).
 **Josh listens to all seven.** Ear verdicts recorded verbatim here; the
 listenability half of the SWEET SPOT gate is his call, never the metrics'.
 
+### Results (2026-08-14 — run and scored same day; L4, ~$2; ear pass pending)
+
+Night is trustworthy: `g6_sig000` reproduces GN4/GN5 base exactly (latent
+std 0.942, 2296 frames, horizon 8 s vs GN4's 14 s — same order); **`g6_sig050`
+replicates GN5 `f2_abl_noise` nearly number-for-number** (FD 672→985→1291 vs
+673→990→1289; full-length; full coverage). Replication gate PASSED.
+
+| tag | WER vs script | coverage | voice % | horizon | FD med |
+|---|---|---|---|---|---|
+| g6_sig000 | 0.933 | 8.5% | 1.3 | 8 s | 1840 |
+| g6_sig010 | 0.686 | 43.3% | 0 | 0 | 2265 |
+| g6_sig020 | 0.585 | 100% | 0 | 0 | 1360 |
+| **g6_sig030** | **0.289** | **100%** | 0 | 0 | **1210** |
+| g6_sig040 | 0.957 | 4.8% | 0 | 0 | 1890 |
+| g6_sig050 | 0.339 | 100% | 0 | 0 | 985 |
+| g6_ramp050 | 0.300 | 76.5% | 2.0 | 14 s | 1109 |
+
+**VERDICT (metric half): TRADEOFF CURVE ONLY — H1 sweet spot REFUTED on the
+identity axis.** Content is rescuable from σ=0.2 up (full coverage), and the
+content optimum is **σ=0.3 (WER 0.289), better than σ=0.5 (0.339)** — the
+noise dose GN5 happened to pick was past the optimum. But no condition puts
+a single 4-s window above voice-likeness 0.5; the identity axis never moves.
+Stage-2 training carries the full identity burden, as the reading pass
+already concluded.
+
+**Anomaly, do not smooth over: σ=0.4 DIED (4.8% coverage, WER 0.957, worse
+than base).** Sandwiched between two full-coverage conditions — the
+dose-response is not monotone at n=1 seed. Consistent with the bistable-
+orbit picture (a single unlucky excursion early can trap the render);
+treat as variance until a reroll at a different seed says otherwise. Direct
+consequence for training: per-frame/per-window RANDOM σ (GameNGen's actual
+design) rather than a fixed dose — a fixed dose can land in a dead pocket.
+
+**H3 (ramp) split verdict: EARLY NOISE IS LOAD-BEARING for content** — the
+ramp lost 24% coverage (compounding seeds before the ramp reaches strength;
+GN4's 14-s collapse said as much) — **but the ramp is the identity-best
+condition** (final-third sim 0.2, horizon 14 s, flattest FD tail 1109→1195).
+Training-schedule read: noise must be present from frame one for content;
+gentler late doses may be where identity is preserved. A reverse-ramp
+(start 0.3–0.5, decay) is the natural GN7 probe if one more inference night
+is ever worth it; otherwise fold into the training-σ schedule directly.
+
+**Consequences for stage-2 (supersedes the σ=0.5-centered plan):** training
+noise schedule centers on **σ≈0.2–0.3**, sampled randomly per frame/window,
+present from frame one; σ-bucket conditioning as per the reading-pass
+decision. No deployable inference-time stabilizer exists — the fast head
+ships only after training.
+
+**Ear verdict (Josh, 2026-08-14, verbatim):** "ehhh all are bad, but yea 50
+makes it ot the end but by the end barley noticeble." — Listenability half:
+FAIL across the board; even the full-coverage conditions are not listenable,
+and σ=0.5's surviving speech fades to barely-noticeable by the end (matches
+the FD tail climbing 985→1291 and final-third sim 0.064 — the content
+survives as measured, but the ear says what the coverage number can't: the
+signal is dying, not stabilizing).
+
+**GATE NIGHT 6 CLOSE-OUT: TRADEOFF CURVE ONLY, confirmed on both halves.**
+No inference-time stabilizer exists at any σ. The σ axis is mapped (content
+optimum ≈0.3, random-σ lesson from the 0.4 anomaly, ramp's split verdict),
+the GN5 replication held, and the program moves to stage-2 training with
+nothing left to extract from plumbing. Next: causal-CD loss swap on the 20K
+cache (reading-pass decision step 2), then GameNGen-style noise-augmented
+training with σ sampled ~0.2–0.3 per frame + σ-bucket conditioning.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

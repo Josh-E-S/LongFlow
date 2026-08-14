@@ -1,0 +1,107 @@
+{
+  "conditions": {
+    "g6_sig000": {
+      "duration_s": 306.1,
+      "wer_vs_script": 0.933,
+      "coverage_pct": 8.5,
+      "voice_pct": 1.3,
+      "horizon_s": 8.0,
+      "final_third_sim": 0.093
+    },
+    "g6_sig010": {
+      "duration_s": 305.6,
+      "wer_vs_script": 0.686,
+      "coverage_pct": 43.3,
+      "voice_pct": 0.0,
+      "horizon_s": 0.0,
+      "final_third_sim": 0.054
+    },
+    "g6_sig020": {
+      "duration_s": 304.5,
+      "wer_vs_script": 0.585,
+      "coverage_pct": 100.0,
+      "voice_pct": 0.0,
+      "horizon_s": 0.0,
+      "final_third_sim": 0.033
+    },
+    "g6_sig030": {
+      "duration_s": 304.5,
+      "wer_vs_script": 0.289,
+      "coverage_pct": 100.0,
+      "voice_pct": 0.0,
+      "horizon_s": 0.0,
+      "final_third_sim": 0.187
+    },
+    "g6_sig040": {
+      "duration_s": 306.1,
+      "wer_vs_script": 0.957,
+      "coverage_pct": 4.8,
+      "voice_pct": 0.0,
+      "horizon_s": 0.0,
+      "final_third_sim": 0.093
+    },
+    "g6_sig050": {
+      "duration_s": 304.0,
+      "wer_vs_script": 0.339,
+      "coverage_pct": 100.0,
+      "voice_pct": 0.0,
+      "horizon_s": 0.0,
+      "final_third_sim": 0.064
+    },
+    "g6_ramp050": {
+      "duration_s": 304.5,
+      "wer_vs_script": 0.3,
+      "coverage_pct": 76.5,
+      "voice_pct": 2.0,
+      "horizon_s": 14.0,
+      "final_third_sim": 0.2
+    }
+  },
+  "verdicts": {
+    "sweep": "TRADEOFF CURVE ONLY \u2014 content saved at ['g6_sig020', 'g6_sig030', 'g6_sig050'] but identity never passes; stage-2 training carries the full burden",
+    "replication": "g6_sig050 reproduces GN5 f2_abl_noise (full-length, content survives)",
+    "h3_schedule": "EARLY NOISE IS LOAD-BEARING \u2014 ramp loses content; compounding seeds before 60 s"
+  },
+  "fd_summary": {
+    "teacher_self": {
+      "first": 553.1,
+      "median": 549.3,
+      "last": 534.3
+    },
+    "g6_sig000": {
+      "first": 625.0,
+      "median": 1839.8,
+      "last": 2016.0
+    },
+    "g6_sig010": {
+      "first": 708.7,
+      "median": 2264.7,
+      "last": 2843.3
+    },
+    "g6_sig020": {
+      "first": 689.5,
+      "median": 1359.9,
+      "last": 1399.0
+    },
+    "g6_sig030": {
+      "first": 752.3,
+      "median": 1210.0,
+      "last": 1478.4
+    },
+    "g6_sig040": {
+      "first": 678.0,
+      "median": 1890.1,
+      "last": 2135.3
+    },
+    "g6_sig050": {
+      "first": 671.9,
+      "median": 985.5,
+      "last": 1291.1
+    },
+    "g6_ramp050": {
+      "first": 674.5,
+      "median": 1108.6,
+      "last": 1195.4
+    }
+  }
+}
