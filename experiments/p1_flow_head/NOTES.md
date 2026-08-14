@@ -1191,6 +1191,13 @@ now confined to one chunk and caught by the ECAPA detect-and-reroll filter
 (music vs voice reference scores near zero); steering machinery remains the
 anti-jingle fallback per CLAUDE.md.
 
+**Second benchmark + backoff shipped (2026-08-14):** 1.5B, same script:
+**100.3 s for 329.6 s = 3.29× realtime** (and that job also absorbed the cold
+start). OOM backoff deployed (waves split in half and retry; unit-tested
+12→6→3 with order preserved) and caps raised to 12 (1.5B) / 6 (7B) —
+overshoot now costs one halving, never the job. Next calibration: a ~2.5k-word
+script to test 12-chunks-in-one-wave on the A100.
+
 **Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
 TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
 microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both
