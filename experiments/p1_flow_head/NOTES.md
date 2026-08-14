@@ -1165,6 +1165,15 @@ class by machine + 3 sightings by ear). At GN3's observed rate (~1 event /
 **The product path is now validated end to end by ear: pacing ✓ drift ✓
 batch parity ✓ seams ✓ glitch-repair story ✓.**
 
+**FIRST PRODUCTION BENCHMARK (2026-08-14, Josh's Conference-Generator Space +
+Modal A100-40GB, deployed this day):** VibeVoice-**7B**, 4 speakers, 17-turn
+955-word script → parallel mode, 4 chunks in 1 wave → **120.4 s for 322.1 s
+of audio = 2.67× realtime** (warm container; pure generation). Community
+reported experience for the same model: RTF 0.5 on an H200 — i.e. ~5×
+slower on a bigger GPU. Chunked-parallel pipeline live in production;
+projections: 90-min 4-speaker ≈ 34 min at 7B quality, likely <20 min on
+1.5B/batch-8. Seam/quality listen on 7B pending (parity was gated on 1.5B).
+
 **Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
 TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
 microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both
