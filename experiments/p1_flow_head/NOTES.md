@@ -1165,6 +1165,20 @@ class by machine + 3 sightings by ear). At GN3's observed rate (~1 event /
 **The product path is now validated end to end by ear: pacing ✓ drift ✓
 batch parity ✓ seams ✓ glitch-repair story ✓.**
 
+**Field check (2026-08-14 searches): no competing "record" exists.** Wild-side
+TTS speed today: official podcast demo 1.8× SLOWER than realtime; open issue
+microsoft/VibeVoice#268 reports RTF 0.5 (2× slower) on an idle H200 for both
+1.5B and 7B — i.e. the community's 90-min render costs 2–3 h of premium GPU.
+No published timed 90-min 4-speaker generation exists at any speed; ComfyUI
+wrappers chunk sequentially with no speed claims. The chunk+batch playbook
+exists in the ecosystem ONLY on the ASR side (JacobLinCool/modal-vibevoice:
+VAD-aware chunking + auto-batching + speaker unification, 15× realtime —
+verified zero TTS functionality). Chunked-parallel GENERATION is unclaimed;
+shipping it (~90 min in ~25 min on modest hardware) would be, on public
+evidence, the fastest demonstrated long-form multi-speaker TTS — enabled
+specifically by the GN2–GN5 quality receipts (turn-split pacing, anchored
+no-drift, seam ear-pass, batch parity) that nobody else has.
+
 (D FD curves / R floor official numbers pending bundle + scorer)
 
 ## Gate Night 1 continued — venue read (updates review §5)
