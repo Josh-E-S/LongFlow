@@ -96,3 +96,67 @@ class FlowHeadPatch:
             "std_overall": float(zs.std()),
             "std_segments": [float(zs[i * q : (i + 1) * q].std()) for i in range(segments)],
         }
+
+
+class _CFGField:
+    """Head adapter presenting the sampler's head(x_t, t, condition) interface
+    while evaluating the CFG-combined velocity field:
+
+        v = v_neg + cfg_scale * (v_cond - v_neg)
+
+    This mirrors what VibeVoice's own DDPM head does with the two LM streams —
+    the flow head had been silently discarding neg_condition/cfg_scale since
+    July (2026-08-15 audit finding), sampling the unguided field instead.
+    """
+
+    def __init__(self, head: FlowHead, neg_condition: torch.Tensor, cfg_scale: float):
+        self.head = head
+        self.cfg = head.cfg  # FlowHeadPatch and samplers read .cfg.d_latent
+        self.neg = neg_condition
+        self.scale = cfg_scale
+
+    def __call__(self, x_t, t, condition):
+        v_cond = self.head(x_t, t, condition)
+        v_neg = self.head(x_t, t, self.neg)
+        return v_neg + self.scale * (v_cond - v_neg)
+
+
+class CFGFlowHeadPatch(FlowHeadPatch):
+    """FlowHeadPatch that honors neg_condition/cfg_scale instead of dropping
+    them. Falls back to the unguided field when the caller passes no
+    neg_condition (e.g. cfg disabled upstream). Costs one extra head eval per
+    sampler step — negligible at the head's ~6% share of the loop."""
+
+    def __init__(self, *args, cfg_scale: float | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        # None -> trust the per-call cfg_scale VibeVoice passes; a float pins it
+        self.cfg_scale_override = cfg_scale
+
+    def __enter__(self):
+        self._was_instance_attr = "sample_speech_tokens" in vars(self.model)
+        self._orig = getattr(self.model, "sample_speech_tokens", None)
+        patch = self
+
+        def flow_sample_cfg(condition, neg_condition=None, cfg_scale=None):
+            t0 = time.time()
+            patch.calls += 1
+            scale = patch.cfg_scale_override if patch.cfg_scale_override is not None else cfg_scale
+            if neg_condition is not None and scale is not None and scale != 1.0:
+                field = _CFGField(patch.head, neg_condition.float(), float(scale))
+            else:
+                field = patch.head
+            z = patch.sampler(
+                field,
+                condition.float(),
+                patch.head.cfg.d_latent,
+                nfe=patch.nfe,
+                sway=patch.sway,
+                generator=None,  # fresh independent x0 EVERY frame — never seeded
+            )
+            z = z * patch.std + patch.mean
+            patch.time_s += time.time() - t0
+            patch.latents.append(z.detach().float().cpu())
+            return z.to(condition.dtype)
+
+        self.model.sample_speech_tokens = flow_sample_cfg
+        return self

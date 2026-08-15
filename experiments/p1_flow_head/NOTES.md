@@ -1603,6 +1603,81 @@ speech from our new head" impression retracted accordingly.)
   σ bucket ∈ {0, ~0.1–0.3, occasional 0.4} + trailing-K latents. Next
   build.
 
+## 2026-08-15 — THE CFG AUDIT FINDING (code audit, no GPU; Josh-prompted)
+
+Josh asked for a root-cause re-examination before the capture spend
+("are we missing anything simple"). The audit found one, hiding since July:
+
+**The flow head has been sampling the UNGUIDED field all along.** The
+teacher generates with CFG 1.3 every frame — the LM computes two streams
+(cond + neg) and the DDPM head combines them. `capture.py` recorded only
+`condition` + the guided output, so the head was trained to predict a
+two-input answer from one input — forced to average over the neg-stream
+variation it cannot see = a small SYSTEMATIC bias toward a conditional
+mean, every frame. That is a concrete generator for exactly the correlated
+error GN5 proved the loop amplifies. And at inference,
+`integration.py`'s `flow_sample(condition, neg_condition=None,
+cfg_scale=None)` accepts both CFG arguments and silently discards them.
+
+Explains the GN1 sampler dilemma without new assumptions: the learned
+field is a blurred compromise → euler4 under-disperses it (intelligible,
+flat → whisper under compounding); heun8 samples it faithfully
+(dispersion-correct, garbled 0.238). "No sampler is both" because the
+FIELD is blurred, and the field is blurred because the target depended on
+hidden information.
+
+**Fix shipped (2026-08-15): `CFGFlowHeadPatch` + `_CFGField`** in
+`src/flow_head/integration.py` — evaluates v_cond and v_neg per sampler
+step, combines v = v_neg + s·(v_cond − v_neg), falls back to unguided when
+no neg is passed; `cfg_scale` override pin for controls. Tier-1 tests
+`tests/test_cfg_patch.py` (combination math at s∈{0,1,1.3}; fallback;
+override-pin equivalence to plain patch; all pass with existing suite).
+Cost: one extra head eval per step, negligible at the head's ~6% share.
+Capture v2 schema gains `neg_condition` regardless of GN8's outcome.
+
+## 2026-08-15 — GATE NIGHT 8 PRE-REGISTRATION (the CFG repair test; not yet run)
+
+Notebook: `gate_night8_colab.ipynb`. Scorer: `score_gate_night8.py`. L4,
+~45 min, ~$2–3. Same 5-min turn-split script as GN5–GN7. Multi-seed rule
+in force: 2 seeds per CFG configuration.
+
+### Hypothesis
+
+**H-CFG:** restoring guidance at inference recovers a meaningful part of
+the closed-loop deficit. Strong form: the whisper/flatness axis (energy,
+identity) improves because the guided field is sharper. Weak form: only
+content metrics move. Null: nothing moves — the bias baked in at training
+dominates and inference-time guidance cannot undo it.
+
+### Conditions (tags)
+
+| tag | config |
+|---|---|
+| `c8_euler4_s0` / `c8_euler4_s1` | CFG-corrected euler4 (caller's 1.3), seeds 0/1 |
+| `c8_heun8_s0` / `c8_heun8_s1` | CFG-corrected heun8, seeds 0/1 |
+| `c8_euler4_plain_s0` | control — copied from GN6 `g6_sig000` (byte-identical settings) |
+| `c8_heun8_plain_s0` | control — plain heun8, this script/length, seed 0 |
+| `t8_cfg10` | teacher at cfg_scale=1.0 — how load-bearing is guidance for the TEACHER? |
+
+### Gate criteria — written before the run
+
+Metrics per the GN7 scorer (WER vs script, coverage, graded sim curve,
+rate, FD). Per the GN7 instrument rule, Whisper numbers are
+content-survival only; identity/listenability claims need the graded
+curve AND Josh's ear.
+
+| Verdict | Condition |
+|---|---|
+| **CFG REPAIR (strong)** | any CFG config: sim_median ≥ its sampler's control + 0.10 OR horizon ≥ 3× control, consistent across both seeds, and Josh hears an actual voice → root cause (partly) confirmed; re-baseline the program on guided sampling; capture v2 + training proceed dual-stream |
+| **PARTIAL** | content metrics (WER/coverage/FD slope) improve across seeds but the graded identity curve stays flat → the training-time information gap dominates; guided sampling becomes the default inference config; capture v2 unchanged, higher priority |
+| **NULL** | no consistent improvement on any axis → hypothesis refuted at inference; the July head's bias is baked in; capture v2 proceeds exactly as planned (still recording neg) |
+| teacher read | `t8_cfg10` degrades vs GN7's clean control → guidance is load-bearing for the teacher, raising the ceiling CFG repair could reach; fine at 1.0 → guidance is polish, not survival |
+
+**Josh listens to all seven.** The A/B that matters most:
+`c8_euler4_s0` vs `c8_euler4_plain_s0` — same seed, only guidance differs.
+
+## Gate Night 1 continued — venue read (updates review §5)
+
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
 **unreadable until the floor is recalibrated**. With three blocking items ahead
 of it and ICASSP 2027's 2026-09-16 deadline five weeks out, **ICASSP is off the
