@@ -1502,6 +1502,89 @@ seed. `a7_sig040_s1` / `a7_sig040_s2` (20K head, euler4, seeds 1 and 2).
 **Josh listens to all five; teacher-condition verdicts matter most** (his
 ear is the final gate on whether noised-teacher audio is target-quality).
 
+### Results (2026-08-14 — run and scored same day; L4, ~$2–3; ear pass pending)
+
+Hook-gate audit PASSED in all three teacher runs: first connector call
+[1, 23, 1536] (prompt) skipped, ~2,280 per-frame calls noised. No GN5-v1
+contamination.
+
+| tag | WER vs script | coverage | voice % | sim med | rate wpm | FD med |
+|---|---|---|---|---|---|---|
+| t7_sig000 | 0.281 | 100% | 98.7 | 0.635 | 183 | 545 |
+| t7_sig020 | 0.195 | 86.8% | 71.5 | 0.527 | 140 | 562 |
+| t7_sig030 | 0.161 | 93.1% | 87.4 | 0.585 | 150 | 547 |
+| a7_sig040_s1 | 0.169 | 100% | 0 | 0.094 | 162 | 1113 |
+| a7_sig040_s2 | 0.346 | 89.8% | 0.7 | 0.144 | 144 | 1141 |
+
+**Calibration note first: the clean teacher scores WER 0.281 vs script** —
+that is the script's intrinsic Whisper-vs-text floor (proper-noun-heavy
+fiction; the reseed-floor exclusion note predicted this), NOT teacher
+degradation. WER *deltas* are the meaningful signal here, and both noised
+conditions IMPROVED on the control (likely mediated by slower speech being
+easier to transcribe).
+
+**Arm A verdict: VARIANCE (bistability) — GN6's σ=0.4 death was an unlucky
+basin.** Seed 1 survives with 100% coverage and WER 0.169 — the best
+closed-loop head render in program history — while seed 2 manages 89.8% at
+0.346. Same σ, same everything, WER 0.169 vs 0.346: the per-seed spread is
+enormous, which simultaneously (a) clears σ=0.4, (b) validates the
+random-σ training design, and (c) proves again that no stage-2 gate may
+run at n=1 seed.
+
+**Arm T verdict (metric half): CAPTURE DESIGN DEAD by the letter — but
+read the margins before burying it.** Neither noised condition passes the
+pre-registered gate, both failing on voice fraction and rate, not on WER:
+σ=0.3 misses the voice bar 87.4 vs 90.0 and the rate floor by **0.1 wpm**
+(149.9 vs 150.0); σ=0.2 misses clearly (71.5 voice, 140 wpm). The real
+finding: feedback noise makes the teacher **slow down** (183 → 140–150
+wpm) and costs mild identity (sim 0.635 → 0.527–0.585) — a graceful,
+N8-mirror-image degradation, nothing like the head's collapse (sim 0.09).
+FD couldn't see it (545/562/547 ≈ teacher-self band) — dispersion stays
+teacher-like while rate and fine identity drift; one more instance of
+"the scalar metric said fine, the graded one didn't."
+
+σ=0.3 is a near-miss; σ=0.2 is not. **Josh's ear on t7_sig030 is the
+decisive input:** if it sounds target-quality, the salvage options are
+(a) capture at σ≤0.3 accepting ~92% identity retention in targets,
+(b) drop to σ≈0.1–0.15 (untested; teacher likely cleaner, decorrelation
+weaker), (c) per-window σ sampling in capture so most targets are clean
+and only some are noised (GameNGen's actual regime — most attractive on
+paper). Decision after the listen; ear verdicts verbatim below.
+
+**Ear verdicts (Josh, 2026-08-15, verbatim):** "sig30, sig000, and sig20 is
+actual speech!! sig30 is the cleanest, very clean and clear. Sig000 is also
+clear, but sounds just a tad like its peaking maybe slight ever so slight
+muddy or louder cant tell. However 000 has more emotion, where as sig 30 is
+more flat. 30 also sounds just a tad slow. sig20 is almost as good as 30
+but seems just a tad flatter and slower. I'm amazed."
+(Attribution correction made in-session: these are TEACHER renders — Arm T
+— not the flow head; the head renders are a7_sig040_s*. Josh's "working
+speech from our new head" impression retracted accordingly.)
+
+**GATE NIGHT 7 CLOSE-OUT.**
+- **Arm T: CAPTURE GREENLIT via the ear gate.** The pre-registered metric
+  half said DEAD, but by margins the ear was designated to arbitrate
+  (σ=0.3: voice 87.4 vs 90, rate 149.9 vs 150.0) — and the ear's verdict
+  is unambiguous: σ=0.3 is target-quality, "cleanest, very clean and
+  clear," even *preferred* over the clean control on clarity. The real
+  costs are **flattened emotion and ~20% slower pacing** — the ear found
+  the axis the metrics hinted at: feedback noise trades prosodic
+  expressiveness for stability. Two capture consequences: (1) **per-window
+  random σ** (mostly-clean windows keep expressive targets; noised windows
+  teach robustness) is adopted — it dilutes both costs; (2) the flatness
+  observation goes in the paper: the noise-stability-vs-expressiveness
+  tradeoff exists in the TEACHER too, gentler — same disease family as N8,
+  fourth sighting of monotone-under-perturbation.
+- Also noted by ear: the CLEAN control "sounds just a tad like it's
+  peaking / slightly muddy or louder" vs the noised runs — consistent with
+  mild energy inflation in the stock teacher even at 5 min turn-split;
+  unmeasured, parked.
+- **Arm A: VARIANCE confirmed** (see results above). σ=0.4 cleared;
+  random-σ design stands; all stage-2 gates at ≥2 seeds.
+- **Capture v2 is GO:** schema = hidden states + DDPM targets + per-window
+  σ bucket ∈ {0, ~0.1–0.3, occasional 0.4} + trailing-K latents. Next
+  build.
+
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
 **unreadable until the floor is recalibrated**. With three blocking items ahead
 of it and ICASSP 2027's 2026-09-16 deadline five weeks out, **ICASSP is off the

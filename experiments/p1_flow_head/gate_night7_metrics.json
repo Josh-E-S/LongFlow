@@ -1,0 +1,182 @@
+{
+  "armT": {
+    "t7_sig000": {
+      "duration_s": 304.3,
+      "wer_vs_script": 0.281,
+      "coverage_pct": 100.0,
+      "voice_pct": 98.7,
+      "sim_median": 0.635,
+      "sim_final_third": 0.645,
+      "rate_wpm": 183.0
+    },
+    "t7_sig020": {
+      "duration_s": 304.0,
+      "wer_vs_script": 0.195,
+      "coverage_pct": 86.8,
+      "voice_pct": 71.5,
+      "sim_median": 0.527,
+      "sim_final_third": 0.538,
+      "rate_wpm": 139.7
+    },
+    "t7_sig030": {
+      "duration_s": 304.3,
+      "wer_vs_script": 0.161,
+      "coverage_pct": 93.1,
+      "voice_pct": 87.4,
+      "sim_median": 0.585,
+      "sim_final_third": 0.588,
+      "rate_wpm": 149.9
+    }
+  },
+  "armA": {
+    "a7_sig040_s1": {
+      "duration_s": 304.3,
+      "wer_vs_script": 0.169,
+      "coverage_pct": 100.0,
+      "voice_pct": 0.0,
+      "sim_median": 0.094,
+      "sim_final_third": 0.054,
+      "rate_wpm": 162.3
+    },
+    "a7_sig040_s2": {
+      "duration_s": 304.5,
+      "wer_vs_script": 0.346,
+      "coverage_pct": 89.8,
+      "voice_pct": 0.7,
+      "sim_median": 0.144,
+      "sim_final_third": 0.116,
+      "rate_wpm": 144.4
+    }
+  },
+  "verdicts": {
+    "armT": "CAPTURE DESIGN DEAD \u2014 teacher degrades under feedback noise at both sigmas; rethink targets (lower sigma, or clean-teacher targets on noised hidden states)",
+    "armA": "VARIANCE (bistability) \u2014 ['a7_sig040_s1'] survive; GN6 sigma=0.4 was an unlucky basin; random-sigma training design stands"
+  },
+  "gate_audit": {
+    "t7_sig000": {
+      "hook_shapes": [
+        [
+          1,
+          23,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ]
+      ],
+      "noised_calls": 0,
+      "skipped_calls": 1
+    },
+    "t7_sig020": {
+      "hook_shapes": [
+        [
+          1,
+          23,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ]
+      ],
+      "noised_calls": 2280,
+      "skipped_calls": 1
+    },
+    "t7_sig030": {
+      "hook_shapes": [
+        [
+          1,
+          23,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ],
+        [
+          1,
+          1,
+          1536
+        ]
+      ],
+      "noised_calls": 2282,
+      "skipped_calls": 1
+    }
+  },
+  "fd_summary": {
+    "teacher_self": {
+      "first": 548.9,
+      "median": 548.9,
+      "last": 529.8
+    },
+    "t7_sig000": {
+      "first": 534.0,
+      "median": 545.4,
+      "last": 581.6
+    },
+    "t7_sig020": {
+      "first": 559.1,
+      "median": 561.5,
+      "last": 578.3
+    },
+    "t7_sig030": {
+      "first": 559.0,
+      "median": 547.2,
+      "last": 516.0
+    },
+    "a7_sig040_s1": {
+      "first": 697.5,
+      "median": 1113.5,
+      "last": 1294.1
+    },
+    "a7_sig040_s2": {
+      "first": 681.5,
+      "median": 1141.4,
+      "last": 1933.1
+    }
+  }
+}
