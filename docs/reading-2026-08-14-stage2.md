@@ -140,7 +140,10 @@ version fixes the mechanism GN5 proved matters AND the deficiency GN5's
 hack suffered from. Direct design import: sample σ per frame/window during
 training, condition the head on the σ bucket.
 
-## DECISION (stage-2 method, sequenced by cost and by CF++'s warning)
+## DECISION (stage-2 method) — AMENDED same day by the critic pass, see below
+
+~~Original sequence kept for the record; superseded by the amended sequence
+at the end of this file.~~
 
 1. **GN6 — σ sweep (unchanged, ~$3):** inference-time sweet-spot hunt +
    the noise schedule for step 3. Runs first regardless.
@@ -180,3 +183,51 @@ training, condition the head on the σ bucket.
   step 5.
 - arXiv indexing lag: a same-week scoop is not ruled out; re-run the sweep
   before submission.
+
+## CRITIC PASS (2026-08-14, post-GN6) — corrections to the decision above
+
+Requested by Josh ("double check our history and our current approach again
+as a critic"). Four findings; the strategy survives, the sequence changes.
+
+1. **Design flaw in step 3 as originally written: the head has no context
+   input to noise.** Verified `src/flow_head/model.py:95` — the head takes
+   (x_t, t, current hidden state), per-frame. GameNGen noises context the
+   model RECEIVES; our head receives none. Noise-augmented training
+   therefore requires a **new capture**: teacher runs with σ-noise injected
+   into the acoustic feedback, caching the *perturbed* hidden states paired
+   with the frozen DDPM head's outputs from those states — expert labels on
+   corrupted states (a DAgger×GameNGen hybrid; stronger than either, but a
+   capture spend, not a loss tweak). **Untested prerequisite: teacher
+   health under feedback noise** — GN5/GN6 noised only student runs. → GN7.
+2. **Sequencing error: causal-CD must not gate the main bet.** CF++'s
+   mode-seeking warning applies to DMD (the reserve), not to supervised
+   training on noised captures. CD targets the dispersion axis, not the
+   GN5-proven correlated-error axis. Run it as a **parallel arm** on the
+   existing cache, never as a serial prerequisite.
+3. **Evidence-strength gap: every GN6 σ point is n=1 seed** and the σ=0.4
+   anomaly shows the per-seed variance is enormous. Random-σ training is
+   robust to this by design, but all stage-2 gates must run the collapse
+   assay at 2–3 seeds, and the binary voice≥0.5 window metric has zero
+   discrimination left (0% everywhere in GN6) — grade stage-2 identity on
+   the continuous similarity curve instead.
+4. **Capture schema must be designed for reuse:** record per-frame σ
+   (bucket) AND a trailing window of K prior latents, so ONE capture serves
+   the noise-trained head, the σ-conditioned head, and the head-v2
+   history-conditioning experiment (the dots.tts identity lever). A
+   re-capture is the expensive mistake to design away now.
+
+**AMENDED SEQUENCE (operative):**
+1. **GN7** (~$3–5): (a) teacher robustness under feedback noise at
+   σ=0.2/0.3 — greenlights or kills the capture design; (b) σ=0.4 reroll
+   at 2 new seeds — settles anomaly-vs-dead-zone.
+2. **Capture v2** (the real spend, batched 4.9×): teacher runs, per-window
+   random σ ∈ {0, 0.1–0.3}, schema = hidden state + DDPM target + σ bucket
+   + trailing K latents.
+3. **Training arms off the one cache:** (a) causal-CD on the clean subset;
+   (b) noise-augmented σ-conditioned head; (c) optional combined. Gate:
+   closed-loop collapse assay at 2–3 seeds, graded identity curve, Josh's
+   ear.
+4. **Reserve unchanged:** short asymmetric DMD only on a healthy init.
+5. What survives the critique untouched: frozen-backbone constraints, N8 +
+   product path, 75K deferral, and GN5's causal mechanism proof — still
+   the strongest evidence in the program.

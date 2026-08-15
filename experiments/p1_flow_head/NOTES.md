@@ -1448,7 +1448,59 @@ nothing left to extract from plumbing. Next: causal-CD loss swap on the 20K
 cache (reading-pass decision step 2), then GameNGen-style noise-augmented
 training with σ sampled ~0.2–0.3 per frame + σ-bucket conditioning.
 
-## Gate Night 1 continued — venue read (updates review §5)
+## 2026-08-14 — CRITIC PASS on the stage-2 plan (no experiments)
+
+Josh asked for an adversarial re-check of history + approach before any
+training spend. Four findings, logged in full in
+`docs/reading-2026-08-14-stage2.md` (CRITIC PASS section): (1) the head has
+no context input (`src/flow_head/model.py:95`) → noise-augmented training
+requires a NEW capture with noise injected at the LM feedback during
+teacher runs, DDPM outputs as targets (DAgger×GameNGen hybrid) — and
+teacher health under feedback noise is UNTESTED (GN5/6 noised only student
+runs); (2) causal-CD demoted from prerequisite to parallel arm (CF++'s
+mode-seeking warning applies to DMD, not supervised noise training);
+(3) all GN6 σ points are n=1 seed — stage-2 gates need 2–3 seeds and the
+graded sim curve (binary voice≥0.5 has zero discrimination left);
+(4) capture schema must include σ buckets + trailing-K latents so one
+capture serves noise-head, σ-conditioned head, and head-v2 history
+conditioning. Amended sequence: GN7 → capture v2 → training arms → DMD
+reserve. Strategy itself: survives.
+
+## 2026-08-14 — GATE NIGHT 7 PRE-REGISTRATION (capture prerequisites; not yet run)
+
+Notebook: `gate_night7_colab.ipynb`. Scorer: `score_gate_night7.py`. L4,
+~45–60 min, ~$2–3. Two arms, five renders. Same ~800-word turn-split script
+and noise machinery as GN6.
+
+### Arm T — teacher robustness under feedback noise (BLOCKS capture v2)
+
+The capture design feeds the TEACHER σ-noised feedback and trusts its
+outputs as training targets. If the teacher degrades under noise, the
+cache is garbage. Never tested: GN5/GN6 noised only student (head) runs.
+
+Conditions (stock DDPM head, no FlowHeadPatch; noise gated to per-frame
+generation calls only — prompt encoding untouched, discriminated by
+sequence length 1, with first-call shape logging to verify the gate):
+`t7_sig000` (clean control) / `t7_sig020` / `t7_sig030`. Seed 0.
+
+| Verdict | Condition |
+|---|---|
+| **CAPTURE GREENLIT at σ** | WER within reseed floor of control (≤ +0.06), voice fraction ≥ 90%, rate 150–200 wpm, Josh's ear passes → capture v2 proceeds at that σ range |
+| **PARTIAL** | 0.2 passes, 0.3 fails → capture caps σ at the passing level |
+| **CAPTURE DESIGN DEAD** | both fail → teacher targets under noise are unusable; rethink (candidates: lower σ, or clean-teacher targets aligned to noised hidden states via a second forward) |
+
+### Arm A — the σ=0.4 anomaly, rerolled
+
+GN6's σ=0.4 died (4.8% coverage) between two full-coverage neighbors, n=1
+seed. `a7_sig040_s1` / `a7_sig040_s2` (20K head, euler4, seeds 1 and 2).
+
+| Verdict | Condition |
+|---|---|
+| VARIANCE (bistability) | ≥1 of 2 survives with ≥90% coverage → GN6's 0.4 was an unlucky basin; dose-response is noisy-monotone; random-σ training design stands as-is |
+| DEAD ZONE | both die → real non-monotonicity; training σ range explicitly excludes ~0.4; flag for the paper's tradeoff figure |
+
+**Josh listens to all five; teacher-condition verdicts matter most** (his
+ear is the final gate on whether noised-teacher audio is target-quality).
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
 **unreadable until the floor is recalibrated**. With three blocking items ahead
