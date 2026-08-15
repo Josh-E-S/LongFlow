@@ -1581,6 +1581,24 @@ speech from our new head" impression retracted accordingly.)
   unmeasured, parked.
 - **Arm A: VARIANCE confirmed** (see results above). σ=0.4 cleared;
   random-σ design stands; all stage-2 gates at ≥2 seeds.
+- **Arm A ear verdict (Josh, 2026-08-15, verbatim, BOTH seeds):** "they
+  both quickly degrade like 14-20 sceonds in to a raspy whisper, slowing
+  and raspy creepy voice, ultimatley unrecognizeable at minute 4-ish."
+  **This retracts the in-session "best closed-loop head render yet"
+  framing for s1** — fifth instance of the ear beating the metrics:
+  Whisper decoded 100% coverage / WER 0.169 from audio a human cannot
+  follow past ~minute 4. **New instrument rule: Whisper word-recovery and
+  human intelligibility DIVERGE in the degraded-register regime** — a
+  raspy whisper is machine-transcribable and human-unintelligible at the
+  same time. Coverage/WER remain content-survival metrics (the words are
+  provably in there), but they are NOT listenability metrics; no stage-2
+  gate may claim intelligibility from Whisper numbers alone. What stands
+  from Arm A: σ=0.4 is not a dead zone (both seeds text-anchor to full
+  length, neither hard-collapses like GN6's seed-0), per-seed variance is
+  huge, random-σ training design unaffected. What changed: the honest
+  description of ALL σ-rescued head renders is "content preserved in a
+  degrading, ultimately unintelligible voice" — the training bet's job
+  description, unchanged since GN5, now stated at its true size.
 - **Capture v2 is GO:** schema = hidden states + DDPM targets + per-window
   σ bucket ∈ {0, ~0.1–0.3, occasional 0.4} + trailing-K latents. Next
   build.
