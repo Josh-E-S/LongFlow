@@ -1842,13 +1842,22 @@ un-test-able-locally GPU notebook. Structure:
 
 ### Still open
 
-- **Batched-vs-unbatched parity for the new schema** (unresolved since
-  2026-08-11) — never re-checked. Worth a small parity spot-check before
-  or during the 1K/5K gate, given how expensive a wrong-and-discovered-
-  late re-capture would be.
 - Notebook is unrun — first real GPU pass will surface anything this
   read-through missed (can't execute Colab-only APIs locally). Watch
   first-batch shapes closely before walking away.
+
+**Correction (2026-08-16, same day):** this entry previously listed
+batched-vs-unbatched capture parity as still open/unresolved since
+2026-08-11 — wrong, caught when Josh asked what the flag meant. It was
+CLEARED at GN4 Arm C (2026-08-12): solo-vs-batch-4 teacher renders,
+distributional quality (WER/sim vs the reseed floor) instead of GN1's
+flawed frame-count/per-dim-mean-shift instrument — mean pair-WER 0.018,
+sim within the teacher's own reseed band; GN1's frame-count divergence
+re-explained as ordinary generation variance, not left-padding pollution.
+Reconfirmed 2026-08-14 as "the only valid instrument" when a stricter
+bitwise-determinism variant was tried and retracted for being the wrong
+kind of test on a stochastic AR system. Not a live blocker for this
+capture run.
 
 No capture notebook has been written yet — that's the next step once
 1-3 are decided.
