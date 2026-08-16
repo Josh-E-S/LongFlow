@@ -130,3 +130,102 @@ def test_to_utterance_rejects_multi_row_calls():
         cap.model.sample_speech_tokens(torch.randn(2, 16))
     with pytest.raises(ValueError, match="multi-row"):
         cap.to_utterance("u0", "text")
+
+
+# ---------------------------------------------------------------------------
+# Capture v2: dual-stream (neg_condition) + sigma bucket (GN8 amendment)
+# ---------------------------------------------------------------------------
+
+
+def test_dual_stream_capture_records_neg_hidden():
+    model = StubModel()
+    with SampleCapture(model) as cap:
+        for i in range(5):
+            cond = torch.full((1, DM), float(i), dtype=torch.bfloat16)
+            neg = torch.full((1, DM), float(-i), dtype=torch.bfloat16)
+            model.sample_speech_tokens(cond, neg, 1.3)
+    utt = cap.to_utterance("u1", "text")
+    assert utt.neg_hidden is not None
+    assert utt.neg_hidden.shape == (5, DM)
+    assert torch.allclose(utt.neg_hidden.float(), -utt.hidden.float())
+
+
+def test_no_neg_condition_leaves_neg_hidden_none():
+    model = StubModel()
+    with SampleCapture(model) as cap:
+        run_frames(model, 4)  # run_frames passes neg_condition=None
+    utt = cap.to_utterance("u1", "text")
+    assert utt.neg_hidden is None
+
+
+def test_partial_dual_stream_refused():
+    import pytest
+
+    model = StubModel()
+    with SampleCapture(model) as cap:
+        model.sample_speech_tokens(torch.ones(1, DM), torch.ones(1, DM), 1.3)
+        model.sample_speech_tokens(torch.ones(1, DM), None, 1.3)  # missing on frame 2
+    with pytest.raises(ValueError, match="not all"):
+        cap.to_utterance("u1", "text")
+
+
+class StubNoise:
+    """Minimal stand-in for NoiseIntervention: exposes .last_sigma only."""
+
+    def __init__(self):
+        self.last_sigma = 0.0
+
+
+def test_sigma_recorded_per_frame_when_noise_wired():
+    model = StubModel()
+    noise = StubNoise()
+    with SampleCapture(model, noise=noise) as cap:
+        for sigma in (0.0, 0.2, 0.3):
+            noise.last_sigma = sigma
+            model.sample_speech_tokens(torch.ones(1, DM), None, 1.3)
+    utt = cap.to_utterance("u1", "text")
+    assert utt.sigma is not None
+    assert torch.allclose(utt.sigma.float(), torch.tensor([0.0, 0.2, 0.3]), atol=1e-3)
+
+
+def test_sigma_absent_without_noise_wired():
+    model = StubModel()
+    with SampleCapture(model) as cap:
+        run_frames(model, 3)
+    utt = cap.to_utterance("u1", "text")
+    assert utt.sigma is None
+
+
+def test_v2_save_load_roundtrip(tmp_path):
+    model = StubModel()
+    noise = StubNoise()
+    with SampleCapture(model, noise=noise) as cap:
+        for i, sigma in enumerate((0.1, 0.2)):
+            noise.last_sigma = sigma
+            cond = torch.full((1, DM), float(i), dtype=torch.bfloat16)
+            neg = torch.full((1, DM), float(10 + i), dtype=torch.bfloat16)
+            model.sample_speech_tokens(cond, neg, 1.3)
+    utt = cap.to_utterance("u1", "text")
+    p = tmp_path / "u1.pt"
+    save_utterance(utt, p)
+    loaded = load_utterance(p)
+    assert torch.allclose(loaded.neg_hidden, utt.neg_hidden)
+    assert torch.allclose(loaded.sigma, utt.sigma)
+
+
+def test_v1_cache_loads_without_v2_fields(tmp_path):
+    """An old .pt saved before the v2 fields existed must still load clean."""
+    p = tmp_path / "old.pt"
+    torch.save(
+        {
+            "utt_id": "u1",
+            "text": "t",
+            "hidden": torch.zeros(3, DM, dtype=torch.float16),
+            "latent": torch.zeros(3, DL, dtype=torch.float16),
+            "meta": {},
+        },
+        p,
+    )
+    utt = load_utterance(p)
+    assert utt.neg_hidden is None
+    assert utt.sigma is None

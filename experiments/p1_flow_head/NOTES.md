@@ -1747,6 +1747,70 @@ GREENLIT for capture v2 (dual-stream) → stage-2 on-policy training
 architecture change indicated.** heun8+CFG is the new operating
 inference config, superseding GN1's euler4-only recommendation.
 
+## 2026-08-16 — CAPTURE V2 INFRA BUILT (code only, no GPU spend yet)
+
+Schema locked by the 8/14 critic pass + the 8/16 GN8 amendment: hidden
+state for **both cond and neg streams** + DDPM target (already captured)
++ per-window σ bucket + trailing-K latents. Built and tier-1 tested:
+
+- **`src/cache/noise.py`** (new): `NoiseIntervention`, ported verbatim
+  from the GN6 notebook (the exact mechanism behind every GN5-8 render —
+  no reimplementation-drift risk) plus one addition, `.last_sigma`, so a
+  capture wrapper can read back which σ was actually applied to the frame
+  it just captured. 6 tier-1 tests (`tests/test_noise.py`): zero-sigma
+  no-op, inactive-gate no-op, running-variance scaling, schedule wiring,
+  hook cleanup on exit.
+- **`src/cache/capture.py`** extended, not replaced: `UtteranceCache`
+  gains `neg_hidden` / `sigma` fields (default `None` — old .pt files
+  load unchanged). `SampleCapture`/`BatchedSampleCapture` take an
+  optional `noise=` handle and now read `neg_condition` out of the
+  wrapped call (previously silently forwarded into `*args`/`**kwargs`
+  and dropped — the same discard pattern the CFG audit found in
+  `integration.py`, just on the capture side). Forwarding to the real
+  method stays byte-transparent (no injected defaults for omitted args —
+  first draft of this got that wrong and would have silently overridden
+  VibeVoice's own `cfg_scale` default; caught before commit).
+  `split_utterances` (v1) is untouched in behavior; `split_utterances_v2`
+  is additive. Partial dual-stream (present on some frames/calls, absent
+  on others) is refused, not silently dropped. 11 new tier-1 tests across
+  `tests/test_cache.py` / `tests/test_batched_capture.py`. Full suite:
+  80/80 green.
+- **Design call on trailing-K latents (flagging, not asking):**
+  `NoiseIntervention` corrupts the acoustic-connector's output
+  *embedding* (what becomes `condition`/`hidden`), not the raw target
+  latent — so the clean per-frame `latent` sequence already saved is
+  unaffected by σ and stays in order. Trailing-K history is therefore
+  **derivable post-hoc from the existing ordered `latent` tensor** —
+  no new capture-time field needed, just a windowing helper at train
+  time (for the head-v2 history-conditioning arm). If the intent was
+  instead to capture the noise-corrupted connector embedding itself as
+  history, say so and this gets revisited before the GPU run.
+
+### Open before any GPU spend (Josh's call, not an engineering one)
+
+1. **Corpus.** The original 10K cache (`cache10k_colab.ipynb`) used
+   short single-utterance LibriTTS clips. Capture v2 training data must
+   *not* repeat that — "context-length OOD" is the program's own
+   diagnosed dominant failure axis (July E3, GN1-8 throughout), so a
+   short-clip-only cache would reproduce the exact problem it's meant to
+   fix. Needs a duration/turn-count mix spanning short → the multi-minute
+   range GN5-8 test, likely built on the same turn-split multi-speaker
+   script style already proven (N8 cure), not raw LibriTTS. Scope
+   (hours, utterance count, speaker/turn-count mix) is undecided.
+2. **σ schedule during capture.** 8/15's GO note said σ ∈ {0, ~0.1-0.3,
+   occasional 0.4} "per window" — GN6's `sigma_fn(call_count)` already
+   supports per-frame-range schedules within one utterance capture; need
+   to pick the actual distribution/ramp shape for the real run.
+3. **Batch size / GPU budget** for the real capture (v1 10K ran batched
+   at 4.9x on an L4; same target here, budget undecided).
+4. Unresolved since 2026-08-11: batched-vs-unbatched condition parity
+   for the *new* schema was never re-checked after GN1 flagged it —
+   worth a small parity check before committing to batched-only capture
+   v2, given how expensive a re-capture would be to discover this after.
+
+No capture notebook has been written yet — that's the next step once
+1-3 are decided.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

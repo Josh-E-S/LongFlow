@@ -68,8 +68,8 @@ def test_call_step_mismatch_refuses():
 def test_row_count_mismatch_refuses():
     streams = [[FRAME], [FRAME]]
     cap = simulate(streams)
-    cond, lat = cap.calls[0]
-    cap.calls[0] = (cond[:1], lat[:1])  # drop a row
+    cond, lat, neg, sigma = cap.calls[0]
+    cap.calls[0] = (cond[:1], lat[:1], neg, sigma)  # drop a row
     with pytest.raises(RuntimeError, match="row/active mismatch"):
         cap.split_utterances(streams, frame_id=FRAME)
 
@@ -114,3 +114,71 @@ def test_uneven_stream_lengths_pad_safe():
     cap = simulate(streams)
     parts = cap.split_utterances(streams, frame_id=FRAME)
     assert parts[0][0].shape == (1, DM) and parts[1][0].shape == (3, DM)
+
+
+# ---------------------------------------------------------------------------
+# Capture v2: dual-stream (neg_condition) + sigma bucket (GN8 amendment)
+# ---------------------------------------------------------------------------
+
+
+class StubNoise:
+    def __init__(self):
+        self.last_sigma = 0.0
+
+
+def simulate_v2(streams, noise=None, with_neg=True):
+    model = StubModel()
+    frame_counter = [0] * len(streams)
+    cap = BatchedSampleCapture(model, noise=noise)
+    with cap:
+        n_steps = max(len(s) for s in streams)
+        for t in range(n_steps):
+            active = [b for b, s in enumerate(streams) if t < len(s) and s[t] == FRAME]
+            if not active:
+                continue
+            rows, neg_rows = [], []
+            for b in active:
+                v = torch.full((DM,), float(b * 100 + frame_counter[b]))
+                neg_rows.append(torch.full((DM,), -float(b * 100 + frame_counter[b])))
+                frame_counter[b] += 1
+                rows.append(v)
+            cond = torch.stack(rows).to(torch.bfloat16)
+            neg = torch.stack(neg_rows).to(torch.bfloat16) if with_neg else None
+            if noise is not None:
+                noise.last_sigma = 0.1 * t
+            model.sample_speech_tokens(cond, neg, 1.3)
+    return cap
+
+
+def test_v2_split_returns_neg_hidden_and_sigma():
+    streams = [[FRAME, FRAME, FRAME, END], [FRAME, FRAME, FRAME, FRAME, FRAME, END]]
+    noise = StubNoise()
+    cap = simulate_v2(streams, noise=noise)
+    parts = cap.split_utterances_v2(streams, frame_id=FRAME)
+    for hidden, _latent, neg_hidden, sigma in parts:
+        assert neg_hidden is not None and neg_hidden.shape == hidden.shape
+        assert torch.allclose(neg_hidden.float(), -hidden.float())
+        assert sigma.shape == (hidden.shape[0],)
+
+
+def test_v2_no_neg_condition_gives_none_neg_hidden():
+    streams = [[FRAME, FRAME, END]]
+    cap = simulate_v2(streams, with_neg=False)
+    parts = cap.split_utterances_v2(streams, frame_id=FRAME)
+    assert parts[0][2] is None
+
+
+def test_v2_sigma_defaults_to_zero_without_noise_wired():
+    streams = [[FRAME, FRAME, END]]
+    cap = simulate_v2(streams, noise=None)
+    parts = cap.split_utterances_v2(streams, frame_id=FRAME)
+    assert torch.allclose(parts[0][3].float(), torch.zeros(2))
+
+
+def test_v1_split_still_works_when_dual_stream_was_captured():
+    """split_utterances (v1) stays usable even on a capture that also
+    recorded neg_condition/sigma -- it just ignores the extra fields."""
+    streams = [[FRAME, FRAME, END]]
+    cap = simulate_v2(streams, noise=StubNoise())
+    parts = cap.split_utterances(streams, frame_id=FRAME)
+    assert len(parts[0]) == 2
