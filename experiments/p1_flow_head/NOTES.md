@@ -1786,27 +1786,69 @@ state for **both cond and neg streams** + DDPM target (already captured)
   instead to capture the noise-corrupted connector embedding itself as
   history, say so and this gets revisited before the GPU run.
 
-### Open before any GPU spend (Josh's call, not an engineering one)
+### Decisions (Josh, 2026-08-16)
 
-1. **Corpus.** The original 10K cache (`cache10k_colab.ipynb`) used
-   short single-utterance LibriTTS clips. Capture v2 training data must
-   *not* repeat that — "context-length OOD" is the program's own
-   diagnosed dominant failure axis (July E3, GN1-8 throughout), so a
-   short-clip-only cache would reproduce the exact problem it's meant to
-   fix. Needs a duration/turn-count mix spanning short → the multi-minute
-   range GN5-8 test, likely built on the same turn-split multi-speaker
-   script style already proven (N8 cure), not raw LibriTTS. Scope
-   (hours, utterance count, speaker/turn-count mix) is undecided.
-2. **σ schedule during capture.** 8/15's GO note said σ ∈ {0, ~0.1-0.3,
-   occasional 0.4} "per window" — GN6's `sigma_fn(call_count)` already
-   supports per-frame-range schedules within one utterance capture; need
-   to pick the actual distribution/ramp shape for the real run.
-3. **Batch size / GPU budget** for the real capture (v1 10K ran batched
-   at 4.9x on an L4; same target here, budget undecided).
-4. Unresolved since 2026-08-11: batched-vs-unbatched condition parity
-   for the *new* schema was never re-checked after GN1 flagged it —
-   worth a small parity check before committing to batched-only capture
-   v2, given how expensive a re-capture would be to discover this after.
+1. **Corpus: turn-split long-form only.** Same multi-speaker turn-split
+   script style GN5-8 validated (N8 cure), at varied lengths — not raw
+   LibriTTS short clips.
+2. **Scale: match v1's total frame budget, not utterance count.** v1's
+   10K cache = 478,191 frame pairs (avg ~48 frames / ~6s per short clip).
+   A 5-min long-form render is ~2,250 frames — ~47x more per utterance —
+   so "10K" would have meant ~47x v1's total compute if read as raw
+   utterance count. Resolved: **~480K total frame pairs** (matching v1),
+   via **~200-250 long-form renders**, not 10,000 of them.
+
+### Capture v2 notebook built: `capture_v2_colab.ipynb`
+
+Follows `cache10k_colab.ipynb`'s COLD START / resumable-loop pattern and
+GN6's `NoiseIntervention` usage exactly, to minimize novel-code risk on an
+un-test-able-locally GPU notebook. Structure:
+
+- **Corpus:** `WORD_BINS = [150, 300, 600, 1200, 2400]` (~1/2/4/8/15 min
+  @ N8's natural 165-190 wpm), cycled round-robin so the ~200-250 renders
+  spread across the OOD range rather than clustering at one length.
+  Sentences streamed from LibriTTS (text only, matching cache10k's
+  quality filter), assembled via `turnscript()` — GN6's exact mechanism,
+  ~60-word same-speaker turns, restored faithfully (an early draft of
+  this collapsed it to a single un-split turn per script — caught before
+  finalizing, would have silently defeated the N8 cure this whole capture
+  depends on). Voice prompts cycled from the existing eval-cache pool for
+  speaker diversity (GN5-8 used one fixed prompt throughout; capture v2
+  training data shouldn't).
+- **σ schedule:** one random draw per ~60s window (`WINDOW=450` frames),
+  distribution 50% clean / 40% U(0.1, 0.3) / 10% at 0.4 — the "σ ∈
+  {0, ~0.1-0.3, occasional 0.4}" schema from the 8/15 GO note, made
+  concrete. Fresh draw sequence per batch (`make_sigma_fn()` re-called
+  in `flush()`), so different renders get independent trajectories even
+  though `NoiseIntervention` hooks the model once per batch (same-batch
+  elements necessarily share one σ trajectory — a real simplification,
+  not hidden: flagged here).
+- **Batching:** same-length-bin renders batched together (BS 8→2 as bin
+  length grows) rather than mixing bin lengths in one batch — avoids
+  short elements idling through a much longer batch-mate's remaining
+  steps. Target dir is a **new** `longflow_p1_cache_v2` on Drive, kept
+  separate from v1's cache rather than mixed.
+- **Resume is frame-budget-based**, not utterance-ID-based like v1 (uids
+  are fresh random UUIDs, not deterministic dataset row IDs) — a resumed
+  session generates new scripts until the frame target is hit rather than
+  replaying v1's dedup-by-ID logic, which doesn't fit a random-corpus
+  design. Minor consequence: resumed sessions may re-stream overlapping
+  LibriTTS text across sessions; not a correctness issue.
+- Exception handling follows the 2026-08-14 production lesson exactly:
+  `repr(e)[:150]` only, never the exception object retained.
+- Cell 3 writes a manifest (frame/script totals, word-bin counts, σ
+  histogram actually realized) to Drive for the gate-check to read —
+  **not** a downloadable audio bundle; there's nothing to listen to here.
+
+### Still open
+
+- **Batched-vs-unbatched parity for the new schema** (unresolved since
+  2026-08-11) — never re-checked. Worth a small parity spot-check before
+  or during the 1K/5K gate, given how expensive a wrong-and-discovered-
+  late re-capture would be.
+- Notebook is unrun — first real GPU pass will surface anything this
+  read-through missed (can't execute Colab-only APIs locally). Watch
+  first-batch shapes closely before walking away.
 
 No capture notebook has been written yet — that's the next step once
 1-3 are decided.
