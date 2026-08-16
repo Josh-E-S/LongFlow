@@ -1894,6 +1894,53 @@ Pushed to `origin/main` (commit history has the exact diff). Josh needs
 to restart the Colab runtime (now selecting A100), and re-run cells 1-2
 clean.
 
+### Second bug (Josh, 2026-08-16, same day) — batched-capture attribution
+### too narrow for capture v2's scale (`src/cache/capture.py`)
+
+Tab accidentally closed after ~5h; Drive check confirmed real progress (91
+scripts, 155,406/480,000 frames, all 5 bins) — Colab kernel had kept
+running headless past the tab close. Josh reconnected but the runtime had
+actually died by then, so he started fresh; resume worked exactly as
+designed (`resuming with 91 scripts already cached, 155406/480000
+frames`). But the fresh run then failed **~12 of 13 batches** with
+`RuntimeError('row/active mismatch at a step: N rows vs M active
+elements — attribution unsafe, aborting')` — each failure burning the
+*full* generation wall-clock before being detected and discarded.
+
+**Root cause:** `BatchedSampleCapture`'s attribution logic (in
+`src/cache/capture.py`, inherited unmodified from the original P1
+caching pipeline) only tolerated exactly one dropped frame, and only at
+the batch's shared *global final step* — sized for cache10k's short,
+duration-uniform LibriTTS clips, where all batch elements finished
+around the same time. Capture v2 batches much longer, much more
+duration-varied scripts (same word-bin target, but real generated length
+varies per script), so elements now routinely finish at *different
+points mid-batch* — and when an early-finisher's own last frame is
+silently unrendered there (not at the shared end), the old logic had no
+way to localize it and hard-aborted the entire batch's data over one
+element's ordinary early finish.
+
+**Fix:** rewrote `_attribute()` as a sequential per-call walk (not a
+precomputed global step list) that tracks each stream's own consumption
+pointer independently. A row deficit at any step is auto-explained ONLY
+when the count of elements whose *current* position is their own last
+remaining frame exactly equals the deficit — ambiguous or unexplainable
+deficits still hard-abort, and a row *surplus* is always a hard abort
+(no plausible mechanism for that direction). This subsumes the original
+tolerance as a special case and generalizes it to (a) any number of
+elements sharing a true simultaneous final drop, not just one, and (b)
+drops occurring at any point mid-batch, not just the global end.
+`split_utterances`/`split_utterances_v2` now consume `_attribute`'s
+per-element row dict directly rather than re-deriving it. 4 existing
+tests needed regex updates for new (more specific) error messages; 2 new
+tests added reproducing the exact failure (mid-batch early-finisher drop)
+and its generalization (multiple simultaneous end-of-batch drops). Full
+suite: 82/82 green.
+
+Pushed to `origin/main`. Josh needs to restart the runtime again and
+re-run cells 1-2 — resume will pick up from the 91+ scripts already
+banked in Drive.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

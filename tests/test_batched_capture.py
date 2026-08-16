@@ -61,23 +61,26 @@ def test_call_step_mismatch_refuses():
     streams = [[FRAME, FRAME]]
     cap = simulate(streams)
     cap.calls.append(cap.calls[-1])  # phantom extra call
-    with pytest.raises(RuntimeError, match="call/step mismatch"):
+    with pytest.raises(RuntimeError, match="left over"):
         cap.split_utterances(streams, frame_id=FRAME)
 
 
 def test_row_count_mismatch_refuses():
+    """Ambiguous deficit: both elements' current position is their own last
+    frame, but only one row went missing -- 2 candidates for a deficit of 1
+    is not auto-explainable, must abort rather than guess which one."""
     streams = [[FRAME], [FRAME]]
     cap = simulate(streams)
     cond, lat, neg, sigma = cap.calls[0]
     cap.calls[0] = (cond[:1], lat[:1], neg, sigma)  # drop a row
-    with pytest.raises(RuntimeError, match="row/active mismatch"):
+    with pytest.raises(RuntimeError, match="explainable"):
         cap.split_utterances(streams, frame_id=FRAME)
 
 
 def test_frame_total_mismatch_refuses():
     streams = [[FRAME, FRAME, FRAME]]
     cap = simulate(streams)
-    with pytest.raises(RuntimeError, match="call/step mismatch|frames assigned"):
+    with pytest.raises(RuntimeError, match="left over|frames assigned"):
         cap.split_utterances([[FRAME, FRAME]], frame_id=FRAME)  # stream claims fewer
 
 
@@ -97,8 +100,48 @@ def test_final_unrendered_frame_step_tolerated():
     cap2 = simulate(streams)
     cap2.calls.pop()
     cap2.calls.pop()
-    with pytest.raises(RuntimeError, match="call/step mismatch"):
+    with pytest.raises(RuntimeError, match="unconsumed frame"):
         cap2.split_utterances(streams, frame_id=FRAME)
+
+
+def test_mid_batch_drop_tolerated():
+    """The actual GN8-era bug (2026-08-16, Josh's live run): a short element
+    finishes mid-batch, and ITS OWN last frame is silently unrendered while
+    a longer batch-mate keeps generating well past that point -- not at the
+    batch's global final step, which is all the original tolerance covered.
+    Must reconstruct cleanly: only the affected element loses its last frame,
+    everyone else is unaffected."""
+    streams = [
+        [FRAME, FRAME, FRAME, FRAME, END],  # element 0: 4 frames, keeps going
+        [FRAME, FRAME, END],  # element 1: 2 frames, LAST one silently unrendered
+    ]
+    cap = simulate(streams)
+    # step index 1 (both active) originally had 2 rows -- drop element 1's row,
+    # simulating its own final frame never getting captured, mid-batch
+    cond, lat, neg, sigma = cap.calls[1]
+    assert cond.shape[0] == 2
+    cap.calls[1] = (cond[:1], lat[:1], neg, sigma)
+    parts = cap.split_utterances(streams, frame_id=FRAME)
+    assert parts[0][0].shape == (4, DM)  # element 0 fully intact, unaffected
+    assert parts[1][0].shape == (1, DM)  # element 1: only its first frame survived
+    for i in range(4):
+        assert float(parts[0][0][i, 0]) == i  # element 0's order/content untouched
+    assert float(parts[1][0][0, 0]) == 100  # element 1's one surviving frame is correct
+
+
+def test_multiple_simultaneous_trailing_drops_tolerated():
+    """Generalization of the single-final-drop tolerance: if MULTIPLE
+    elements share the batch's true global final step and none of their
+    calls happen, all of them are explainable -- not just one."""
+    streams = [
+        [FRAME, FRAME, FRAME],
+        [FRAME, FRAME, FRAME],
+    ]
+    cap = simulate(streams)
+    cap.calls.pop()  # the shared final step (both elements) never got called
+    parts = cap.split_utterances(streams, frame_id=FRAME)
+    assert parts[0][0].shape == (2, DM)
+    assert parts[1][0].shape == (2, DM)
 
 
 def test_method_restored_after_exit():

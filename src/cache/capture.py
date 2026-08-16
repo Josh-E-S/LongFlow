@@ -201,27 +201,79 @@ class BatchedSampleCapture:
 
     def _attribute(
         self, token_streams: list[list[int]], frame_id: int
-    ) -> tuple[list[list[int]], list[int] | None]:
-        n_steps = max(len(s) for s in token_streams)
-        active_per_step = [
-            [b for b, s in enumerate(token_streams) if t < len(s) and s[t] == frame_id]
-            for t in range(n_steps)
-        ]
-        frame_steps = [a for a in active_per_step if a]
-        # End-of-generation edge case (observed ~1% of batches, 2026-07-07 run):
-        # a frame token emitted at the very final step is never rendered —
-        # generation stops before its sample_speech_tokens call. Exactly one
-        # trailing frame-step with no call is therefore attributable and safe
-        # to drop; anything else stays a hard abort.
-        dropped_final = None
-        if len(frame_steps) == len(self.calls) + 1:
-            dropped_final = frame_steps.pop()
-        if len(frame_steps) != len(self.calls):
+    ) -> tuple[dict[int, list[tuple]], set[int]]:
+        """Replays token_streams against self.calls, call by call, attributing
+        each captured row to its originating batch element.
+
+        Elements finish at different times in a batch, and -- especially with
+        long, duration-varied renders (capture v2) -- an element's very LAST
+        frame token is sometimes never rendered (generation stops right
+        before its sample_speech_tokens call). That is tolerated per element,
+        at whichever step it actually occurs -- not just at the batch's
+        global final step (the original, narrower tolerance, sized for
+        cache10k-scale short uniform-length batches where all elements
+        finished around the same time and a mid-batch drop was never
+        observed; GN1-style long duration-varied batches hit it routinely,
+        2026-08-16). A deficit is only ever auto-explained when the number of
+        elements whose CURRENT position is their own last remaining frame
+        exactly equals the deficit -- any ambiguity, or any row surplus, is a
+        hard abort. This must never silently misattribute rows.
+        """
+        n = len(token_streams)
+        frame_positions = [[t for t, tok in enumerate(s) if tok == frame_id] for s in token_streams]
+        ptr = [0] * n
+        dropped: set[int] = set()
+        per_b: dict[int, list[tuple]] = {b: [] for b in range(n)}
+
+        call_idx = 0
+        while call_idx < len(self.calls):
+            candidates = [
+                b for b in range(n) if b not in dropped and ptr[b] < len(frame_positions[b])
+            ]
+            if not candidates:
+                break
+            t_min = min(frame_positions[b][ptr[b]] for b in candidates)
+            active = [b for b in candidates if frame_positions[b][ptr[b]] == t_min]
+            cond, lat, neg, sigma = self.calls[call_idx]
+            if cond.shape[0] > len(active):
+                raise RuntimeError(
+                    f"attribution unsafe at step {t_min}: {cond.shape[0]} rows vs "
+                    f"{len(active)} active elements — more rows than expected, aborting"
+                )
+            keep = active
+            if cond.shape[0] < len(active):
+                deficit = len(active) - cond.shape[0]
+                drop_candidates = [b for b in active if ptr[b] == len(frame_positions[b]) - 1]
+                if len(drop_candidates) != deficit:
+                    raise RuntimeError(
+                        f"attribution unsafe at step {t_min}: {cond.shape[0]} rows vs "
+                        f"{len(active)} active elements, {len(drop_candidates)} explainable "
+                        f"drop candidates for a deficit of {deficit} — aborting"
+                    )
+                dropped.update(drop_candidates)
+                keep = [b for b in active if b not in drop_candidates]
+            for row, b in enumerate(keep):
+                per_b[b].append((cond[row], lat[row], neg[row] if neg is not None else None, sigma))
+                ptr[b] += 1
+            call_idx += 1
+
+        if call_idx < len(self.calls):
             raise RuntimeError(
-                f"call/step mismatch: {len(self.calls)} capture calls vs "
-                f"{len(frame_steps)} steps with active frames — attribution unsafe, aborting"
+                f"attribution unsafe: {len(self.calls) - call_idx} capture calls left over "
+                "with no more expected frames — aborting"
             )
-        return frame_steps, dropped_final
+        for b in range(n):
+            remaining = len(frame_positions[b]) - ptr[b]
+            if remaining == 0:
+                continue
+            if remaining == 1:
+                dropped.add(b)  # this element's final frame token was never rendered
+                continue
+            raise RuntimeError(
+                f"attribution unsafe: element {b} has {remaining} unconsumed frame "
+                "tokens with no more capture calls — aborting"
+            )
+        return per_b, dropped
 
     def split_utterances(
         self, token_streams: list[list[int]], frame_id: int
@@ -233,28 +285,17 @@ class BatchedSampleCapture:
 
         v1-compatible: drops neg_condition/sigma even if this capture recorded
         them. Use split_utterances_v2 to get the dual-stream/sigma fields."""
-        frame_steps, dropped_final = self._attribute(token_streams, frame_id)
-        per_b: dict[int, list[tuple[torch.Tensor, torch.Tensor]]] = {
-            b: [] for b in range(len(token_streams))
-        }
-        for (cond, lat, _neg, _sigma), active in zip(self.calls, frame_steps, strict=True):
-            if cond.shape[0] != len(active):
-                raise RuntimeError(
-                    f"row/active mismatch at a step: {cond.shape[0]} rows vs "
-                    f"{len(active)} active elements — attribution unsafe, aborting"
-                )
-            for row, b in enumerate(active):
-                per_b[b].append((cond[row], lat[row]))
+        per_b, dropped = self._attribute(token_streams, frame_id)
         out = []
         for b, stream in enumerate(token_streams):
             expected = sum(1 for tok in stream if tok == frame_id)
-            if dropped_final is not None and b in dropped_final:
-                expected -= 1  # this element's final frame token was never rendered
+            if b in dropped:
+                expected -= 1
             got = len(per_b[b])
             if got != expected:
                 raise RuntimeError(f"element {b}: {got} frames assigned vs {expected} frame tokens")
-            hidden = torch.stack([c for c, _ in per_b[b]])
-            latent = torch.stack([z for _, z in per_b[b]])
+            hidden = torch.stack([r[0] for r in per_b[b]])
+            latent = torch.stack([r[1] for r in per_b[b]])
             assert_frame_aligned(hidden.float().unsqueeze(0), latent.float().unsqueeze(0))
             out.append((hidden, latent))
         return out
@@ -268,7 +309,6 @@ class BatchedSampleCapture:
         every element if this capture recorded no neg_condition anywhere
         (v1-style clean capture); partial dual-stream (present on some calls,
         absent on others) is refused rather than silently dropped."""
-        frame_steps, dropped_final = self._attribute(token_streams, frame_id)
         any_neg = any(neg is not None for _, _, neg, _ in self.calls)
         all_neg = all(neg is not None for _, _, neg, _ in self.calls)
         if any_neg and not all_neg:
@@ -276,30 +316,22 @@ class BatchedSampleCapture:
                 "neg_condition present on some capture calls but not all — "
                 "dual-stream capture requires every call to carry it"
             )
-        per_b: dict[int, list[tuple]] = {b: [] for b in range(len(token_streams))}
-        for (cond, lat, neg, sigma), active in zip(self.calls, frame_steps, strict=True):
-            if cond.shape[0] != len(active):
-                raise RuntimeError(
-                    f"row/active mismatch at a step: {cond.shape[0]} rows vs "
-                    f"{len(active)} active elements — attribution unsafe, aborting"
-                )
-            for row, b in enumerate(active):
-                per_b[b].append((cond[row], lat[row], neg[row] if neg is not None else None, sigma))
+        per_b, dropped = self._attribute(token_streams, frame_id)
         out = []
         for b, stream in enumerate(token_streams):
             expected = sum(1 for tok in stream if tok == frame_id)
-            if dropped_final is not None and b in dropped_final:
-                expected -= 1  # this element's final frame token was never rendered
+            if b in dropped:
+                expected -= 1
             got = len(per_b[b])
             if got != expected:
                 raise RuntimeError(f"element {b}: {got} frames assigned vs {expected} frame tokens")
-            hidden = torch.stack([c for c, _, _, _ in per_b[b]])
-            latent = torch.stack([z for _, z, _, _ in per_b[b]])
+            hidden = torch.stack([r[0] for r in per_b[b]])
+            latent = torch.stack([r[1] for r in per_b[b]])
             assert_frame_aligned(hidden.float().unsqueeze(0), latent.float().unsqueeze(0))
-            neg_hidden = torch.stack([n for _, _, n, _ in per_b[b]]) if all_neg else None
+            neg_hidden = torch.stack([r[2] for r in per_b[b]]) if all_neg else None
             if neg_hidden is not None:
                 assert_frame_aligned(hidden.float().unsqueeze(0), neg_hidden.float().unsqueeze(0))
-            sigma_t = torch.tensor([s for _, _, _, s in per_b[b]], dtype=torch.float16)
+            sigma_t = torch.tensor([r[3] for r in per_b[b]], dtype=torch.float16)
             out.append((hidden, latent, neg_hidden, sigma_t))
         return out
 
