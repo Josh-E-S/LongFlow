@@ -1859,8 +1859,40 @@ bitwise-determinism variant was tried and retracted for being the wrong
 kind of test on a stochastic AR system. Not a live blocker for this
 capture run.
 
-No capture notebook has been written yet — that's the next step once
-1-3 are decided.
+### First live run (Josh, 2026-08-16) — mixed-bin batching bug, fixed
+
+Josh started the notebook and flagged it crawling almost immediately:
+`Generating (active: 3/4): 20%|...` on the very first batch, 1.6 it/s.
+Real bug, not Colab slowness: cell 2's word-bin batching design (batch
+same-length scripts together, so short elements never idle waiting on a
+much longer batch-mate) was defeated by the loop itself — `bin_i`
+incremented and `target_words` was recomputed on every completed script,
+but nothing segregated the accumulating `buf` by bin, so it silently
+filled with scripts from *different* bins before flushing. `active: 3/4`
+was exactly that: a short script finishing early inside a batch stuck
+waiting on longer ones. **Fixed**: `buf` replaced with `bufs = {w: [] for
+w in WORD_BINS}`, keyed by bin, flushed independently per bin. Caught
+after ~7 min GPU time on the first (still in-progress) batch — no cached
+data existed yet, nothing to redo.
+
+Also hardened `capture_v2_colab.ipynb` cell 1 while fixing this: it only
+cloned the repo once and would have silently kept serving stale code on
+a same-session re-run (no way to pick up a live fix without a runtime
+restart otherwise). Now `git pull`s if already cloned, with an explicit
+note that already-imported Python modules still need a runtime restart
+to actually pick up changes — `git pull` alone updates the files on disk,
+not what's already loaded in the kernel.
+
+Also switched the target runtime from L4 to **A100** and raised
+`BIN_BATCH` accordingly (`{150:12, 300:10, 600:8, 1200:5, 2400:3}`, up
+from the L4-sized `{150:8, 300:8, 600:6, 1200:4, 2400:2}`) — L4 was a
+default inherited from every prior gate-night notebook without
+re-examining it for a one-time real spend where wall-clock matters more
+than $/hr. Josh's call, explicit: stop optimizing for cost here.
+
+Pushed to `origin/main` (commit history has the exact diff). Josh needs
+to restart the Colab runtime (now selecting A100), and re-run cells 1-2
+clean.
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
