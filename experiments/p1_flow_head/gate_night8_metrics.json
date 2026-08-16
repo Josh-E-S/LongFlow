@@ -1,0 +1,146 @@
+{
+  "conditions": {
+    "c8_euler4_plain_s0": {
+      "duration_s": 306.1,
+      "wer_vs_script": 0.933,
+      "coverage_pct": 8.1,
+      "voice_pct": 1.3,
+      "horizon_s": 8.0,
+      "sim_median": 0.072,
+      "sim_final_third": 0.093,
+      "rate_wpm": 12.9
+    },
+    "c8_euler4_s0": {
+      "duration_s": 272.0,
+      "wer_vs_script": 0.065,
+      "coverage_pct": 100.0,
+      "voice_pct": 49.6,
+      "horizon_s": 240.0,
+      "sim_median": 0.5,
+      "sim_final_third": 0.443,
+      "rate_wpm": 189.0
+    },
+    "c8_euler4_s1": {
+      "duration_s": 265.5,
+      "wer_vs_script": 0.04,
+      "coverage_pct": 100.0,
+      "voice_pct": 41.2,
+      "horizon_s": 234.0,
+      "sim_median": 0.49,
+      "sim_final_third": 0.436,
+      "rate_wpm": 187.6
+    },
+    "c8_heun8_plain_s0": {
+      "duration_s": 294.3,
+      "wer_vs_script": 0.102,
+      "coverage_pct": 99.4,
+      "voice_pct": 4.8,
+      "horizon_s": 64.0,
+      "sim_median": 0.18,
+      "sim_final_third": 0.08,
+      "rate_wpm": 165.4
+    },
+    "c8_heun8_s0": {
+      "duration_s": 285.9,
+      "wer_vs_script": 0.031,
+      "coverage_pct": 100.0,
+      "voice_pct": 61.7,
+      "horizon_s": 238.0,
+      "sim_median": 0.522,
+      "sim_final_third": 0.453,
+      "rate_wpm": 174.2
+    },
+    "c8_heun8_s1": {
+      "duration_s": 266.4,
+      "wer_vs_script": 0.033,
+      "coverage_pct": 100.0,
+      "voice_pct": 61.4,
+      "horizon_s": 240.0,
+      "sim_median": 0.561,
+      "sim_final_third": 0.431,
+      "rate_wpm": 186.5
+    },
+    "t8_cfg10": {
+      "duration_s": 304.3,
+      "wer_vs_script": 0.298,
+      "coverage_pct": 81.4,
+      "voice_pct": 21.9,
+      "horizon_s": 210.0,
+      "sim_median": 0.419,
+      "sim_final_third": 0.37,
+      "rate_wpm": 130.9
+    }
+  },
+  "deltas": {
+    "c8_euler4_s0": {
+      "wer_vs_script": -0.868,
+      "coverage_pct": 91.9,
+      "sim_median": 0.428,
+      "horizon_s": 232.0
+    },
+    "c8_euler4_s1": {
+      "wer_vs_script": -0.893,
+      "coverage_pct": 91.9,
+      "sim_median": 0.418,
+      "horizon_s": 226.0
+    },
+    "c8_heun8_s0": {
+      "wer_vs_script": -0.071,
+      "coverage_pct": 0.6,
+      "sim_median": 0.342,
+      "horizon_s": 174.0
+    },
+    "c8_heun8_s1": {
+      "wer_vs_script": -0.069,
+      "coverage_pct": 0.6,
+      "sim_median": 0.381,
+      "horizon_s": 176.0
+    }
+  },
+  "verdicts": {
+    "cfg": "CFG REPAIR (strong, metric half) on ['euler4', 'heun8'], both seeds \u2014 Josh's ear confirms or denies; if confirmed, re-baseline on guided sampling; capture v2 + training go dual-stream",
+    "teacher_cfg": "GUIDANCE LOAD-BEARING \u2014 teacher degrades at cfg 1.0; raises the ceiling CFG repair can reach"
+  },
+  "fd_summary": {
+    "teacher_self": {
+      "first": 552.9,
+      "median": 550.4,
+      "last": 536.1
+    },
+    "c8_euler4_s0": {
+      "first": 559.6,
+      "median": 1419.4,
+      "last": 1556.8
+    },
+    "c8_euler4_s1": {
+      "first": 581.1,
+      "median": 1498.9,
+      "last": 1759.3
+    },
+    "c8_heun8_s0": {
+      "first": 551.4,
+      "median": 1058.3,
+      "last": 1422.3
+    },
+    "c8_heun8_s1": {
+      "first": 507.6,
+      "median": 1039.8,
+      "last": 1341.9
+    },
+    "c8_euler4_plain_s0": {
+      "first": 624.9,
+      "median": 1838.6,
+      "last": 2011.8
+    },
+    "c8_heun8_plain_s0": {
+      "first": 523.0,
+      "median": 1178.6,
+      "last": 1551.2
+    },
+    "t8_cfg10": {
+      "first": 541.9,
+      "median": 593.9,
+      "last": 589.7
+    }
+  }
+}

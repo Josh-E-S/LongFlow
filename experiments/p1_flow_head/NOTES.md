@@ -1676,6 +1676,77 @@ curve AND Josh's ear.
 **Josh listens to all seven.** The A/B that matters most:
 `c8_euler4_s0` vs `c8_euler4_plain_s0` — same seed, only guidance differs.
 
+### Results (2026-08-16 — run and scored same day; L4, ~$2–3; ear pass pending)
+
+| tag | WER | coverage | voice % | horizon | sim med | sim last⅓ | rate | FD med |
+|---|---|---|---|---|---|---|---|---|
+| c8_euler4_plain_s0 | 0.933 | 8.1% | 1.3 | 8 s | 0.072 | 0.093 | — | 1839 |
+| **c8_euler4_s0** | **0.065** | 100% | 49.6 | **240 s** | 0.500 | 0.443 | 189 | 1419 |
+| **c8_euler4_s1** | **0.040** | 100% | 41.2 | 234 s | 0.490 | 0.436 | 188 | 1499 |
+| c8_heun8_plain_s0 | 0.102 | 99.4% | 4.8 | 64 s | 0.180 | 0.080 | 165 | 1179 |
+| **c8_heun8_s0** | **0.031** | 100% | 61.7 | 238 s | 0.522 | 0.453 | 174 | 1058 |
+| **c8_heun8_s1** | **0.033** | 100% | 61.4 | 240 s | 0.561 | 0.431 | 187 | 1040 |
+| t8_cfg10 | 0.298 | 81.4% | 21.9 | 210 s | 0.419 | 0.370 | 131 | 594 |
+
+**VERDICT (metric half): CFG REPAIR — STRONG, on BOTH samplers, BOTH
+seeds.** The pre-registered strong criterion is cleared by an order of
+magnitude on every axis:
+
+- **Content: closed-loop WER 0.031–0.065 ≈ the head's TEACHER-FORCED
+  quality (July: 0.030).** The exposure-bias content deficit is, on these
+  metrics, GONE. Full coverage, natural pacing (174–189 wpm), natural
+  render lengths (~270 s, no dead-audio padding), all four runs.
+- **Identity: half-recovered, not cured.** Voice fraction 41–62% (vs 1–5%
+  unguided), sim medians sit AT the 0.5 voice-likeness line, horizons
+  reach ~4 min of the 4.5-min render — but sim declines to ~0.44 by the
+  final third and FD still drifts (≈1040–1500 vs teacher 550). A slow
+  erosion remains.
+- **heun8 + CFG is the new best config** (WER 0.031, voice 62%, FD 1040):
+  with the guided field, dispersion-correct sampling is no longer garbled
+  — the GN1 sampler dilemma is RESOLVED by fixing the field, exactly as
+  prescribed ("fix the head — do not tune the integrator").
+- **Teacher at cfg 1.0 DEGRADES** (voice 21.9% vs 98.7%, rate 131 wpm,
+  WER 0.298): guidance is load-bearing for teacher identity too (FD
+  couldn't see it — dispersion fine, identity off; graded-curve rule
+  vindicated again). Raises the ceiling on what guided sampling can carry.
+
+Root-cause account now strongly supported: the July head was trained to
+predict guided targets from the cond stream alone AND sampled unguided.
+Restoring guidance at inference recovers content completely and identity
+halfway; the residue (slow identity erosion) is the part baked into the
+weights by the one-stream training gap — capture v2's dual-stream schema
+targets exactly that. GN7 instrument rule applies: intelligibility claims
+await Josh's ear. Per-seed consistency this night is tight (0.031/0.033,
+0.065/0.040) — first multi-seed-stable head result in the program.
+
+Ear verdict (Josh, 2026-08-16, `c8_heun8_s0`, verbatim close): "the
+heun8_s0 is best, but it still degrades over the duration. Almost like the
+voice is getting a very sore throat by the end, not as much whispery
+raspy anymore, a bit different, so starts out pretty good but still
+degrades over duration."
+
+**GN8 CLOSE-OUT: CFG REPAIR CONFIRMED (partial) — ear agrees with the
+metrics, does not overturn them.** heun8_s0 confirmed as the best config.
+Unlike GN7 (Whisper decoded content from audio a human found
+unintelligible past minute 4 — the instrument-divergence case), this ear
+pass and the metrics tell the SAME story: strong start, real but
+incomplete identity recovery, slow erosion across the render. The
+*texture* of the erosion changed from GN5–GN7's raspy/breath-collapse
+whisper to a vocal-strain/"sore throat" quality — read as: CFG removed
+the train/inference guidance mismatch (one dominant correlated-error
+source), and what surfaces underneath is the smaller residual correlated
+error GN5 already characterized (the loop amplifies whatever systematic
+bias is left in the head's per-frame prediction), now compounding into a
+different perceptual artifact rather than energy collapse. Not evidence
+of a head-capacity ceiling — nothing across GN1–GN8 traces a failure back
+to the 15M-param no-attention head running out of room; every traced
+cause has been *what supervises it* (one-stream/teacher-forced targets)
+or *what context it sees* (length-OOD). Constraint 5 stands. **Verdict:
+GREENLIT for capture v2 (dual-stream) → stage-2 on-policy training
+(Causal Forcing / CF++ family) as the cure for the residual erosion; no
+architecture change indicated.** heun8+CFG is the new operating
+inference config, superseding GN1's euler4-only recommendation.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
