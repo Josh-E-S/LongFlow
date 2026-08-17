@@ -2035,6 +2035,63 @@ wait), but wrong in hindsight once it ran unbounded overnight with zero
 completion signal. Worth a firmer cutoff next time a long-running cell's
 progress can't be directly observed.
 
+### Shaky-voice ablation, attempt 2 — result: undertraining, not sigma-mixing
+
+Rerun with the Drive-IO fix. **Ear verdict (Josh, 2026-08-17):** all six
+files — pools A (mixed), B (sigma==0 only), and C (v1 cache), both short
+and long test utterances — share the same core "underwater/shaky/not
+perfectly clear" character. They "differ a bit" but none is clean.
+
+**Both hypotheses ruled out cleanly**: B (no noised frames at all) still
+has it → sigma-mixing is NOT the cause. C (a completely different,
+always-clean, short-clip-only cache) still has it → the v2 cache is NOT
+implicated either. What's left, and well-supported by an independent
+prior data point: **step count.** All three checkpoints here got only
+5,000 steps — the deliberate bare minimum for a gate check. July's
+production head, same architecture and recipe, trained to 20,000 steps
+on v1-style data, was clean (0.030 WER / 0.984 sim, no shakiness
+reported). Same recipe, 5K → shaky (3x now); 20K → clean (once, on
+record). **Verdict: generic undertraining, not a capture v2 or
+sigma-mixing problem.** σ-conditioning is still the right fix for the
+separate closed-loop identity-erosion axis — just not this one.
+
+### THE REAL RUN — `train20k_v2_colab.ipynb` (2026-08-17)
+
+Josh: "let's train long and just get it over with." Decision: 20,000
+steps (not higher) — July's own E3 finding already showed 80K steps
+OVERFIT and got WORSE on held-out data on a similarly-sized cache (v1's
+478K frames vs v2's 510K), so this isn't a "more is safer" situation;
+20K was the established sweet spot at this data scale and is the target
+here too, verified empirically rather than assumed to transfer.
+
+Added real infrastructure the quick checks skipped, per the 2026-08-11
+"process rules now in force" that gate/ablation notebooks didn't
+implement:
+- **`train()` gained `checkpoint_every`/`checkpoint_path_fn`**
+  (`src/flow_head/trainer.py`) — intermediate checkpoint saving was
+  entirely missing before; a single final-step save can't catch an
+  overfit-past-X finding the way July's E3 did. 2 new tests, 84/84 green.
+- **Held-out split**: 5 scripts per word bin (25 total, stratified by
+  length), never trained on — every prior check trained on 100% of
+  available data with no generalization signal at all.
+- **Proven hyperparameters**: lr 2e-4→2e-5 cosine decay (July's actual
+  recipe; gate/ablation checks left lr constant), ema_decay 0.9999 (the
+  documented default — gate/ablation checks used a faster 0.999,
+  deliberately sized for their much shorter 5K-step horizon, not
+  appropriate here).
+- Checkpoints every 5K steps (5K/10K/15K/20K); held-out eval at each —
+  full 25-utterance eval at the final checkpoint, 2-per-bin subset (10
+  utterances) at the intermediate ones, tracing the same overfitting
+  curve July's E3 used to catch the 80K regression.
+
+`score_train20k_v2.py` (Mac-side, matches every gate-night scorer's
+pattern) computes held-out WER + speaker-sim per checkpoint via
+`src/eval/metrics.py`, and explicitly flags if the best held-out WER
+lands before the final step — the same overfitting signature to watch
+for.
+
+Not yet run.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

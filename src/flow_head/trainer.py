@@ -80,10 +80,19 @@ def train(
     device: str = "cpu",
     log_every: int = 500,
     seed: int = 0,
+    checkpoint_every: int | None = None,
+    checkpoint_path_fn=None,
 ) -> dict:
     """lr_final: if set, cosine-decay from lr to lr_final over the run
     (review-adversarial.md §3 — constant-lr-to-the-end leaves terminal loss
-    on the table)."""
+    on the table).
+
+    checkpoint_every/checkpoint_path_fn: if both given, saves an intermediate
+    checkpoint every `checkpoint_every` steps via `checkpoint_path_fn(step)`
+    -> path (process rule, 2026-08-11: "save intermediate checkpoints in ALL
+    runs" — this is what let the project catch the 20K-vs-80K overfit finding
+    in the first place; a single final-step save can't).
+    """
     import math
 
     head = head.float().to(device).train()
@@ -108,6 +117,8 @@ def train(
         if step % log_every == 0 or step == 1:
             recent = sum(losses[-log_every:]) / len(losses[-log_every:])
             print(f"step {step}/{steps}  loss {recent:.4f}  lr {opt.param_groups[0]['lr']:.2e}")
+        if checkpoint_every and checkpoint_path_fn and step % checkpoint_every == 0:
+            save_checkpoint(checkpoint_path_fn(step), head, ema, data, step=step)
     return {"losses": losses, "ema": ema}
 
 

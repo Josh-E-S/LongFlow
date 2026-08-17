@@ -107,6 +107,44 @@ def test_end_to_end_overfit_and_checkpoint_roundtrip(tmp_path):
     assert err < 0.7 * null, f"samples don't track conditions ({err:.3f} vs {null:.3f})"
 
 
+def test_intermediate_checkpoints_saved_at_requested_steps(tmp_path):
+    write_cache(tmp_path, n_utts=4, frames=16)
+    data = load_pairs(tmp_path)
+    head = FlowHead(FlowHeadConfig(d_model=DM, d_latent=DL, width=16, layers=1))
+    ckpt_dir = tmp_path / "ckpts"
+    ckpt_dir.mkdir()
+    seen_steps = []
+
+    def path_fn(step):
+        seen_steps.append(step)
+        return ckpt_dir / f"step{step}.pt"
+
+    train(
+        head,
+        data,
+        steps=30,
+        batch_size=16,
+        lr=1e-2,
+        ema_decay=0.9,
+        log_every=10_000,
+        checkpoint_every=10,
+        checkpoint_path_fn=path_fn,
+    )
+    assert seen_steps == [10, 20, 30]
+    for step in (10, 20, 30):
+        h, _, _ = load_checkpoint(ckpt_dir / f"step{step}.pt")
+        assert h.cfg.d_model == DM and h.cfg.d_latent == DL
+
+
+def test_no_checkpointing_when_args_omitted(tmp_path):
+    """Backward compat: omitting checkpoint_every/checkpoint_path_fn changes nothing."""
+    write_cache(tmp_path, n_utts=2, frames=10)
+    data = load_pairs(tmp_path)
+    head = FlowHead(FlowHeadConfig(d_model=DM, d_latent=DL, width=16, layers=1))
+    out = train(head, data, steps=20, batch_size=16, lr=1e-2, ema_decay=0.999, log_every=10_000)
+    assert len(out["losses"]) == 20
+
+
 def test_checkpoint_ema_differs_from_raw_weights(tmp_path):
     write_cache(tmp_path, n_utts=2, frames=10)
     data = load_pairs(tmp_path)
