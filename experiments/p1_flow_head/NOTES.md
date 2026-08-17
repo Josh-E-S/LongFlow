@@ -1941,6 +1941,27 @@ Pushed to `origin/main`. Josh needs to restart the runtime again and
 re-run cells 1-2 — resume will pick up from the 91+ scripts already
 banked in Drive.
 
+### CAPTURE V2 COMPLETE (2026-08-16) — `capture_v2_manifest.json`
+
+Ran clean after the attribution fix. Final tally:
+
+| | |
+|---|---|
+| scripts | 248 |
+| total frames | 510,143 (target 480,000 — overshot by ~6%, fine) |
+| word-bin spread | 150w:39, 300w:77, 600w:47, 1200w:47, 2400w:38 — all five bins populated, 300w over-represented (round-robin + resume/restart interruptions, not concerning) |
+| σ distribution | 0: 52.6%, (0,0.1): 0.75% (fp16 rounding artifact — sigma_draw() can't actually produce this range by design), [0.1,0.3): 36.3%, 0.3 (boundary): 1.6%, 0.4+: 8.8% — matches the designed 50/40/10 mix closely |
+
+Dual-stream (neg_hidden) + per-frame sigma schema confirmed present via
+the manifest generation itself (`d.get("sigma")` populated all 510,143
+entries). Cache lives at Drive `longflow_p1_cache_v2`, kept separate from
+v1's `longflow_p1_cache`.
+
+**Next: the mandatory 1K/5K gate check (hard constraint 6) before this
+cache feeds any training run** — decode a sample, listen, verify the
+dual-stream/sigma fields are sane before committing to a training spend.
+Not yet built.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
