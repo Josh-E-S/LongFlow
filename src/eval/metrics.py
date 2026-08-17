@@ -12,28 +12,38 @@ import soundfile as sf
 import torch
 
 _WHISPER = None
+_WHISPER_DEVICE = None
 _ECAPA = None
+_ECAPA_DEVICE = None
 _NORMALIZER = None
 
 
-def _whisper():
-    global _WHISPER
-    if _WHISPER is None:
+def _whisper(device: str = "cpu"):
+    """device: 'cpu' (default -- Mac-side scoring) or 'cuda' (Colab GPU
+    scoring, dramatically faster on long clips). Re-loads if a different
+    device is requested than what's cached -- fine since a single process
+    only ever uses one device in practice."""
+    global _WHISPER, _WHISPER_DEVICE
+    if _WHISPER is None or device != _WHISPER_DEVICE:
         from faster_whisper import WhisperModel
 
-        _WHISPER = WhisperModel("large-v3", device="cpu", compute_type="int8")
+        compute_type = "int8" if device == "cpu" else "float16"
+        _WHISPER = WhisperModel("large-v3", device=device, compute_type=compute_type)
+        _WHISPER_DEVICE = device
     return _WHISPER
 
 
-def _ecapa():
-    global _ECAPA
-    if _ECAPA is None:
+def _ecapa(device: str = "cpu"):
+    global _ECAPA, _ECAPA_DEVICE
+    if _ECAPA is None or device != _ECAPA_DEVICE:
         from speechbrain.inference.speaker import EncoderClassifier
 
         _ECAPA = EncoderClassifier.from_hparams(
             source="speechbrain/spkrec-ecapa-voxceleb",
             savedir="~/.cache/speechbrain/spkrec-ecapa-voxceleb",
+            run_opts={"device": device},
         )
+        _ECAPA_DEVICE = device
     return _ECAPA
 
 
@@ -58,23 +68,25 @@ def load_16k_mono(path) -> torch.Tensor:
     return t
 
 
-def wer(path, reference_text: str) -> dict:
-    """Whisper-large-v3 transcription WER vs reference (both normalized)."""
+def wer(path, reference_text: str, device: str = "cpu") -> dict:
+    """Whisper-large-v3 transcription WER vs reference (both normalized).
+    device='cuda' for GPU scoring (Colab) -- dramatically faster on long
+    clips than the default CPU path (Mac-side scoring)."""
     import jiwer
 
-    segments, _info = _whisper().transcribe(str(path), language="en", beam_size=5)
+    segments, _info = _whisper(device).transcribe(str(path), language="en", beam_size=5)
     hyp = " ".join(s.text for s in segments)
     norm = _normalizer()
     ref_n, hyp_n = norm(reference_text), norm(hyp)
     return {"wer": jiwer.wer(ref_n, hyp_n), "transcript": hyp.strip()}
 
 
-def speaker_similarity(path, reference_path) -> float:
+def speaker_similarity(path, reference_path, device: str = "cpu") -> float:
     """ECAPA cosine similarity between a clip and the reference voice."""
-    model = _ecapa()
+    model = _ecapa(device)
     embs = []
     for p in (path, reference_path):
-        wav = load_16k_mono(p).unsqueeze(0)
+        wav = load_16k_mono(p).unsqueeze(0).to(device)
         with torch.no_grad():
             embs.append(model.encode_batch(wav).squeeze())
     return float(torch.nn.functional.cosine_similarity(embs[0], embs[1], dim=-1))
@@ -101,9 +113,9 @@ def prosody(path) -> dict:
     }
 
 
-def clip_metrics(path, reference_text: str, reference_voice_path) -> dict:
+def clip_metrics(path, reference_text: str, reference_voice_path, device: str = "cpu") -> dict:
     return {
-        **wer(path, reference_text),
-        "speaker_sim": speaker_similarity(path, reference_voice_path),
+        **wer(path, reference_text, device=device),
+        "speaker_sim": speaker_similarity(path, reference_voice_path, device=device),
         **prosody(path),
     }
