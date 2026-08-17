@@ -2006,6 +2006,35 @@ this entry is the trail back to when it was first heard.
 **Next:** decide the stage-2 training approach (causal-CD parallel arm
 vs. the σ-conditioned noise-augmented head) and scope that build.
 
+### Shaky-voice ablation, attempt 1 — Drive-IO bug, no data (2026-08-17)
+
+Josh proposed a proper controlled ablation before doing more building
+("troubleshoot the system, need to know why before changing more
+things") to test undertraining vs. sigma-mixing as the cause of the
+1-2 Hz wobble. Built `gate_v2_ablation_colab.ipynb`: three checkpoints,
+identical architecture/hyperparameters/step count, only the training
+data pool differs (A = v2 mixed, reused; B = v2 sigma==0 only, new;
+C = v1 cache, reused if `gate_5k.pt` survived from July).
+
+**Pool C never finished loading — ran all night, timed out.** Cause:
+`pairs_from_files()` read v1's 10,000 individual files one at a time
+straight off the Drive mount. Pools A/B (248 files each) loaded near-
+instantly; C, at ~40x the file count, apparently never completed even
+overnight. The original P1 gate notebook (`gate_colab.ipynb`) hit this
+exact problem in July and documented the fix — bulk-copy to local disk
+before reading — which didn't get carried into this new notebook.
+**Fixed**: pool C now does one bulk `cp` of the whole v1 cache to local
+disk first (same pattern as the July gate), then reads from local files.
+Pushed. Rerun from cell 2 (pools A/B/checkpoints don't need redoing if
+the runtime is fresh — Colab session state doesn't survive a timeout
+either way, so this is effectively a clean restart from cell 1).
+
+**Process note:** mid-run advice was "let it ride rather than interrupt"
+— reasonable at the time (didn't want to throw away already-invested
+wait), but wrong in hindsight once it ran unbounded overnight with zero
+completion signal. Worth a firmer cutoff next time a long-running cell's
+progress can't be directly observed.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
