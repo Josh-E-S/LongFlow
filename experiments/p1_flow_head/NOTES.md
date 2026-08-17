@@ -1962,6 +1962,50 @@ cache feeds any training run** — decode a sample, listen, verify the
 dual-stream/sigma fields are sane before committing to a training spend.
 Not yet built.
 
+### 1K/5K GATE CHECK — `gate_v2_colab.ipynb` (2026-08-16/17)
+
+Ran clean after two bugs, both in the notebook, not the cache: (1)
+`decode_latents` OOM'd on capture v2's long-bin samples (up to ~6300
+frames) — it was copied from the original P1 gate, which only ever
+decoded ~48-frame clips in one shot; fixed by chunking to 30s pieces,
+mirroring the encode-side chunking already used elsewhere (GN6). Cache
+summary confirmed all 248 scripts carry intact `neg_hidden` + `sigma`,
+zero alignment errors on read.
+
+**Ear verdict (Josh, 2026-08-17):** roundtrip and all `_teacher.wav`
+clean. All `flow4`/`flow16` samples — short bin AND long bin, both NFE
+settings — share a consistent artifact: correct, clear speech content,
+but a rhythmic "shaky" quality-wobble, "up is good, down is degraded,"
+cycling roughly 1-2x/second. flow16 "maybe" marginally better than
+flow4 but the effect is still clearly present — no clean NFE separation.
+
+**Diagnosis:** the near-absence of a flow4-vs-flow16 gap is the key
+fact — if this were a sampling-resolution/dispersion artifact (the
+GN1-era euler4-vs-heun8 pattern), 16 steps should have cleaned it up
+much more than it did. Pointing instead at the trained WEIGHTS, not the
+integrator: consistent with this checkpoint's minimal 5K-step training
+(vs July's 20K-step production head) not yet converging to a stable
+per-frame velocity field. Distinct from the closed-loop collapse disease
+(GN4-8) on mechanism grounds — this run is teacher-forced (head reads
+the real teacher's hidden states, never its own output), so the
+feedback-amplification pathology GN5 proved doesn't apply here; this is
+a simpler undertraining symptom, not a structural bug. Also present
+about equally on short and long bins, meaning it currently swamps the
+context-length-quality signal capture v2 was built to test — that
+comparison needs a properly-trained checkpoint, not this 5K-step one.
+
+**Verdict: GATE PASSES** on what it's actually checking (cache is not
+corrupted, trains without erroring, content survives teacher-forced
+decode intact). The shaky texture is logged as a **WATCH ITEM, not
+dismissed** — per the ear-beats-metrics pattern (4 prior instances), if
+this exact 1-2 Hz wobble persists at a real training step count (20K+)
+in the eventual stage-2 run, that would be a genuine new finding
+requiring investigation rather than attributable to undertraining, and
+this entry is the trail back to when it was first heard.
+
+**Next:** decide the stage-2 training approach (causal-CD parallel arm
+vs. the σ-conditioned noise-augmented head) and scope that build.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
