@@ -2670,6 +2670,25 @@ combined+polish (0.076), identity-best = cleanabl+polish (0.522 flat).
 The ~0.52–0.57 identity band keeps recurring across configs (vs teacher-
 self 0.734) — likely the offline ceiling; stage-2's target.
 
+**Ear verdict on `cleanabl_polish2_s0` (Josh, 2026-08-18, verbatim):** "flat
+a bit, but it sounds pretty good, it starts out strong and maybe degrades
+just a little throughout where some artifacts happen at the end of
+utterances. its getting closer! So now its like a tiny bit of dirtiness
+still not tons... hardly any shakiness or garbled, only a bit. It now just
+sort of degrades to the snowy dirty noise with the voice, but almost
+smooth now. Like the first 10 seconds sound probbly 85-90 of teach, then
+the first minute I would grade at like 65-75."
+**Read: the 80% bar is TOUCHED at render start — first time ever.** The
+residual enemy has changed character: no collapse, no garble, no identity
+loss — a slow additive "snow/fuzz" accumulation over minutes plus
+artifacts at utterance ends. ECAPA said flat (0.522→0.525) because
+identity IS flat; the fuzz is a noise-floor/texture accumulation the sim
+metric can't see. This is the gentlest failure mode the loop has ever
+produced, and its accumulation profile is exactly the residue stage-2
+on-policy training exists to remove. Utterance-end artifacts noted as a
+possible polish re-decision cost at turn boundaries — split-path probe
+will separate it.
+
 **Next probe (cheap, before stage-2): SPLIT-PATH POLISH.** Tonight's patch
 polished ONE latent used for both audio and feedback. The two channels are
 separable: (a) polish-audio-only (loop dynamics unchanged → keeps 0.116
