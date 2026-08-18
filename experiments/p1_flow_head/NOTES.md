@@ -2473,6 +2473,43 @@ data entirely different; the regression is a DATA effect.
 4. Parked: "bucket lie" probe (expectations low post-sig02); 1200w/2400w
    top-up capture.
 
+## 2026-08-18 — CLEAN-FRAMES ABLATION PRE-REGISTRATION (not yet run)
+
+Notebook: `clean_ablation_colab.ipynb`. Scorer: `score_cleanabl_gpu_colab.ipynb`.
+A100, ~1–1.5 h, ~$5–8. Tests the HV2 close-out's prime suspect for the
+closed-loop identity regression (verdict 3): **the 47% noised-feedback
+frames in capture v2.**
+
+### Design
+
+One arm: control architecture (dual_stream=False — the only architecture
+that survives the loop), trained on capture v2's **clean frames only**
+(frame-level filter `sigma_bucket == 0`, ~268K pairs, mean/std recomputed on
+the clean subset), same recipe (20K, bs 1024, 2e-4→2e-5 cosine, EMA 0.9999,
+ckpts every 5K), same filtered file pool and identical held-out split as the
+HV2 run. Eval: (a) teacher-forced held-out at 20K (n=25, heun8+CFG 1.3 —
+comparability with 20000:B); (b) closed loop, 2 seeds, heun8+CFG, same
+GN5–8 script/protocol.
+
+Fixed comparison rows: arm B (mixed pool) closed loop = WER 0.116/0.119,
+sim_med 0.207/0.297, voice 0%; GN8 July-head (v1 data) = WER 0.031, sim_med
+0.522, voice 61.7%. Reseed floor: WER differences > 0.06 are real.
+
+### Gate criteria — written before the run
+
+| Verdict | Condition (both seeds) |
+|---|---|
+| **NOISED FRAMES CULPRIT** | WER ≤ 0.07 AND sim_med ≥ 0.42 (back in the GN8 band) → offline base trains CLEAN from now on; noise-robustness belongs exclusively to stage-2's on-policy data; the DAgger×GameNGen noised-teacher capture idea is retired for base training |
+| **PARTIAL** | clear improvement over arm B (sim_med +0.10 or WER −0.05) but below the GN8 band → noised frames contribute; remainder is register/prompt-mix; stage-2 proceeds from the clean-trained base, residual investigated later |
+| **NO RECOVERY** | ≈ arm B on both axes → noised frames acquitted; suspect becomes the long-form register / multi-prompt mix itself; investigate BEFORE stage-2 (v1-vs-v2 data-mix arms) |
+
+Held-out note logged in advance: the clean pool is ~56% of the frames, so a
+small teacher-forced dip vs 20000:B (0.163/0.901) is expected and does NOT
+count against the run; the closed-loop rows are the verdict.
+
+**Josh listens to both closed-loop renders** — the specific question for the
+ear: is the "underwater" quality gone?
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
