@@ -2623,6 +2623,62 @@ Fixed references: cleanabl CL rows (0.116/0.474/24.8% and 0.158/0.572/88.6%),
 GN8 July head (0.031/0.522/61.7%), reseed floor 0.06. Ear = authority on
 listenability; Josh's stated target = "80% sounding good enough for most."
 
+### Results (2026-08-18, same day; `polish_metrics.json` on Drive; partial ear pass)
+
+**KNOB WORKS — pre-registered verdict met, ear-first.** Josh on the 150w
+series (verbatim): "k3 is getting really close! they quality sound garble
+underwater crap is almost gone, so now the voice expression and voice
+clarity sound like teach, but theres still/now like a stutter every once in
+while or almost like a millisecond audio frame misses... It feels like weve
+alsmost fixed the [q]uality voice sounding good, now its like the speech
+flow sound conistent smooth needs work." Metrics agree: teacher-sim rises
+monotonically with k on BOTH scripts (150w 0.928→0.951; 1200w 0.925→0.954)
+with WER flat through k3 — and a real operating ceiling: **k5 on the long
+script costs content (WER 0.160→0.234)**, the polish occasionally
+re-deciding frames. Operating range: k2–k3. **This is the interventional
+confirmation of the manifold-distance model: pushing latents onto the
+teacher manifold removes the garble family.** Residual artifact = frame-
+boundary continuity (stutter); two suspects — decode 30s-chunk seams
+(plumbing; crossfade fixes) vs per-frame independent polish noise (shared/
+smoothed noise fixes); Josh to report stutter spacing.
+
+**Combined pool (arm M): NOT the base.** Held-out 0.126/0.901 ≈ cleanabl
+(0.123/0.914) with short/mid bins best-ever (300w 0.084, 600w 0.100) but
+long bins diluted. Closed loop: WER improved (0.094/0.115) but **identity
+regressed** (sim 0.374/0.328, voice 4.4/0%, last⅓ DECLINING again 0.333/
+0.243) — the 64%-v1-dominant mix pulled the head back toward July-head
+behavior (better words, eroding identity), trading away v2-clean's flat-
+identity property. Data composition steers the content-vs-identity axis;
+ratio is a tunable lever, not a free win. Pre-registered COMBINED WINS bar:
+failed (sim < 0.45).
+
+**Closed loop with polished feedback — the night's headline row:**
+
+| tag | WER | voice % | sim med / last⅓ | horizon |
+|---|---|---|---|---|
+| cleanabl s0 (no polish, ref) | 0.116 | 24.8 | 0.474 / 0.467 | 254 s |
+| **cleanabl_polish2_s0** | 0.243 | **62.0** | **0.522 / 0.525** | **282 s (full)** |
+| combined_cfg_s0 | 0.094 | 4.4 | 0.374 / 0.333 | 60 s |
+| combined_polish2_s0 | **0.076** | 0.0 | 0.319 / 0.267 | 0 |
+
+**On-manifold feedback partially confirmed:** on the cleanabl base, loop
+polish lifts identity to the July-head level (0.522) WITHOUT the July
+erosion (flat 0.525 in the final third), voice windows 2.5×, full-render
+horizon — at a content cost (WER 0.116→0.243, the k-cost showing up
+through the loop). Properties still refuse to co-locate: content-best =
+combined+polish (0.076), identity-best = cleanabl+polish (0.522 flat).
+The ~0.52–0.57 identity band keeps recurring across configs (vs teacher-
+self 0.734) — likely the offline ceiling; stage-2's target.
+
+**Next probe (cheap, before stage-2): SPLIT-PATH POLISH.** Tonight's patch
+polished ONE latent used for both audio and feedback. The two channels are
+separable: (a) polish-audio-only (loop dynamics unchanged → keeps 0.116
+WER, audio gets k3 texture — possibly the best-sounding config available
+today), (b) polish-feedback-only (isolates the loop effect), (c) both
+(tonight's). Plus the stutter fixes (shared polish noise; crossfaded
+decode). One cell-set, ~$3, on the cleanabl base. Ear verdicts on tonight's
+two loop renders + stutter spacing pending from Josh.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
