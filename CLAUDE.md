@@ -20,7 +20,53 @@ Full scope, positioning, data plan, and phases: `README.md`. ~~Paper target: Int
 - ~~**Next task is P1: the flow-head baseline** — caching pipeline (`src/cache/`, reuse the positive-stream logic from `src/steering/contrast_pairs.py`), then OT-CFM 4-NFE head with the mandatory 1K/5K gate check before the full 75K run.~~ **[2026-08-10]** P1 is mid-flight, not pending: caching pipeline built (batched, 4.9×), gate PASSED, 10K scaling PASSED, E3 steps-scaling FAILED. See the August addendum for the actual next action.
 - ~~Phase order: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.~~ **[2026-08-10]** See revised ordering in the August addendum.
 
-## Current state (2026-08-14 — READ THIS FIRST; supersedes the addenda below)
+## Current state (2026-08-18 — READ THIS FIRST; supersedes everything below)
+
+Three intense days (08-17→18) after the truncation-audit session; full log =
+`experiments/p1_flow_head/NOTES.md` from "FULL-HISTORY REVIEW SESSION"
+onward. Where things stand:
+
+- **Cache v2 audited and filtered** (25 truncated + 2 suspect files flagged
+  via Drive file-size forensics — `capture_v2_audit_flags.json`; always
+  filter, always stratify held-out by FILENAME bin, never meta).
+- **Head-v2 (dual-stream + σ-bucket) built and tested:** teacher-forced it
+  ties the control at half the compute; in closed loop it dies — learned
+  joint conditioning is MORE loop-fragile than arithmetic CFG outside the
+  network. Constraint-5 amendment (Josh): capacity increases permitted, but
+  only after no-param levers, so gains stay attributable.
+- **Noised-feedback capture frames were the "underwater" — clean-frames-only
+  training recovered loop identity** (0.21→0.47–0.57, FLAT through renders).
+  Rule: offline base trains CLEAN; the feedback path only ever receives
+  independent noise (EMA/correlated noise in the loop = GN5 poison, re-proven).
+  Combined v1+v2 pool traded identity back for content — data composition
+  steers that axis; not the base.
+- **TEACHER-POLISH discovered and knob-validated (the big one):** flow head
+  proposes the latent; the frozen DDPM head runs its last k steps on a
+  re-noised copy (SDEdit-style; verified against fork 07cb79fea scheduler).
+  k2–k3 removes the garble/underwater family — interventional proof of the
+  manifold-distance model (all student artifacts = one variable, distance
+  from the σ-VAE decoder's expected manifold). k5 re-decides content; don't.
+- **OPERATING CONFIG (pending final ear sign-off): `cleanabl_20k` +
+  heun8+CFG 1.3 + audio-only polish k=3.** Closed-loop WER 0.02–0.06
+  (program record, beats GN8's 0.031), full coverage, identity flat.
+  Josh's ear: first 10 s ≈ 85–90% of teacher — the 80% target touched.
+- **Instrument notes:** Whisper scorer rerun noise ≈ ±0.04 WER on identical
+  audio (differences <0.04 between scoring sessions are noise); EMA-0.9999
+  intermediate checkpoints are init-diluted (never read 5K/10K ckpts of a
+  0.9999 run as a training curve); per-seed rendition variance puts renders
+  in identity basins (~0.45 vs ~0.56) — render-level detect-and-reroll is
+  the product answer.
+- **Remaining gaps = stage-2's whole job:** (1) slow "snow" accumulation
+  over minutes (85-90% start → 65-75% by minute one, Josh-graded);
+  (2) the 0.45–0.56 identity band vs teacher-self 0.734. Plan: DAgger-style
+  on-policy collection (head drives the loop, frozen DDPM head labels the
+  self-generated states) + fine-tune from cleanabl_20k; spec sized in
+  dollars before spend; condition-drift monitor ships with it.
+- Literature verified 2026-08-17 (not scooped; three must-reads logged in
+  related-work.md); Inworld TTS-1 assessed (reward design for stage-2;
+  ~40 s cap strengthens C4 positioning).
+
+## Current state (2026-08-14 — superseded by the section above; background)
 
 Five gate nights (GN1–GN5, 2026-08-11→14, ~$15 total) are fully logged in
 `experiments/p1_flow_head/NOTES.md` — read the Gate Night entries before

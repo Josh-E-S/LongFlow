@@ -2737,6 +2737,41 @@ the operating config: bars = WER ≤ 0.06 AND sim_med ≥ 0.50 both seeds,
 Josh's ear on listenability. Notebook updated in place; rerun cells 1+3+4
 (done-tags skip, only the stack renders).
 
+## 2026-08-18 — STACK RESULTS + OPERATING CONFIG DECISION
+
+| tag | WER | voice % | sim med / last⅓ | horizon |
+|---|---|---|---|---|
+| sp_stack_s0 | 0.069 | 38.1 | 0.483 / 0.483 | 252 s |
+| sp_stack_s1 | 0.116 | 87.9 | 0.558 / 0.549 | 266 s |
+
+**Stack: below bars (narrowly), and not worth its complexity.** Per-seed
+against audio-only: s0 gains a little identity (+0.03 sim, +14% voice) at
+equal WER; s1 gains nothing on identity and pays double WER (0.116 vs
+0.054). The feedback-k2 lift is marginal and inconsistent — it does not
+justify modifying the loop. (Last night's both-k2 identity lift (0.522)
+likely rode the same rendition variance that gives s1-type renders 0.55+
+regardless.)
+
+**New instrument calibration — SCORER RERUN NOISE:** identical wav files
+scored in two scorer sessions moved by up to 0.042 WER (sp_audio_k3_s0
+0.022→0.064; both_ema 0.094→0.061; feed 0.599→0.597). Whisper-on-GPU
+transcription is not deterministic across sessions. **WER differences
+< ~0.04 between runs are measurement noise; the honest audio-k3 content
+claim is a band, WER ≈ 0.02–0.06 — still the program record either way.**
+Log alongside the reseed floor (0.06); the two stack together.
+
+**OPERATING CONFIG DECIDED (pending Josh's ear): `cleanabl_20k` base +
+heun8 + inference CFG 1.3 + AUDIO-ONLY teacher polish k=3 (EMA noise legal
+on the audio path; loop untouched).** Rationale: program-record content
+(0.02–0.06), texture at the k3 level Josh graded "almost gone" garble,
+identity equal to base, zero loop-modification risk, simplest possible
+mechanism. Per-seed rendition variance (the s0/s1 identity split,
+0.45-vs-0.56 basins) persists across ALL configs — note the product-side
+answer already exists: detect-and-reroll at the render level (per-window
+ECAPA picks the better seed). Remaining quality gaps, both stage-2
+targets: (1) the slow "snow" accumulation Josh graded 85-90%→65-75% over
+minute one; (2) the ~0.45–0.56 identity band vs teacher-self 0.734.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
