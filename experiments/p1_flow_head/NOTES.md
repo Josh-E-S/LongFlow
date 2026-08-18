@@ -2379,8 +2379,10 @@ all vindicated on-distribution.
   evidence of speech.)
 - `hv2ctl_cfg_heun8_s0` (control + inference CFG): "not great but speech is
   intelligble, just sounds like the guy is underwater or something. It does
-  go the full length held togheter." — the GN8-class config replicates on
-  the clean cache; still the only offline config that survives the loop.
+  go the full length held togheter." — ~~the GN8-class config replicates on
+  the clean cache~~ **[AMENDED same day by the scored rows: it does NOT
+  replicate — see the regression finding below]**; still the only offline
+  config that survives the loop.
 - `hv2_heun8_s0_sig02` (σ=0.2 injected + bucket 2 told): "worse, I barley
   hear 'Fancy' and thats it it goes full alien weird stuff then silence then
   more wierd stufff." **INVERSION of GN5/GN6:** on the one-stream head,
@@ -2407,24 +2409,69 @@ information gap fixed (teacher-forced ≥ control), loop unfixed.** The last
 - The hv2 20K checkpoint is the stage-2 initialization: healthy field,
   guidance absorbed, best long-context numbers to date.
 
-### Next (after morning close-out): stage-2 on-policy, sized before spend
+### OFFICIAL CLOSE-OUT (2026-08-18 morning; `headv2_metrics.json` in this dir)
 
-1. Morning: 20000:B + scored closed-loop rows → finalize this entry; pull
-   `headv2_metrics.json` from Drive.
-2. Optional $1 probe: "bucket lie" (bucket 2 told, NO injected noise) —
-   expectations lowered by the sig02 inversion; run only as part of a
-   planned night, not standalone.
-3. **New instrument (build with stage-2): per-frame condition-drift monitor**
-   — record the LM hidden state each frame during a render, plot Mahalanobis
-   distance to the cache's 470K-frame reference distribution against the
-   spectrogram timeline. Shows conditions leaving the manifold BEFORE the
-   ear hears it; the cause-vs-symptom chart Josh asked for (2026-08-18).
-4. **Stage-2 proper (DAgger-style, spec before spend):** collect on-policy
-   conditions by letting the hv2 head drive the loop (capture-wraps-patch
-   nesting, built July) while the frozen DDPM head labels those same states;
-   fine-tune hv2 from 20K on a teacher-forced + on-policy mixture; iterate
-   2–3 rounds. Est. tens of dollars. Gate criteria to be pre-registered
-   after the morning numbers.
+Held-out final rows: **20000:A 0.161 / 0.858** vs **20000:B 0.163 / 0.901**
+(n=25 each) — statistically tied; A wins the 1200w bin (0.125 vs 0.191), B
+wins 150w; A does it at HALF the head compute per sampler step (one field
+eval vs the CFG pair). Pre-registered teacher-forced check: no arm-A
+deficit, no training bug.
+
+Closed loop, scored (same GN5–8 script/protocol/scorer):
+
+| tag | WER vs script | coverage | voice % | sim med / last⅓ | rate wpm |
+|---|---|---|---|---|---|
+| hv2_heun8_s0 | 0.958 | 17.0% | 0 | −0.007 / −0.017 | 27 |
+| hv2_heun8_s1 | 0.956 | 17.5% | 0 | 0.030 / −0.003 | 28 |
+| hv2_heun8_s0_sig02 | 0.973 | 5.6% | 0 | 0.096 / 0.170 | 9 |
+| hv2ctl_cfg_heun8_s0 | **0.116** | **100%** | 0 | 0.207 / 0.166 | 199.7 |
+| hv2ctl_cfg_heun8_s1 | **0.119** | **100%** | 0 | 0.297 / 0.221 | 197.1 |
+| *GN8 July-head ref* | *0.031* | *100%* | *61.7* | *0.522 / 0.453* | *174* |
+
+**Verdict 1 — arm A closed loop: FAIL, pre-registered branch, both seeds.**
+Scorer verdict string: "dual-stream training hurt on both seeds; diagnose
+before any further spend" — scoped correctly to the LOOP (teacher-forced it
+matched the control). Ear and metrics agree.
+
+**Verdict 2 — σ-conditioning: NO RESCUE** (voice 0%, coverage 5.6% — worse
+than plain arm A; the GN5/GN6 noise-rescue inversion confirmed by machine).
+
+**Verdict 3 — NEW FINDING, the morning's most important number: the
+control-architecture head trained on capture v2 REGRESSED in closed loop vs
+the same architecture trained on v1 (GN8 July head): WER 0.116 vs 0.031
+(drift 0.088 > 0.06 reseed floor, flagged by the pre-registered replication
+check) and identity HALVED (sim_med 0.21–0.30 vs 0.52; voice% 0 vs 62).**
+Josh's "underwater" is that halved identity, heard. Teacher-forced best-ever
++ closed-loop worse = the v2 data mix bought on-distribution quality at the
+price of loop identity. Prime suspect: the **47% noised-feedback frames** —
+GN7's ear already found noised-teacher targets "flatter, slower, less
+emotional"; training half the pool on them plausibly bakes in the muffled
+register. Alternates: long-form register shift; multi-prompt dilution.
+NB the confound: July head = v1 data (short clips, clean); arm B = v2 data
+(turn-split long-form, 47% noised, multi-prompt) — architecture identical,
+data entirely different; the regression is a DATA effect.
+
+### Next actions, in order (nothing trains until 1 reports)
+
+1. **Clean-frames ablation (~30 min A100, the diagnosis):** train the
+   control architecture on capture v2's σ=0 frames only (~268K pairs,
+   filter `sigma < 0.05` at the frame level), closed-loop at 2 seeds, same
+   protocol. Identity recovers toward GN8's 0.52 → noised frames are the
+   culprit; the offline base trains CLEAN and noise-robustness moves to
+   stage-2's on-policy data (where it belonged; the noised-teacher capture
+   was always a proxy). No recovery → register/data-mix investigation
+   before stage-2.
+2. **Stage-2 DAgger collection (spec before spend):** hv2-or-best head
+   drives the loop (capture-wraps-patch, built July); frozen DDPM head
+   labels the self-generated states; fine-tune from the best base on a
+   teacher-forced + on-policy mixture; 2–3 rounds; est. tens of dollars.
+   Gates pre-registered with ≥2 seeds + graded sim + Josh's ear.
+3. **Condition-drift monitor ships with stage-2:** per-frame LM hidden
+   state recorded during renders, Mahalanobis distance to the cache
+   reference distribution plotted against the spectrogram timeline —
+   watch conditions leave the manifold BEFORE the ear hears it.
+4. Parked: "bucket lie" probe (expectations low post-sig02); 1200w/2400w
+   top-up capture.
 
 ## Gate Night 1 continued — venue read (updates review §5)
 
