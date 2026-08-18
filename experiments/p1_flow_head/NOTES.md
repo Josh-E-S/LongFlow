@@ -2177,6 +2177,165 @@ with a device param) is sound and reusable. What's not usable yet is
 trust in *this specific* 20K checkpoint and its held-out numbers, until
 the audit above happens.
 
+## 2026-08-17 — FULL-HISTORY REVIEW SESSION (no GPU; audit + literature re-verification)
+
+Josh asked for a from-scratch review of the whole experiment line ("have we
+been taking the right course"), prompted by the rough 8/16–17 session. Three
+deliverables, no GPU spent:
+
+### 1. Cache truncation audit — DONE without Colab (close-out step 1)
+
+Full write-up: **`capture_v2_audit.md`** + machine-readable
+`capture_v2_audit_flags.json`. Method: Drive file sizes are linear in frame
+count (6,269 B/frame, calibrated on the known-truncated exemplar), so implied
+wpm = bin words / implied duration exposes truncation with no download.
+**Result: 25 TRUNCATED + 2 SUSPECT of 248 files (~8% of frames), every
+truncated file from the pre-17:00 first session, 24/25 sitting within 1% of
+exactly two token-budget caps (7.48 MB = 300w budget, 14.97 MB = 600w
+budget).** Clean files' implied wpm lands precisely in the turn-split natural
+band (per-bin medians 150–168, max 192) — method validated. Damage is
+filterable: ~470K clean frames remain (at target); worst hit is the 2400w bin
+(38→26 scripts); optional ~3–4 A100-h top-up restores it. Truncated files
+poison meta labels and text-vs-audio eval, NOT the per-frame training pairs —
+so the v2_20k checkpoint's training is probably fine and its *evaluation* is
+what must be redone on a clean split.
+
+### 2. Finding: the v2 20K run did not implement the stage-2 design
+
+`train20k_v2_colab.ipynb` cell 2 trains on `utt.hidden` + `utt.latent` only —
+**`neg_hidden` and `sigma` are never read.** `FlowHead.forward` still takes
+(x_t, t, condition); there is no dual-stream input and no σ-bucket embedding.
+And the held-out eval sampled **unguided flow4**, not the GN8 operating config
+(heun8+CFG), with no closed-loop assay and n=1 seed. So the run is a
+stage-1 re-baseline on v2 data — legitimate as an undertraining check, but it
+does not test what capture v2 was built to enable, and none of its numbers
+bear on the CFG-repair or noise-training hypotheses. The head-v2 input
+contract (cond+neg concat + σ-bucket embedding — a new artifact tag per
+process rules) must be designed and built BEFORE the next training spend, or
+the next 20K steps re-learn the same one-stream blurred field GN8 diagnosed.
+
+### 3. Literature re-verification + scoop sweep (independent, direct fetches)
+
+- CF++ (2605.15141), dots.tts, GameNGen, Diffusion Forcing, Self Forcing,
+  GROW: all verified as characterized. **One correction: Causal Forcing
+  (2602.02214) never says "mode-seeking" or "accumulated history error" —**
+  its actual finding is "a large architectural gap at initialization cannot
+  be resolved by the subsequent DMD stage." Same practical lesson (strong
+  init before DMD), wrong words; fix before citing.
+- **Not scooped, re-confirmed 2026-08-17:** arXiv "VibeVoice" sweep returns
+  only the ASR product line + the original report; no TTS head distillation
+  anywhere; no published measurement of rate inflation (MagpieTTS-LF
+  2606.18485, the nearest long-form neighbor, never mentions pacing — cite
+  and differentiate).
+- **Three must-reads found before the stage-2 build:**
+  (a) **2411.18447** (Pasini et al., NeurIPS-24 workshop) — noise-augmented
+  continuous-AR *audio* explicitly to stop error accumulation, incl.
+  inference-time low-level noise = the GN5 hack, published. Validates the
+  whole direction AND narrows our novelty claim to the causal isolation +
+  the content/identity axis split + first-on-TTS (the 8/14 "novelty
+  calibration" entry anticipated video precedents; an audio one exists too).
+  (b) **2607.24731** — "Rethinking CFG in On-Policy Diffusion Distillation":
+  negative-branch asymmetry, i.e. OUR one-stream trap named and analyzed;
+  read before fixing the head-v2 objective. (c) **CuteTTS 2608.08638** —
+  continuous-AR TTS with "guidance-step distillation" absorbing CFG into the
+  student; the closest published answer to our dual-stream design question.
+
+### Course verdict
+
+The through-line P0→GN8 holds up under adversarial re-read: every pivot
+(N8/turn-split, feedback-OOD, CFG audit) is evidence-driven, pre-registered,
+and independently consistent with the verified literature. The 8/16–17
+session's failures were execution (notebook bugs, wrong-device scoring, and
+item 2 above), not direction. Stale note: CLAUDE.md's "first task: verify the
+50-min render" was already done and ear-certified 2026-08-15.
+
+~~**Next actions, in order:** (1) filter the 27 flagged files + re-derive the
+held-out split by FILENAME bin; (2) re-score the existing v2_20k checkpoints
+on the clean split (GPU scorer notebook, cheap) — decides if the 5K→20K trend
+is real; (3) read 2607.24731 + CuteTTS + 2411.18447, then lock the head-v2
+input contract (cond+neg + σ-bucket); (4) optional 1200w/2400w top-up
+capture; (5) train head-v2 on the filtered cache; gate = closed-loop
+heun8-or-native, ≥2 seeds, graded sim curve, Josh's ear (GN8 protocol).~~
+**[Superseded same day — steps 1, 3 and 5 executed/built below; step 2
+dropped (the old v2_20k checkpoint is superseded by the retrained control
+arm on the filtered pool — re-scoring it buys nothing that ships); step 4
+stays optional.]**
+
+## 2026-08-17 — HEAD-V2 BUILT + HV2 RUN PRE-REGISTRATION (code complete; not yet run)
+
+Josh: "whatever the BEST option is to do this right." Decision and build:
+
+### Design (locked after the targeted reading pass)
+
+**Head-v2 = dual-stream + σ-bucket conditioning, guidance absorbed into the
+learned field.** `FlowHeadConfig(dual_stream=True, sigma_buckets=4)`:
+`forward(x_t, t, condition, neg_condition, sigma_bucket)`, neg enters as a
+second summed projection (≡ concat + linear), σ as a zero-init learned
+embedding (GameNGen §3.2.1's exact mechanism). 17.63M params (vs 16.64M) —
+still a thin no-attention adapter; constraint 5 holds. No CFG combination at
+inference (`DualStreamFlowHeadPatch` passes VibeVoice's per-frame neg stream
+straight to the head, σ-bucket 0 = clean feedback).
+
+Reading-pass verdicts backing this (full agent report archived in session):
+- **2607.24731 formalizes v1's exact failure** ("Negative Branch Asymmetry":
+  privileged info in the teacher's neg branch → antagonistic branch errors).
+  Its trigger condition dissolves when the student SEES both streams — our
+  design is the information-complete fix; their PDM loss is the workaround
+  for when you can't do that. One warning adopted as a limitation note, not
+  a build: the guided field is a *scale-1.3-baked-in* artifact (no guidance
+  knob at inference without multi-scale capture + a w-embedding à la CuteTTS
+  2608.08638 — future capture-schema option if a scale sweep is ever wanted).
+- **CuteTTS** ships a guidance-absorbed student (cond-only input is safe for
+  them ONLY because their neg branch is an information subset; ours is a
+  separate LM forward — so their shortcut does not license dropping our neg).
+- Neither paper documents any over-sharpening problem from guided targets.
+
+Every layer now REFUSES silent conditioning mismatches in both directions
+(model forward, cfm_loss, trainer, patch) — the discard pattern that caused
+both the July CFG bug and the first v2 20K run's neg_hidden omission is now
+structurally impossible. `trainer.pairs_from_files(files, dual_stream=True)`
+refuses v1-style files; `trainer.filter_flagged` applies
+`capture_v2_audit_flags.json` loudly. Tests: `tests/test_headv2.py`, suite
+98/98 green, ruff clean.
+
+### The run: `train_headv2_colab.ipynb` (A100, ~2–3 h, ~$10–15) + `score_headv2_gpu_colab.ipynb`
+
+Pools: filtered clean cache (27 flagged files excluded), held-out = 5/bin by
+FILENAME bin, ~196 training scripts / ~470K frames. Two arms, same data, same
+recipe (20K steps, bs 1024, lr 2e-4→2e-5 cosine, EMA 0.9999, ckpt every 5K):
+**arm A** = head-v2 (dual+σ); **arm B (control)** = v1 architecture cond-only
+— at eval, arm B runs GN8's operating config (heun8 + inference CFG 1.3), so
+the comparison isolates *training-time* dual-stream conditioning against the
+best inference-time repair. Notebook order enforces hard constraint 6: a 5K
+gate arm renders clips for Josh's ear BEFORE the real cells run (expected:
+shaky-but-intelligible per the ablation; silence/collapse = stop).
+
+### Pre-registered criteria — written before the run
+
+Teacher-forced held-out (per checkpoint, clean split): informational +
+overfit watch (best-WER-before-final flags, July E3 signature). Arm A should
+be ≥ arm B; a large arm-A deficit = dual-stream training bug, stop.
+
+Closed-loop (the real gate; GN5–8 script recipe, heun8, seeds 0+1 per arm;
+reference row = GN8 July-head heun8+CFG: WER 0.031 / voice 61.7% / sim_med
+0.522 / sim_last⅓ 0.453 / full 240 s horizon):
+
+| Verdict | Condition (both seeds unless noted) |
+|---|---|
+| **STRONG** | arm A: WER ≤ 0.08 AND sim_last⅓ ≥ 0.55 AND horizon = full render → the training-time information gap was a main erosion driver; stage-2 scope shrinks to the residual |
+| **PARTIAL** | arm A: WER ≤ 0.08, sim gains < strong bar → content parity holds, identity still erodes; stage-2 on-policy carries identity as planned |
+| **FAIL** | arm A: WER > 0.15 or coverage < 90% on any seed → dual-stream training hurt; diagnose (σ-mix? stats?) before ANY further spend |
+| replication check | arm B ≈ GN8's row (±reseed floor); if not, the filtered-pool retrain changed the baseline — flag before comparing |
+
+Informational arm (no gate): `hv2_heun8_s0_sig02` — closed loop with σ=0.2
+feedback noise + matching bucket 2 told to the head: first test of whether
+σ-conditioning preserves identity where GN6's blind noise (g6_sig020, voice
+0%) could not. Bears directly on the stage-2 noise-training design.
+
+Josh listens to the gate clips, the best arm-A render vs its arm-B twin, and
+the sig02 arm. Ear verdicts recorded verbatim here; instrument rule (GN7)
+applies — Whisper numbers are content-survival only.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

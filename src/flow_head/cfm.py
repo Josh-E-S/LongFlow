@@ -13,16 +13,31 @@ import math
 import torch
 
 
-def cfm_loss(head, x1: torch.Tensor, condition: torch.Tensor, generator=None) -> torch.Tensor:
-    """x1: clean latents [B, d_latent]; condition: [B, d_model]."""
+def cfm_loss(
+    head,
+    x1: torch.Tensor,
+    condition: torch.Tensor,
+    generator=None,
+    neg_condition: torch.Tensor | None = None,
+    sigma_bucket: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """x1: clean latents [B, d_latent]; condition: [B, d_model].
+
+    neg_condition/sigma_bucket: head-v2 conditioning, forwarded verbatim; the
+    head itself refuses a mismatch with its config in either direction."""
     if not torch.isfinite(x1).all() or not torch.isfinite(condition).all():
         raise ValueError("non-finite training batch — refusing to step")
+    if neg_condition is not None and not torch.isfinite(neg_condition).all():
+        raise ValueError("non-finite neg_condition batch — refusing to step")
     b = x1.shape[0]
     t = torch.rand(b, device=x1.device, generator=generator)
     x0 = torch.randn(x1.shape, device=x1.device, dtype=x1.dtype, generator=generator)
     x_t = (1 - t[:, None]) * x0 + t[:, None] * x1
     v_target = x1 - x0
-    v_pred = head(x_t, t, condition)
+    if neg_condition is None and sigma_bucket is None:
+        v_pred = head(x_t, t, condition)  # v1 heads keep the 3-arg call
+    else:
+        v_pred = head(x_t, t, condition, neg_condition=neg_condition, sigma_bucket=sigma_bucket)
     return torch.nn.functional.mse_loss(v_pred, v_target)
 
 

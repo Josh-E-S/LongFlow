@@ -26,6 +26,9 @@ class PairData:
     latent: torch.Tensor  # [N, d_latent] fp32, standardized
     mean: torch.Tensor  # [d_latent]
     std: torch.Tensor  # [d_latent]
+    # head-v2 (2026-08-17): None on v1-style pools
+    neg_hidden: torch.Tensor | None = None  # [N, d_model] fp32
+    sigma_bucket: torch.Tensor | None = None  # [N] long (see model.sigma_to_bucket)
 
     @property
     def d_model(self) -> int:
@@ -41,16 +44,61 @@ def load_pairs(cache_dir, limit: int | None = None) -> PairData:
     files = sorted(Path(cache_dir).glob("*.pt"))[:limit]
     if not files:
         raise FileNotFoundError(f"no cached utterances in {cache_dir}")
-    hiddens, latents = [], []
+    return pairs_from_files(files)
+
+
+def pairs_from_files(files, dual_stream: bool = False) -> PairData:
+    """Flatten an explicit file list into frame pairs; compute latent stats.
+
+    dual_stream=True reads the v2 fields (neg_hidden + sigma) and REFUSES any
+    file missing them — silently training one-stream on a dual-stream pool is
+    the exact discard bug of the 2026-08-15 CFG audit (and of the first v2
+    20K run, which never read neg_hidden at all)."""
+    from src.flow_head.model import sigma_to_bucket
+
+    if not files:
+        raise FileNotFoundError("empty file list")
+    hiddens, latents, negs, sigmas = [], [], [], []
     for f in files:
         utt = load_utterance(f)
         hiddens.append(utt.hidden.float())
         latents.append(utt.latent.float())
+        if dual_stream:
+            if utt.neg_hidden is None or utt.sigma is None:
+                raise ValueError(f"{f}: dual_stream pool but neg_hidden/sigma missing")
+            negs.append(utt.neg_hidden.float())
+            sigmas.append(utt.sigma.float())
     hidden = torch.cat(hiddens)
     latent = torch.cat(latents)
     mean = latent.mean(dim=0)
     std = latent.std(dim=0).clamp_min(1e-4)
-    return PairData(hidden=hidden, latent=(latent - mean) / std, mean=mean, std=std)
+    return PairData(
+        hidden=hidden,
+        latent=(latent - mean) / std,
+        mean=mean,
+        std=std,
+        neg_hidden=torch.cat(negs) if dual_stream else None,
+        sigma_bucket=sigma_to_bucket(torch.cat(sigmas)) if dual_stream else None,
+    )
+
+
+def filter_flagged(files, flags_path) -> list:
+    """Drop cache files named in a capture_v2_audit_flags.json ('flagged' key).
+
+    Loud by design: prints the counts and raises if the flag list matches
+    nothing (wrong dir would silently train on poisoned data otherwise)."""
+    import json
+
+    with open(flags_path) as fh:
+        flagged = set(json.load(fh)["flagged"])
+    keep = [f for f in files if Path(f).stem not in flagged]
+    hit = len(files) - len(keep)
+    print(
+        f"filter_flagged: {len(files)} files -> {len(keep)} (removed {hit}/{len(flagged)} flagged)"
+    )
+    if flagged and hit == 0:
+        raise ValueError("flag list matched no files — wrong cache dir or stale flags?")
+    return keep
 
 
 class EMA:
@@ -98,6 +146,10 @@ def train(
     head = head.float().to(device).train()
     hidden = data.hidden.to(device)
     latent = data.latent.to(device)
+    # dual-stream/sigma mismatches between head config and pool are refused by
+    # the head's own forward on step 1 — no silent one-stream fallback here
+    neg = data.neg_hidden.to(device) if data.neg_hidden is not None else None
+    sig = data.sigma_bucket.to(device) if data.sigma_bucket is not None else None
     opt = torch.optim.Adam(head.parameters(), lr=lr, betas=(0.9, 0.95), weight_decay=0.0)
     ema = EMA(head, ema_decay)
     g = torch.Generator(device="cpu").manual_seed(seed)
@@ -107,7 +159,13 @@ def train(
             frac = 0.5 * (1 + math.cos(math.pi * step / steps))
             opt.param_groups[0]["lr"] = lr_final + (lr - lr_final) * frac
         idx = torch.randint(0, hidden.shape[0], (batch_size,), generator=g)
-        loss = cfm_loss(head, latent[idx], hidden[idx])
+        loss = cfm_loss(
+            head,
+            latent[idx],
+            hidden[idx],
+            neg_condition=neg[idx] if neg is not None else None,
+            sigma_bucket=sig[idx] if sig is not None else None,
+        )
         opt.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0)
@@ -157,6 +215,9 @@ def sample_latents(
     nfe: int = 4,
     sway: float = 0.0,
     seed: int | None = None,
+    neg_condition: torch.Tensor | None = None,
+    sigma_bucket=0,
+    sampler=None,
 ) -> torch.Tensor:
     """condition [T, d_model] -> head-space latents [T, d_latent] (de-standardized).
 
@@ -166,10 +227,22 @@ def sample_latents(
     for reproducible offline evals. sway default changed -1.0 -> 0.0: the
     front-loaded grid leaves a giant final step in the re-expansion phase and
     under-disperses even a perfect field (§2b); sweep it explicitly in E1.
+
+    neg_condition [T, d_model] + sigma_bucket: required for dual-stream/
+    sigma-conditioned heads (bound via model.BoundField); the head refuses a
+    config mismatch either way. sampler: euler_sample default; pass
+    cfm.heun_sample for dispersion-correct evals (GN8 operating config).
     """
+    from src.flow_head.model import BoundField
+
     device = next(head.parameters()).device
     g = None if seed is None else torch.Generator(device=device).manual_seed(seed)
-    z = euler_sample(
-        head, condition.float().to(device), head.cfg.d_latent, nfe=nfe, sway=sway, generator=g
+    field = head
+    if head.cfg.dual_stream or head.cfg.sigma_buckets > 0:
+        neg = neg_condition.float().to(device) if neg_condition is not None else None
+        field = BoundField(head, neg, sigma_bucket)
+    sample_fn = sampler or euler_sample
+    z = sample_fn(
+        field, condition.float().to(device), head.cfg.d_latent, nfe=nfe, sway=sway, generator=g
     )
     return z * latent_std.to(device) + latent_mean.to(device)

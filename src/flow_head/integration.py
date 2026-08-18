@@ -121,6 +121,55 @@ class _CFGField:
         return v_neg + self.scale * (v_cond - v_neg)
 
 
+class DualStreamFlowHeadPatch(FlowHeadPatch):
+    """FlowHeadPatch for head-v2: passes VibeVoice's per-frame neg_condition
+    straight through to the dual-stream head (guidance is absorbed in the
+    learned field — no CFG combination on top, unlike CFGFlowHeadPatch) and
+    binds a constant sigma bucket (default 0 = clean feedback at inference).
+
+    Refuses to run a non-dual head, and refuses a missing neg_condition —
+    both would silently reproduce the one-stream bias this head exists to fix.
+    """
+
+    def __init__(self, *args, sigma_bucket: int = 0, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.head.cfg.dual_stream:
+            raise ValueError("DualStreamFlowHeadPatch requires a dual_stream head config")
+        self.sigma_bucket = sigma_bucket
+
+    def __enter__(self):
+        from src.flow_head.model import BoundField
+
+        self._was_instance_attr = "sample_speech_tokens" in vars(self.model)
+        self._orig = getattr(self.model, "sample_speech_tokens", None)
+        patch = self
+
+        def flow_sample_dual(condition, neg_condition=None, cfg_scale=None):
+            if neg_condition is None:
+                raise ValueError(
+                    "dual-stream head got no neg_condition — caller has CFG disabled? "
+                    "(cfg_scale=1.0 suppresses the neg stream upstream)"
+                )
+            t0 = time.time()
+            patch.calls += 1
+            field = BoundField(patch.head, neg_condition.float(), patch.sigma_bucket)
+            z = patch.sampler(
+                field,
+                condition.float(),
+                patch.head.cfg.d_latent,
+                nfe=patch.nfe,
+                sway=patch.sway,
+                generator=None,  # fresh independent x0 EVERY frame — never seeded
+            )
+            z = z * patch.std + patch.mean
+            patch.time_s += time.time() - t0
+            patch.latents.append(z.detach().float().cpu())
+            return z.to(condition.dtype)
+
+        self.model.sample_speech_tokens = flow_sample_dual
+        return self
+
+
 class CFGFlowHeadPatch(FlowHeadPatch):
     """FlowHeadPatch that honors neg_condition/cfg_scale instead of dropping
     them. Falls back to the unguided field when the caller passes no
