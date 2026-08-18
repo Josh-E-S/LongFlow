@@ -60,6 +60,39 @@ SwanBench-Speech.
   level; unpublished. Footnote as the community's working alternative — consistent
   with our finding that VibeVoice's internals don't expose steerable affect range.
 
+## Inworld TTS-1 (2507.21138, Jul 2025) — read 2026-08-17 (Josh flagged it)
+
+Discrete-token AR TTS: X-codec2 (single codebook 65,536, 50 tok/s) on
+LLaMA-3.2-1B / 3.1-8B, 48 kHz decoder, 11 languages, MIT **training code**
+(SFT + multi-node vLLM RL) — but **no weights released anywhere** (GitHub +
+HF both checked). Relevance to us, in order:
+
+1. **Stage-2 evidence + reward design.** Their GRPO alignment stage uses a
+   composite reward that is literally our two closed-loop failure axes plus
+   quality: `R = exp(−2.5·WER)` (Whisper-large-v3) + WavLM speaker-sim +
+   DNSMOS, equal weights, 8 rollouts/prompt on a 1K-hour subset. Second
+   sighting of on-policy RL for TTS (with GROW 2608.03215) and the earlier
+   one; their open-sourced RL pipeline is the infra reference. Caveat: their
+   policy is a discrete-token LM — gradients through token logits; our
+   student is a continuous flow head, so the recipe transfers as *reward
+   design + evidence*, not drop-in code (GROW's advantage-weighted flow
+   objective remains the mechanically-matching variant).
+2. **Long-form positioning sentence.** Max training sequence 2,048 tokens ≈
+   40 s of audio; they note longer generations degrade and offer nothing
+   beyond streaming chunking. A 2025 top-rated commercial-grade system caps
+   at ~40 s — the 90-min territory (N8, drift curves, chunked-parallel
+   renders) stays unclaimed. Cite in C4 framing.
+3. **Emotion markups = the trained-affect contrast for N7.** 8 styles + 7
+   non-verbals via LoRA (r16, α32) on ~180 h of paired neutral/stylized data
+   (style tag as transcript delimiter, 0.5–1.5 s silence join). This is what
+   affect control costs when the backbone must LEARN it — supports N7's
+   conclusion that training-free steering can't exceed the backbone's affect
+   range. In-paper: one contrast sentence. (A VibeVoice-LoRA emotion port
+   using their exact data recipe is a clean SEPARATE project — it violates
+   LongFlow constraint 1 by design, so it lives outside this repo if ever.)
+4. Not relevant to C1: discrete-codec architecture (constraint 4 divide);
+   no diffusion/flow component to distill.
+
 ## Ecosystem notes
 
 - VibeVoice-ASR (2601.18184, MSR, Mar 2026) exists — the backbone is a live
