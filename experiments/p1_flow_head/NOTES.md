@@ -2092,6 +2092,91 @@ for.
 
 Not yet run.
 
+### SESSION CLOSE-OUT (2026-08-17) — bad day, real finding buried in it, read this first
+
+Josh's words: "this has been horrible and a waste of time and money for
+2 days." That's accurate and should not be softened. Full honest
+retrospective, then the one finding that actually matters, then the
+concrete next action.
+
+**What went wrong, in order, so it doesn't repeat:**
+1. Mixed-bin batching bug in `capture_v2_colab.ipynb` — caught mid-run,
+   fixed, but its damage to already-captured files (below) wasn't
+   understood until much later.
+2. Batched-capture attribution bug — ate real GPU hours twice before the
+   per-element fix landed.
+3. Decode OOM on long-context latents — fixed, cheap.
+4. **The big one: `score_train20k_v2.py` ran Whisper-large-v3 on Josh's
+   Mac CPU for 3+ hours and produced nothing** — should have run on
+   Colab GPU from the start (Josh has premium Colab specifically for
+   this). Killed with zero output to show for it.
+5. Rebuilt as a GPU Colab scorer. Direct browser drag-in of the ~1GB
+   result zip silently truncated (BadZipFile).
+6. Fixed to read from Drive — but the fix used a **recursive glob across
+   Josh's entire Drive tree**, the exact same slow-FUSE-mount trap hit
+   earlier with the 10,000-file v1 cache, just in a new spot. Caught by
+   Josh, not by me, again.
+7. Scoring finally ran and mostly completed (steps 5K/10K/15K/20K, 24 of
+   25 at the final step before a GPU OOM on the last long clip).
+
+**The finding underneath all of it, which is real and matters:** some
+files in the capture v2 cache — the ones captured during the buggy
+mixed-batching window, before the fix in the "Second bug" entry above —
+are not just mislabeled, they appear **genuinely truncated**. Evidence:
+`cv2_1200w_4f19765a` (filename says a true ~1200-word/~7min script) has
+an actual rendered duration of **159s** — nowhere near enough for its
+true content. The mechanism: during the bug, `max_new_tokens` was sized
+from whichever bin *triggered* a batch flush, not each item's own
+target, so a long script swept into a short-budget batch would get cut
+off mid-capture. Both its teacher capture and anything trained from it
+are working from incomplete data. In the step-20000 held-out results,
+WER is bimodal in exactly the way this predicts: files whose corrupted
+meta label doesn't match their true filename bin score WER ~0.7-0.8
+(broken/truncated); files where label and filename happen to agree score
+~0.08-0.2 (clean, and genuinely improving 5K→20K). This is not the model
+struggling with long content — it's contaminated data in the comparison.
+
+**Consequence:** an unknown fraction of the 248-script v2 cache (likely
+concentrated in the ~91 scripts captured before the mid-session batching
+fix landed) may contain truncated renders. This means:
+- The held-out split for this 20K run was NOT cleanly length-stratified
+  as designed (25 held-out scripts skewed heavily toward one filename
+  bin, zero true 300w/600w representation — the corrupted label, not
+  true content, drove the stratification).
+- Some fraction of the 223-script *training* pool for this run may also
+  be truncated, not just the held-out eval — unquantified.
+- The clean-looking checkpoints (files where label happened to match
+  truth) still show a strong, real, improving trend 5K→20K — that signal
+  is probably genuine, just not yet cleanly separable from the noise
+  without a proper audit.
+
+**Next action for a fresh session, in order:**
+1. **Audit, don't guess.** For every file in `longflow_p1_cache_v2` on
+   Drive, compare its filename-embedded target-word bin against its
+   actual frame count / rendered duration (7.5 Hz, ~165-190 wpm natural
+   pace gives an expected range per bin). Flag anything that doesn't
+   fit — that's the truncated set.
+2. **Decide, based on how big the damage is**: if it's a small minority
+   of files, filter them out and re-derive a clean held-out split +
+   retrain (cheap, no new capture). If it's a large fraction, a targeted
+   re-capture of just the affected scripts is probably faster than
+   distrusting the whole cache.
+3. Only after that: re-run the held-out eval (the GPU scorer notebook
+   works now — `score_train20k_v2_gpu_colab.ipynb`, reads the zip from
+   Drive root, non-recursive) on a cache that's actually clean, and
+   redo the per-bin breakdown for real this time.
+4. `train20k_v2_metrics.json` was never written (the run crashed on the
+   final entry) — the only numbers that exist are in this session's
+   transcript, not any saved file. Re-scoring is required regardless of
+   what the audit finds.
+
+Nothing was lost that can't be recovered — the 248-script cache and all
+its component data are still on Drive, and the infra built today (dual-
+stream capture, the attribution fix, checkpoint intervals, GPU scoring
+with a device param) is sound and reusable. What's not usable yet is
+trust in *this specific* 20K checkpoint and its held-out numbers, until
+the audit above happens.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
