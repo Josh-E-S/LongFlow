@@ -2558,6 +2558,71 @@ noised-teacher capture component (DAgger×GameNGen proxy) is retired for
 base training; stage-2 proceeds from the clean-trained base per the
 pre-registered PARTIAL branch. Ear verdicts to be appended verbatim.
 
+## 2026-08-18 — EAR VERDICTS (clean ablation) + SCOPE DECISION + the "one sound" observation
+
+**Ear verdicts (Josh, verbatim):** s0 — "less underwatery to where now its
+just a slight garbled, but no emaotion, just flat." s1 — "expressivness is
+great, but quality is a bit worse... its not underwater, its a bit garbled
+but its like just degraded sound." Both confirmed intelligible to 5 min.
+Josh places both at "55-70 percent" of teacher; his bar: "if we could get
+to 80% sounding good enough for most I'd be happy." s0-vs-s1 split maps to
+the E1 dispersion axis (under-dispersed/flat vs dispersed/rough).
+
+**Instrument-grade observation (Josh):** "across most of our tests the
+sound is similar the underwater, garbled, not as clear sound, but just at
+different levels or frequency... I want to just turn a nob." — consistent
+with the single-axis model: every student artifact family (ghosting,
+muffle, underwater, garble) = latent fine-structure distance from the
+σ-VAE decoder's expected manifold, at different magnitudes. Evidence base:
+roundtrip-clean teacher latents (July), rescale-made-it-worse (July),
+renorm-worse-than-nothing (GN5), dispersion→audibility mapping (E1).
+
+**SCOPE DECISION (Josh, 2026-08-18): constraint 5 relaxed** — see the dated
+amendment in CLAUDE.md. Head capacity may grow if quality demands it; the
+paper's claim is the method + the quality-vs-size-vs-NFE tradeoff curve
+(speed story is carried by chunked-parallel batching). Ordering discipline
+retained: no-param levers first (teacher-polish knob, combined clean pool,
+MeanFlow), capacity ladder after, so gains stay attributable.
+
+## 2026-08-18 — POLISH + COMBINED-POOL NIGHT PRE-REGISTRATION (not yet run)
+
+Notebook: `polish_combined_colab.ipynb`. Scorer: `score_polish_gpu_colab.ipynb`.
+A100, ~1.5–2 h, ~$10. The two no-param quality levers, per the amended
+constraint-5 ordering. Teacher-polish mechanics verified against the pinned
+fork commit (07cb79fea): `sample_speech_tokens` runs a vendored
+DPMSolverMultistep with in-loop CFG; `add_noise` + mid-schedule `step()`
+(diffusers-style `index_for_timestep`) support an SDEdit-style partial
+denoise. Polish = flow-sample z → re-noise to the k-th-from-last timestep of
+the teacher's 10-step schedule → run the teacher head's last k steps (CFG
+1.3). **k IS the knob** (0 = raw student, larger = more teacher). Cost/frame
+≈ k × ~5 ms of the 123M head on top of the flow head — k=2 keeps ~2×
+head-level speedup vs the full DDPM head.
+
+### Arms
+
+- **P — the knob, teacher-forced:** cleanabl_20k head, 2 held-out utts
+  (150w + 1200w), k ∈ {0, 1, 2, 3, 5}. Ten wavs to Drive; Josh turns the
+  knob with his ears. Metrics per k (WER vs text, ECAPA vs teacher render).
+- **M — combined clean pool:** v1 cache (478K clean short-clip frames) +
+  v2 clean σ=0 frames (268K long-form) = ~746K, control architecture, same
+  recipe (20K, ckpts every 5K). Held-out = the same v2 25-script split.
+- **CL — closed loop (heun8+CFG, GN5–8 protocol):** combined head seeds
+  0/1; cleanabl head + polish k=2 seed 0; combined head + polish k=2 seed 0
+  (the stacked "80% candidate").
+
+### Gate criteria — written before the run
+
+| Verdict | Condition |
+|---|---|
+| **KNOB WORKS** | some k: Josh hears clearly less garble than k=0 without losing the voice, AND metrics don't contradict (sim within −0.05 of k=0, WER not worse by >0.06) → polish enters the operating config; quality-vs-k curve is a paper figure |
+| **COMBINED WINS** | arm M held-out ≤ 0.123 WER (match/beat clean pool) AND closed-loop both seeds WER ≤ 0.09 with sim_med ≥ 0.45 → combined pool becomes the offline base |
+| **MERGED SUCCESS** | any CL config: WER ≤ 0.07 AND sim_med ≥ 0.50 both-seed-or-ear-confirmed → July's content precision + v2's flat identity achieved in one head; stage-2 scope shrinks to polish-level residue |
+| **NULL (either lever)** | no k audibly helps / arm M ≤ cleanabl on both axes → that lever retires; stage-2 (on-policy from the best base) proceeds unchanged |
+
+Fixed references: cleanabl CL rows (0.116/0.474/24.8% and 0.158/0.572/88.6%),
+GN8 July head (0.031/0.522/61.7%), reseed floor 0.06. Ear = authority on
+listenability; Josh's stated target = "80% sounding good enough for most."
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
