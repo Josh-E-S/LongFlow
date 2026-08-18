@@ -2510,6 +2510,54 @@ count against the run; the closed-loop rows are the verdict.
 **Josh listens to both closed-loop renders** — the specific question for the
 ear: is the "underwater" quality gone?
 
+### Results (2026-08-18 — run + scored same day; `cleanabl_metrics.json` on Drive; ear pass pending)
+
+**Held-out 20000:C (clean pool, n=25): WER 0.123 / sim 0.914 — BETTER than
+both mixed-pool arms (A 0.161/0.858, B 0.163/0.901) on 56% of the frames.**
+The pre-registered "small dip expected" note was wrong in the good
+direction: the noised frames were dragging down teacher-forced quality too.
+Clean 268K > mixed 470K. New best-ever, superseding yesterday's.
+
+Closed loop (heun8+CFG, same protocol):
+
+| | s0 | s1 | arm B (mixed) | GN8 July head |
+|---|---|---|---|---|
+| WER vs script | 0.116 | 0.158 | 0.116/0.119 | 0.031 |
+| coverage | 100% | 100% | 100% | 100% |
+| voice % | 24.8 | **88.6** | 0 | 61.7 |
+| sim med / last⅓ | 0.474 / 0.467 | **0.572 / 0.569** | 0.21–0.30 | 0.522 / 0.453 |
+| rate wpm | 205 | 208 | ~198 | 174 |
+
+**Scorer verdict: PARTIAL** (pre-registered): the sim bar passed on BOTH
+seeds (0.474/0.572 ≥ 0.42) — s1 actually EXCEEDS the July head — but the
+WER bar (≤0.07) failed (0.116/0.158; per-seed spread 0.042, inside the
+reseed floor). Reading:
+
+1. **Noised frames were the identity killer, confirmed.** Removing them
+   took loop sim from 0.21–0.30 (voice 0%) back to 0.47–0.57 (voice up to
+   88.6%). The GN7 "flatter/noised-teacher-targets" suspicion was right.
+2. **New observation — identity is FLAT through the render on both seeds**
+   (last⅓ ≈ median: 0.467/0.474 and 0.569/0.572), where the July head
+   ERODED (0.522→0.453). The long-form turn-split training data appears to
+   buy within-render identity stability; July's short-clip data bought
+   per-frame content precision (WER 0.031 vs 0.116). Complementary
+   strengths, cleanly measured.
+3. **Residual vs July head = content precision** (WER 0.116–0.158 vs
+   0.031), possibly linked to the faster render rate (205–208 vs 174 wpm)
+   and/or the smaller clean pool. This is the stage-2 target — and it also
+   motivates a cheap offline arm first:
+4. **Registered option — COMBINED CLEAN POOL:** v1 cache (478K clean
+   short-clip frames) + v2 clean frames (268K long-form) = 746K frames,
+   the largest all-clean pool available, covering both registers. One
+   ~30–40 min A100 train; could merge July's WER with v2-clean's flat
+   identity before stage-2 even starts. Candidate for the same night as
+   the stage-2 collection.
+
+Consequences: **the offline base trains CLEAN from now on**; the
+noised-teacher capture component (DAgger×GameNGen proxy) is retired for
+base training; stage-2 proceeds from the clean-trained base per the
+pre-registered PARTIAL branch. Ear verdicts to be appended verbatim.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
