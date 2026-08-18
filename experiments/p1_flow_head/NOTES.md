@@ -2336,6 +2336,96 @@ Josh listens to the gate clips, the best arm-A render vs its arm-B twin, and
 the sig02 arm. Ear verdicts recorded verbatim here; instrument rule (GN7)
 applies — Whisper numbers are content-survival only.
 
+## 2026-08-17/18 — HV2 RUN RESULTS (provisional — scorer mid-flight overnight)
+
+Run executed by Josh on A100 per `train_headv2_colab.ipynb`; scoring via
+`score_headv2_gpu_colab.ipynb` (GPU, T4-class). ~$15 total. 20000:B and the
+scored closed-loop section land in the morning; everything below is settled.
+
+### Instrument finding first — EMA dilution poisons intermediate checkpoints
+
+The 5K/10K rows are NOT model quality: the run trains with EMA 0.9999
+(correct for 20K) and checkpoints load EMA weights, so the step-5K shadow is
+still ~60% zero-init (0.9999^5000 ≈ 0.61) — both arms score ~0.98 WER at 5K
+by construction, warming to real numbers only by 15–20K. The July notebooks
+knew this (their 5K gates deliberately used EMA 0.999); tonight generalized
+it: **never read intermediate checkpoints of a 0.9999-EMA run as a training
+curve.** Retroactive consequence: the 2026-08-17 train20k_v2 "improving
+5K→20K trend" was partly this artifact on top of the truncation contamination.
+
+### Teacher-forced held-out (clean filtered split, heun8; A native dual, B +CFG 1.3)
+
+| step | A wer_med / sim_med | B wer_med / sim_med |
+|---|---|---|
+| 5000 | 0.981 / 0.133 | 0.984 / 0.143 |
+| 10000 | 0.474 / 0.489 | 0.294 / 0.568 |
+| 15000 | 0.219 / 0.761 | 0.254 / 0.816 |
+| **20000** | **0.161 / 0.858** (n=25; bins 150:0.180, 300:0.107, 600:0.161, 1200:0.125, 2400:0.201) | pending |
+
+**Arm A at 20K is the best teacher-forced held-out result in program history
+on real long-form data**, and the long bins are its strongest (1200w 0.125).
+At 15K, A beats B on 600/1200 bins. **Dual-stream + σ-bucket training WORKS
+teacher-forced** — the architecture, cache v2 (filtered), and pipeline are
+all vindicated on-distribution.
+
+### Closed loop — ear verdicts (Josh, 2026-08-18, verbatim; scored rows pending)
+
+- `hv2_heun8_s0` (arm A native): "pretty bad pretty much unintelligle
+  giberrish starting at 00:05 and degrades to what ultimatley sounds like
+  fabric tearing and thats it." **FAIL.** (Run vitals had looked healthy —
+  full-length text-anchored 2284 frames, stable latent std 1.178 both seeds —
+  the stable-noise-attractor illusion again, SIXTH instance of the ear
+  beating the metrics. Seed-consistent full-length + teacher-band std is NOT
+  evidence of speech.)
+- `hv2ctl_cfg_heun8_s0` (control + inference CFG): "not great but speech is
+  intelligble, just sounds like the guy is underwater or something. It does
+  go the full length held togheter." — the GN8-class config replicates on
+  the clean cache; still the only offline config that survives the loop.
+- `hv2_heun8_s0_sig02` (σ=0.2 injected + bucket 2 told): "worse, I barley
+  hear 'Fancy' and thats it it goes full alien weird stuff then silence then
+  more wierd stufff." **INVERSION of GN5/GN6:** on the one-stream head,
+  σ=0.2 feedback noise RESCUED content (100% coverage); on the dual-stream
+  head the same noise kills near-instantly. The decorrelation trick does not
+  transfer — head-v2's loop failure is acute sensitivity of the learned
+  joint conditioning (noise now corrupts BOTH trained input pathways), not
+  slow correlated-bias compounding. The loop attacks whatever the network
+  has learned to depend on.
+
+### Provisional verdict (pre-registered FAIL branch for arm A closed-loop)
+
+Diagnosis resolves to branch 1 of the pre-registration: **training-time
+information gap fixed (teacher-forced ≥ control), loop unfixed.** The last
+"avoid stage-2" escape hatch is closed by direct test. Ledger:
+- Offline training cannot cross the loop-stability threshold in ANY variant
+  tried (one-stream, +inference CFG, dual-stream, σ-told): final
+  confirmation of the GN4 conclusion, now with the strongest possible
+  offline baseline.
+- Finding for the paper: learned joint conditioning is MORE loop-fragile
+  than arithmetic CFG applied outside the network — arm B (one-stream field,
+  guidance composed arithmetically) survives where arm A (guidance absorbed
+  into learned weights) dies. The loop amplifies through learned pathways.
+- The hv2 20K checkpoint is the stage-2 initialization: healthy field,
+  guidance absorbed, best long-context numbers to date.
+
+### Next (after morning close-out): stage-2 on-policy, sized before spend
+
+1. Morning: 20000:B + scored closed-loop rows → finalize this entry; pull
+   `headv2_metrics.json` from Drive.
+2. Optional $1 probe: "bucket lie" (bucket 2 told, NO injected noise) —
+   expectations lowered by the sig02 inversion; run only as part of a
+   planned night, not standalone.
+3. **New instrument (build with stage-2): per-frame condition-drift monitor**
+   — record the LM hidden state each frame during a render, plot Mahalanobis
+   distance to the cache's 470K-frame reference distribution against the
+   spectrogram timeline. Shows conditions leaving the manifold BEFORE the
+   ear hears it; the cause-vs-symptom chart Josh asked for (2026-08-18).
+4. **Stage-2 proper (DAgger-style, spec before spend):** collect on-policy
+   conditions by letting the hv2 head drive the loop (capture-wraps-patch
+   nesting, built July) while the frozen DDPM head labels those same states;
+   fine-tune hv2 from 20K on a teacher-forced + on-policy mixture; iterate
+   2–3 rounds. Est. tens of dollars. Gate criteria to be pre-registered
+   after the morning numbers.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
