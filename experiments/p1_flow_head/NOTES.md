@@ -2698,6 +2698,45 @@ today), (b) polish-feedback-only (isolates the loop effect), (c) both
 decode). One cell-set, ~$3, on the cleanabl base. Ear verdicts on tonight's
 two loop renders + stutter spacing pending from Josh.
 
+## 2026-08-18 — SPLIT-PATH PROBE RESULTS (`splitpath_metrics.json` on Drive)
+
+| tag | WER | voice % | sim med / last⅓ | horizon | rate |
+|---|---|---|---|---|---|
+| **sp_audio_k3_s0** | **0.022** | 23.6 | 0.452 / 0.449 | 276 s | 175 |
+| **sp_audio_k3_s1** | **0.043** | 85.0 | 0.558 / 0.538 | 256 s | 195 |
+| sp_both_k2_ema_s0 | 0.094 | 11.9 | 0.277 / 0.210 | 52 s | 187 |
+| sp_feed_k2_s0 | 0.599 | 0.7 | 0.154 / 0.177 | 8 s | 146 |
+
+**1. AUDIO-ONLY POLISH IS THE WINNER — closed-loop WER 0.022/0.043, the
+best content numbers in program history (beats GN8's 0.031), full
+coverage, identity flat, natural-ish rate.** Major reinterpretation
+follows: the loop's latents carried near-teacher CONTENT all along — the
+0.116-class WER of unpolished renders was substantially Whisper tripping
+on dirty texture, not lost words. Polishing only the audio path (loop
+untouched) both sounds better AND measures better. Also the sixth-ish
+reminder that WER measures the audio, not the latent content.
+
+**2. NEGATIVE FINDING — EMA-correlated polish noise in the FEEDBACK path
+is poison (GN5's law re-proven by own-goal).** The probe's rho=0.9
+temporally-correlated noise, added as a stutter fix, is precisely a
+slowly-varying correlated perturbation — the exact error class GN5 proved
+the loop amplifies. Both arms that fed it into the loop collapsed
+(feed-only: 8 s horizon, WER 0.599; both+EMA: identity 0.522→0.277 vs last
+night's independent-noise both-k2) while content stayed readable when the
+audio path was polished (0.094). Last night's identity lift used
+INDEPENDENT per-frame polish noise — decorrelated, benign. **Rule: the
+feedback path may only ever receive independent (decorrelated) noise;
+temporal smoothing is legal on the audio path alone.** The feed-only
+attribution question stays open (no independent-noise feed-only arm ran).
+
+**3. Next (pre-registered here): THE STACK — `sp_stack_s0/s1`:** audio
+polish k=3 (EMA noise ok) + feedback polish k=2 with INDEPENDENT noise
+(last night's identity-lift recipe), cleanabl base, seeds 0/1. If the
+identity lift (0.522+) and the content record (≤0.05) co-occur, that is
+the operating config: bars = WER ≤ 0.06 AND sim_med ≥ 0.50 both seeds,
+Josh's ear on listenability. Notebook updated in place; rerun cells 1+3+4
+(done-tags skip, only the stack renders).
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
