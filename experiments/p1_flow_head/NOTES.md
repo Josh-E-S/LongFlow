@@ -2772,6 +2772,66 @@ ECAPA picks the better seed). Remaining quality gaps, both stage-2
 targets: (1) the slow "snow" accumulation Josh graded 85-90%→65-75% over
 minute one; (2) the ~0.45–0.56 identity band vs teacher-self 0.734.
 
+## 2026-08-18/19 — EAR RANKING OVERRULES THE METRICS + THE GOLDEN-WINDOW INSIGHT
+
+**Josh's full-catalog ear ranking (TOP PICKS folder, verbatim):** best =
+`32_MILESTONE_first_cfg_repair_julyhead` (GN8 July head + CFG heun8, NO
+polish), tied with `30_MILESTONE_first_80pct_start` (cleanabl + both-polish
+k2, independent noise): "they sound the best for first 30 seconds, then
+they slowly get a little garbled cold voice kinda at the end." The nominal
+operating config `10/11` (cleanabl + audio-only k3, EMA noise): "much worse
+than the top 2... slowed, wobbly, muddy, and by the end voice is way
+different, but voice survives." **SEVENTH ear-beats-metrics instance:
+record WER (0.02–0.06), worst-ranked sound.**
+
+**Diagnosis of the wobble: EMA-correlated polish noise is bad on the AUDIO
+path too.** rho=0.9 at 7.5 Hz drifts the noise direction on a ~1.3 s time
+constant → ~0.5–1 Hz slow coloration = "wobbly/muddy," the same perceptual
+band as the old undertrained shakiness. **EMA noise RETIRED everywhere;
+independent noise only; the stutter is addressed by crossfade decode
+alone.** (The knobfix A/B is moot.) `sp_audio_k3_s0` also drew the weak
+identity basin (0.452/23.6%), compounding the verdict.
+**Operating-config decision REOPENED** — the metric-picked config loses to
+ear-picked configs whose recipes differ in noise type, polish dose, and
+base head.
+
+**THE GOLDEN-WINDOW INSIGHT (from Josh's "why are the first 30 seconds so
+close to the parent???"):** early in a render the context is prompt-
+dominated (teacher-grade), so the head runs at its teacher-forced quality
+(85–90%+); degradation tracks the growing fraction of self-generated
+context — the audible exposure-bias gradient. **The production pipeline
+already renders 60–80 s chunks, each restarting from the clean prompt —
+every chunk lives entirely inside the golden window.** The endurance
+disease never activates in the product architecture (the same move that
+cured teacher-side N8/drift). Consequence: single-stream endurance stays
+the RESEARCH problem (stage-2); the PRODUCT config can ship golden-window
+chunks now.
+
+## 2026-08-19 — CHUNKED ENGINE A/B PRE-REGISTRATION (the product-config test; not yet run)
+
+Notebook: `chunked_engine_colab.ipynb`. L4 ok, ~40–60 min, ~$3. The same
+803-word GN5–8 script rendered THE PRODUCTION WAY — 4 turn-boundary chunks
+(~200 words each), each a fresh generate call from the clean prompt P0,
+stitched with 0.25 s crossfades — once per engine:
+
+| tag | engine |
+|---|---|
+| `ce_teacher` | stock DDPM head (the ceiling for this harness) |
+| `ce_july` | July head (`full10k_20k`) + CFG heun8, no polish (Josh's #1) |
+| `ce_july_p2` | July head + audio-polish k=2, INDEPENDENT noise |
+| `ce_cleanabl_p2` | cleanabl + both-polish k=2, independent (the #1-tie recipe) |
+| `ce_cleanabl` | cleanabl plain (control) |
+
+Gate (ear-first, pre-registered): **PRODUCT CONFIG FOUND** if any student
+engine holds Josh's ~85% grade for the FULL stitched render (every chunk
+is golden-window, so first-30s quality should now be everywhere) and seams
+stay inaudible. Metrics (WER vs script, per-window sim flatness) are
+supporting evidence only. If julyhead wins: its erosion weakness is
+irrelevant at chunk length — data note for the paper (short-clip-trained
+field + chunked deployment is a coherent recipe). A win here = the fast
+head ships in the Conference-Generator pipeline at 85%+ with zero further
+training; stage-2 continues as the research arc for single-stream.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
