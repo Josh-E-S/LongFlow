@@ -2832,6 +2832,54 @@ field + chunked deployment is a coherent recipe). A win here = the fast
 head ships in the Conference-Generator pipeline at 85%+ with zero further
 training; stage-2 continues as the research arc for single-stream.
 
+## 2026-08-19 — CHUNKED A/B EAR VERDICTS + AUDIO FORENSICS (Mac-side; no GPU)
+
+**Ear (Josh, verbatim):** teacher itself has "very very subtle and random
+artifacts"; `ce_july` "starts out strong, as it goes toward the last 10-15
+seconds its speeding up and losing quality/getting louder/degraded/
+shaking/underwaterish. but re[s]ets at the stitch. mid way through
+generations is like he starts to get a cold... beyond the first 10 seconds
+a normal user would notice." Other engines "worse and start out worse" —
+`ce_july` is the chunk-engine ear winner. **"Resets at the stitch" =
+direct observation of the golden-window mechanism.**
+
+**Forensics** (`audio_forensics.py` + `chunked_forensics_summary.json` in
+this dir; per-1s HNR/flatness/HF-ratio/rate curves on all 5 renders,
+chunk-aligned):
+
+1. **Josh's "cold" IS harmonics-to-noise ratio.** Teacher holds 13.5–13.9
+   dB HNR flat across a whole chunk (drift −0.34). Every student starts
+   ~10–12 and slides to ~6.5–7.6 by 30 s, then plateaus — and the timeline
+   shows clean resets at every stitch. The un-verbalizable percept now has
+   a number.
+2. **The 80–90% golden-window floor = a ~3–4 dB HNR gap AT SECOND ZERO**
+   (july early 9.65 vs teacher 13.88). Per-frame voice noise present under
+   perfect conditions — the precise target for the quality night
+   (data/size/MeanFlow).
+3. **"Speeding up" measured:** july's envelope-peak rate climbs ~280 →
+   ~445/s after ~40 s in-chunk (teacher flat ~230–300); flatness + HF
+   spike in the final ~10 s = the ear's "shaky/louder/underwaterish" chunk
+   tail. **July-engine chunk length prescription: ≤ 30–35 s** (decay knee
+   25–40 s, rate runaway after ~40 s).
+4. **cleanabl_p2 is objectively the most STABLE engine** (rate and
+   flatness flat, hugging teacher through 80 s; flat_early 0.0119 beats
+   teacher's 0.0160) — but a noisier voice floor; july = sharpest start,
+   worst tail. The ear-heard trade, now on axes.
+5. **Polish measurably cleans the fuzz:** july_p2 early flatness 0.0178 vs
+   july 0.0253, HF 0.008 vs 0.015, HNR +0.7 — even though ear prefers
+   plain july overall.
+6. **NEW INSTRUMENT — the ear-proxy found: per-window HNR.** Seven
+   ear-beats-metrics incidents happened because WER measures content and
+   ECAPA measures identity, and NEITHER measures voice cleanliness — the
+   axis Josh's ear actually ranks by. HNR tracks his judgments across this
+   whole catalog. **Add per-window HNR (parselmouth, cheap) to every
+   scorer from now on**; gate criteria may cite it.
+
+**Consequences:** (a) product config = july-family engine at ~30 s chunks —
+one validation render pending; (b) quality-night success metric = close
+the ~4 dB starting HNR gap (with Josh's ear confirming); (c) HNR curves
+become a standard deliverable; figures copied to Josh's Downloads.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
