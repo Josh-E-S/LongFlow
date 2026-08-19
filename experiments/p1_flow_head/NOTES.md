@@ -2880,6 +2880,42 @@ one validation render pending; (b) quality-night success metric = close
 the ~4 dB starting HNR gap (with Josh's ear confirming); (c) HNR curves
 become a standard deliverable; figures copied to Josh's Downloads.
 
+## 2026-08-19 — QUALITY NIGHT PRE-REGISTRATION (capture v3 + size ladder; the first quality spend)
+
+Pieces, in launch order:
+
+1. **EAR PACK shipped** (`src/eval/metrics.py::ear_pack` +
+   `clip_metrics_ear`; `tests/test_earpack.py`, suite 101/101): per-window
+   HNR, CPPS, jitter, shimmer, spectral flatness, HF-ratio + medians;
+   `wer()` now also returns `asr_confidence` (mean Whisper log-prob — the
+   free fluency signal previously discarded). Validated on synthetic ground
+   truth (clean tone vs noise vs amplitude-wobbled tone). **Every scorer
+   from now on reports ear-pack curves; windowed UTMOS/DNSMOS (the original
+   C4 plan) get added notebook-side where pip is easy.**
+2. **Capture v3** (`capture_v3_colab.ipynb`, A100, ~10–16h resumable,
+   the long pole — LAUNCH FIRST): clean 4× scale-up, 1.92M frames (~70h),
+   same turn-split corpus recipe and dual-stream schema as v2, σ ≡ 0
+   (clean-frames ablation verdict), new Drive dir `longflow_p1_cache_v3`,
+   `cv3_` tags. E3's data-binds finding is the thesis of this spend.
+3. **Size-ladder training** (notebook to be built while capture runs):
+   width-640 (16.6M) AND width-960 (~35M) control-architecture heads on
+   v3, same recipe, ckpts every 5K (steps scaled to the larger pool with
+   the overfit watch active). Eval: teacher-forced heun8+CFG with the FULL
+   ear pack + a 30s-chunked closed-loop render per head.
+
+### Gate criteria — written before the runs
+
+| Verdict | Condition |
+|---|---|
+| **DATA PAYS** | v3-trained 640 head beats cleanabl on golden-window HNR by ≥1 dB (early-window median, chunked render) with WER/sim not worse — E3's scaling law extends to the cleanliness axis |
+| **SIZE PAYS** | 960 beats 640 on golden-window HNR by ≥1 dB at equal data — capacity was binding; the ladder continues |
+| **QUALITY NIGHT WIN** | best config closes ≥half the 4 dB teacher gap (early HNR ≥ ~11.8) AND Josh grades the 30s-chunked render ≥ his current 80–90% — product config upgrades |
+| **NULL** | neither lever moves HNR ≥1 dB → the floor is objective-limited; P2 MeanFlow is promoted to the next build |
+
+Reference numbers: teacher early-HNR 13.88; july 9.65; cleanabl_p2 9.93
+(chunked forensics 2026-08-19). Ear remains the final authority;
+the ear pack is its translator, not its replacement.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
