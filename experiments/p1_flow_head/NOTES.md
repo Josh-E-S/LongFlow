@@ -2903,6 +2903,18 @@ Pieces, in launch order:
    the overfit watch active). Eval: teacher-forced heun8+CFG with the FULL
    ear pack + a 30s-chunked closed-loop render per head.
 
+### CAPTURE V3 COMPLETE (2026-08-20) — `capture_v3_manifest.json`
+
+**757 scripts, 1,937,472 frames (~72 h of audio), all five word bins
+near-evenly filled (153/151/141/156/156), σ ≡ 0 across every frame —
+the clean 4× pool exists.** ~26 h A100 wall (one ambiguous-attribution
+batch safely aborted by the per-element guard — the v2 lesson paying
+rent; one runtime disconnect absorbed by resume with zero data loss).
+The largest and cleanest training pool in program history, ~4× anything
+previously trained on. Time-estimate honesty: forecast 10–16 h, actual
+~26 h — v2's measured throughput extrapolated to ~30 h and the forecast
+anchored optimistically; noted for future capture sizing.
+
 ### Gate criteria — written before the runs
 
 | Verdict | Condition |
