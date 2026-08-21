@@ -2963,6 +2963,34 @@ training; polish on top). Ear verdicts (qc_teacher vs qc_640 vs qc_960)
 pending. Next build: `quality_finish_colab.ipynb` — 640 continuation
 40K→80K + the polished-640 chunked render (the stack candidate) + rescore.
 
+### FINISH-RUN RESULTS (2026-08-21 pm; `quality_metrics2.json` in this dir)
+
+- **Continuation 40K→80K: modest, real gains, curve flattening.** Held-out
+  WER 0.150→**0.1435**, sim 0.964→**0.9709** — both program records; the
+  70K subset blip (0.245, n=10) is inside subset+scorer noise. 40K steps
+  bought ~0.007 WER: **converged-ish at this data scale (~42 epochs).**
+- **In the loop, continuation bought +0.2 dB** (qf_640b_plain early HNR
+  **9.72** vs qc_640 9.52; CPPS 8.99). Gap to teacher (13.55) now ~3.8 dB;
+  ~37% of the cleanabl→teacher gap closed within-run.
+- **Polish on the good head: near-neutral — diminishing returns mapped.**
+  qf_640b_polish3: CPPS **9.16** and shimmer **0.120** (both best-ever
+  student values) but early HNR 9.21 (below plain's 9.72) and flatness/HF
+  UP (0.030/0.015 — the polish noise residue is now metrically visible).
+  As the base head improves, the knob's benefit shrinks toward its noise
+  cost — the July-era gains came from polishing a much dirtier head. Ear
+  A/B (polish3 vs plain) decides if it stays in the config.
+- **Ledger of the quality levers, final:** data +2.1 dB (PAID) · steps
+  +0.2 dB (paid, exhausted) · size 0 (acquitted) · polish ≈0 on the good
+  head. **The offline CFM recipe converges around ~9.5–9.7 dB early HNR
+  vs teacher 13.6.** Per the pre-registered NULL branch, the remaining
+  floor gap is now presumptively OBJECTIVE-limited → **P2 MeanFlow is
+  promoted to the next build** — the day-one designated quality phase,
+  the last unpulled lever, composing with the 72 h pool. (Data rung 2 —
+  another 2–4× capture — stays available if MeanFlow moves the floor and
+  data becomes binding again.)
+- Pending: Josh's ears (qf_640b_polish3 vs qf_640b_plain vs qc_teacher)
+  + the CFG-scale sweep (1.0/1.3/1.6/2.0) ear verdicts.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
