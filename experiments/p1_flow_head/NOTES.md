@@ -3016,6 +3016,20 @@ frames — video-diffusion consistency trick — but flagged with the EMA
 lesson: correlated noise near the loop has burned us once; one listen-arm
 max, never a default.)
 
+**Polish A/B completed (Josh, 2026-08-21, verbatim):** front half "hard to
+tell between the polish and plain version"; back half of the polished
+render "a little better, and a little more emotion too. specif[i]c[al]ly
+2:25-2:50 is probably the best sounding I've ever heard this voice on
+this head. It's like **90%** with the tiny bit of the frame mismatch
+sound we can bar[e]ly hear." — **First 90% grade ever recorded**, on a
+25 s window of the polished 72 h render. Split verdict matches the
+metrics exactly (polish ≈neutral early where frames are cleanest, small
+gain late). **CONFIG DECISION: plain = the operating "fast mode" (zero
+teacher-head calls, pure small-head speed story); polish k2–3 audio-only
+= an optional "quality mode" toggle** (product framing — worth its ~30%
+head-path cost when maximum fidelity matters). MeanFlow's acceptance
+test, restated in ear terms: make 2:25–2:50 the whole render.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
