@@ -2928,6 +2928,41 @@ Reference numbers: teacher early-HNR 13.88; july 9.65; cleanabl_p2 9.93
 (chunked forensics 2026-08-19). Ear remains the final authority;
 the ear pack is its translator, not its replacement.
 
+### RESULTS (2026-08-21; `quality_metrics.json` in this dir; ear pass pending)
+
+Scorer verdicts, verbatim: **"DATA PAYS (640-on-v3 9.52 vs cleanabl 7.46,
+bar +1.0)"; "SIZE did not pay (960 8.92 vs 640 9.52)"; "QUALITY-NIGHT
+below the halfway bar (best 9.52 vs halfway 10.51 toward teacher 13.55)."**
+(NB cross-run HNR absolutes shift with chunk format/scorer windowing —
+cleanabl reads 7.46 here vs 9.2–9.9 in the 2026-08-19 forensics; only
+WITHIN-run deltas are compared. All bars evaluated within-run.)
+
+1. **DATA PAYS, decisively — E3's law extends to the cleanliness axis.**
+   Same architecture, 4× clean data: golden-window HNR +2.1 dB, **CPPS
+   6.41 → 8.54 (teacher 10.60 — MORE than half the breathiness gap closed
+   on the clinically stronger metric)**, shimmer 0.163 → 0.127 (teacher
+   0.088), and the fig1 within-chunk HNR curve is near-FLAT across 30 s
+   (the old in-chunk slide is mostly gone at this data scale).
+2. **SIZE did not pay at this data/steps.** 960 learns FASTER (dominates
+   640 at every intermediate checkpoint: 0.267 vs 0.344 @10K, 0.181 vs
+   0.238 @15K) but converges to the same endpoint (WER 0.154 vs 0.150,
+   sim 0.970 vs 0.964) and is slightly WORSE in the loop (early HNR 8.92
+   vs 9.52). Capacity acquitted yet again; the ladder pauses at rung one.
+3. **Best-ever teacher-forced identity, by a wide margin: sim 0.964/0.970**
+   (previous best 0.914). The 72 h pool moved every axis.
+4. **NOT CONVERGED: fig3's held-out WER curve is still falling at 40K on
+   both arms** (640: 0.159@35K → 0.150@40K; best = final step, no E3
+   overfit signature at ~21 epochs). Cheapest next lever in the program:
+   warm-continue 640 from 40K (+40K steps, ~1–1.5 h).
+5. **The chunked renders were UNPOLISHED** — the presumptive-best config
+   (v3_640 + audio-polish k3 + 30 s chunks) has never been rendered.
+
+**Overall: WIN bar missed on HNR-halfway, crossed on CPPS-halfway —
+a partial win with the two cheapest levers still unpulled** (continue
+training; polish on top). Ear verdicts (qc_teacher vs qc_640 vs qc_960)
+pending. Next build: `quality_finish_colab.ipynb` — 640 continuation
+40K→80K + the polished-640 chunked render (the stack candidate) + rescore.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
