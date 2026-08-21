@@ -2991,6 +2991,31 @@ pending. Next build: `quality_finish_colab.ipynb` — 640 continuation
 - Pending: Josh's ears (qf_640b_polish3 vs qf_640b_plain vs qc_teacher)
   + the CFG-scale sweep (1.0/1.3/1.6/2.0) ear verdicts.
 
+**Ear verdict on the 72 h head (Josh, 2026-08-21, verbatim):** "muchhh
+better, but probably like 75%-85% of teacher on q[u]ality. pros[o]dy and
+emotion probably like 75-85% too... a lot of the noise is gone, the voice
+sounds like the teacher, the pace is pretty good, a little less emotion
+but not bad... the only thing that would keep me from using this
+person[al]ly [w]ould be that voice quality where it's not comple[te]ly
+smooth. Al[m]ost like you can he[a]r the tiny voice frames mismatched
+just ever so slightly or that the timing just ever so slightly. It's
+similar to quality issues before, but now much much less... like so
+close." **First time a whole-render grade sits in the 75–85 band**
+(previously: 85–90 for 10 s decaying to 65–75).
+
+**The residue named: frame-boundary sampling scatter.** Every frame draws
+independent x0 noise; a slightly-wide conditional field means adjacent
+frames land on slightly different points of the distribution →
+micro-mismatch at the 7.5 Hz frame grid — exactly "tiny voice frames
+mismatched ever so slightly." The teacher's head does the same independent
+sampling but its conditional is TIGHT, so draws cohere. The fix is
+sharpening the conditional — **which is MeanFlow's literal job
+description; the promoted P2 build now has an ear-verified target.**
+(Secondary cheap probe if ever needed: temporally-correlated x0 across
+frames — video-diffusion consistency trick — but flagged with the EMA
+lesson: correlated noise near the loop has burned us once; one listen-arm
+max, never a default.)
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
