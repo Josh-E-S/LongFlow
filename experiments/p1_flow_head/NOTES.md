@@ -3087,6 +3087,52 @@ Build plan (references: MeanFlow Geng 2025; DSFlow 2602.09041; IntMeanFlow
 Est. cost: ~$12–18 (training + renders + scoring). Gate rule (constraint
 6) applies: 1K/5K gate with decode+listen before the 40K run.
 
+## 2026-08-22 — P2 MEANFLOW RESULTS (`quality_metrics_mf.json`, `mf_report.json`)
+
+Core verified before spend: JVP vs float64 finite differences **1.9e-05**;
+**adaptive weighting proven load-bearing** (plain MSE on the JVP-bootstrap
+target diverged 2→461 on the synthetic task — logged in the docstring);
+synthetic NFE-2 relRMSE 0.08. 108/108 tests.
+
+**1. THE SCATTER RESIDUE IS SOLVED — teacher parity at every NFE.** The
+new instrument, across all 25 held-out scripts: excess-jerk vs teacher
+**0.99 (NFE 1) / 0.975 (NFE 2) / 0.979 (NFE 8)** — bar was ≤1.5×; landed
+at 1.0×. Closed-loop jerk teacher-typical too. The ear-named
+frame-boundary mismatch is gone at the latent level.
+
+**2. THE MF FIELD IS THE BEST THE PROGRAM HAS TRAINED** (teacher-forced
+held-out, n=25): **mf_nfe8h 0.1156 WER / 0.9664 sim** vs the CFM incumbent
+`v3_640b_step80000` 0.1435 / 0.9709 — **better WER on HALF the steps**
+(40K vs 80K). Degradation is monotone in NFE (8h 0.116 → nfe2 0.136 →
+nfe1 0.154): **the objective did not hurt the field; the 1–2-step JUMP is
+where quality is lost.** Consistent with p_equal=0.75 (75% of batches were
+the r=t/CFM term, so the instantaneous field got most of the signal).
+
+**3. Chunked closed-loop ear-pack (NFE 1/2 only — the design miss):**
+qf_mf_nfe2 early HNR 7.96 / CPPS 6.78 vs incumbent 9.72 / 8.99 — a real
+regression, but **we never rendered the closed loop at NFE 8**, i.e. we
+never rendered the good field. Addendum cell shipped (`qf_mf_nfe8h`,
+`qf_mf_nfe4`).
+
+**4. Criteria-design flaw, stated not bent** (GN2 convention): the WIN bar
+was "HNR ≥ 10.5 **OR** scatter ≤ 1.5×" — scatter passed trivially while
+the axis of interest regressed. An OR across a necessary-but-insufficient
+metric and the real one is not a valid gate. Rewritten for the addendum:
+**MEANFLOW WINS iff chunked early HNR ≥ 9.7 (incumbent parity) AND
+scatter ≤ 1.2× AND Josh hears the mismatch reduced without new softness.**
+
+**5. Free side-findings from the same scoring run:** CFG sweep ear-pack
+confirms Josh's ear numerically — cfg13 HNR 9.84 (best student), cfg16
+9.13 but best CPPS 9.96, **cfg20 craters to 6.74 with 3× the noise floor**
+("loud and peaked", quantified). Teacher single-chunk: cfg13 HNR 15.84 vs
+cfg20 12.36 — the 1.3 teacher is *cleaner*, the 2.0 teacher more
+expressive; the 1.6 future-capture decision sits between them and stands.
+
+**Pending:** the NFE-8 chunked renders + Josh's ear (qf_mf_nfe8h vs
+`41_NEW_BEST`). If parity-or-better: mf_640 becomes the operating head
+(better field, scatter solved, 40K steps) and the few-step regime becomes
+a separately-tunable speed knob (p_equal sweep / more steps / NFE 4).
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is

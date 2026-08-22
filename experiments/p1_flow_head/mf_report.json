@@ -1,0 +1,1238 @@
+{
+ "notebook_version": "MeanFlow v1.0 (2026-08-21): mf_640 on capture v3",
+ "runs": [
+  {
+   "tag": "qf_mf_nfe2",
+   "nfe": 2,
+   "chunks": 6
+  },
+  {
+   "tag": "qf_mf_nfe1",
+   "nfe": 1,
+   "chunks": 6
+  }
+ ],
+ "scatter": {
+  "mf_nfe1": {
+   "cv3_150w_024bb352": {
+    "student": {
+     "scatter_median": 11.44261360168457,
+     "scatter_iqr": 4.045597076416016,
+     "jerk_median": 19.987089157104492,
+     "n_frames": 400
+    },
+    "teacher": {
+     "scatter_median": 11.864161491394043,
+     "scatter_iqr": 3.6892309188842773,
+     "jerk_median": 20.267221450805664,
+     "n_frames": 400
+    },
+    "excess": 0.964,
+    "excess_jerk": 0.986
+   },
+   "cv3_150w_03bda5da": {
+    "student": {
+     "scatter_median": 12.667177200317383,
+     "scatter_iqr": 4.563235282897949,
+     "jerk_median": 21.91427230834961,
+     "n_frames": 417
+    },
+    "teacher": {
+     "scatter_median": 13.075350761413574,
+     "scatter_iqr": 4.028210639953613,
+     "jerk_median": 22.396265029907227,
+     "n_frames": 417
+    },
+    "excess": 0.969,
+    "excess_jerk": 0.978
+   },
+   "cv3_150w_03bfce23": {
+    "student": {
+     "scatter_median": 11.065857887268066,
+     "scatter_iqr": 4.265964508056641,
+     "jerk_median": 18.977121353149414,
+     "n_frames": 428
+    },
+    "teacher": {
+     "scatter_median": 11.25830078125,
+     "scatter_iqr": 3.808478355407715,
+     "jerk_median": 19.296703338623047,
+     "n_frames": 428
+    },
+    "excess": 0.983,
+    "excess_jerk": 0.983
+   },
+   "cv3_150w_045c8437": {
+    "student": {
+     "scatter_median": 11.625877380371094,
+     "scatter_iqr": 3.6524391174316406,
+     "jerk_median": 19.763721466064453,
+     "n_frames": 503
+    },
+    "teacher": {
+     "scatter_median": 11.996606826782227,
+     "scatter_iqr": 3.4849977493286133,
+     "jerk_median": 20.57642364501953,
+     "n_frames": 503
+    },
+    "excess": 0.969,
+    "excess_jerk": 0.961
+   },
+   "cv3_150w_0546c96c": {
+    "student": {
+     "scatter_median": 11.840410232543945,
+     "scatter_iqr": 3.3073911666870117,
+     "jerk_median": 20.20176887512207,
+     "n_frames": 441
+    },
+    "teacher": {
+     "scatter_median": 12.295049667358398,
+     "scatter_iqr": 3.09725284576416,
+     "jerk_median": 20.99958038330078,
+     "n_frames": 441
+    },
+    "excess": 0.963,
+    "excess_jerk": 0.962
+   },
+   "cv3_300w_01ef691b": {
+    "student": {
+     "scatter_median": 11.580856323242188,
+     "scatter_iqr": 4.915095329284668,
+     "jerk_median": 20.17173957824707,
+     "n_frames": 985
+    },
+    "teacher": {
+     "scatter_median": 11.821199417114258,
+     "scatter_iqr": 4.380258560180664,
+     "jerk_median": 20.32374382019043,
+     "n_frames": 985
+    },
+    "excess": 0.98,
+    "excess_jerk": 0.993
+   },
+   "cv3_300w_03c708a9": {
+    "student": {
+     "scatter_median": 10.852444648742676,
+     "scatter_iqr": 3.478910446166992,
+     "jerk_median": 18.53190040588379,
+     "n_frames": 944
+    },
+    "teacher": {
+     "scatter_median": 11.319077491760254,
+     "scatter_iqr": 3.169095993041992,
+     "jerk_median": 19.42274284362793,
+     "n_frames": 944
+    },
+    "excess": 0.959,
+    "excess_jerk": 0.954
+   },
+   "cv3_300w_07135af8": {
+    "student": {
+     "scatter_median": 11.327502250671387,
+     "scatter_iqr": 3.547586441040039,
+     "jerk_median": 19.45975112915039,
+     "n_frames": 855
+    },
+    "teacher": {
+     "scatter_median": 11.54421615600586,
+     "scatter_iqr": 3.3130922317504883,
+     "jerk_median": 19.98954200744629,
+     "n_frames": 855
+    },
+    "excess": 0.981,
+    "excess_jerk": 0.973
+   },
+   "cv3_300w_095aa3aa": {
+    "student": {
+     "scatter_median": 12.617901802062988,
+     "scatter_iqr": 3.8085079193115234,
+     "jerk_median": 21.556222915649414,
+     "n_frames": 868
+    },
+    "teacher": {
+     "scatter_median": 12.902202606201172,
+     "scatter_iqr": 3.330944061279297,
+     "jerk_median": 22.245975494384766,
+     "n_frames": 868
+    },
+    "excess": 0.978,
+    "excess_jerk": 0.969
+   },
+   "cv3_300w_0d88bdb7": {
+    "student": {
+     "scatter_median": 11.207174301147461,
+     "scatter_iqr": 4.557733535766602,
+     "jerk_median": 19.159141540527344,
+     "n_frames": 948
+    },
+    "teacher": {
+     "scatter_median": 11.575357437133789,
+     "scatter_iqr": 4.642688751220703,
+     "jerk_median": 19.840133666992188,
+     "n_frames": 948
+    },
+    "excess": 0.968,
+    "excess_jerk": 0.966
+   },
+   "cv3_600w_026a542a": {
+    "student": {
+     "scatter_median": 11.08147144317627,
+     "scatter_iqr": 2.8223400115966797,
+     "jerk_median": 18.96686363220215,
+     "n_frames": 1588
+    },
+    "teacher": {
+     "scatter_median": 11.32492446899414,
+     "scatter_iqr": 2.611422538757324,
+     "jerk_median": 19.467069625854492,
+     "n_frames": 1588
+    },
+    "excess": 0.979,
+    "excess_jerk": 0.974
+   },
+   "cv3_600w_034f77bc": {
+    "student": {
+     "scatter_median": 12.498191833496094,
+     "scatter_iqr": 3.590023994445801,
+     "jerk_median": 21.52826499938965,
+     "n_frames": 1690
+    },
+    "teacher": {
+     "scatter_median": 12.429801940917969,
+     "scatter_iqr": 3.2163286209106445,
+     "jerk_median": 21.524436950683594,
+     "n_frames": 1690
+    },
+    "excess": 1.006,
+    "excess_jerk": 1.0
+   },
+   "cv3_600w_04100098": {
+    "student": {
+     "scatter_median": 11.29004192352295,
+     "scatter_iqr": 3.532644271850586,
+     "jerk_median": 19.45240020751953,
+     "n_frames": 1824
+    },
+    "teacher": {
+     "scatter_median": 11.136382102966309,
+     "scatter_iqr": 2.9881763458251953,
+     "jerk_median": 19.259906768798828,
+     "n_frames": 1824
+    },
+    "excess": 1.014,
+    "excess_jerk": 1.01
+   },
+   "cv3_600w_05b55121": {
+    "student": {
+     "scatter_median": 12.539322853088379,
+     "scatter_iqr": 2.8867692947387695,
+     "jerk_median": 21.521459579467773,
+     "n_frames": 1762
+    },
+    "teacher": {
+     "scatter_median": 12.675169944763184,
+     "scatter_iqr": 2.550180435180664,
+     "jerk_median": 21.77039909362793,
+     "n_frames": 1762
+    },
+    "excess": 0.989,
+    "excess_jerk": 0.989
+   },
+   "cv3_600w_0a35af94": {
+    "student": {
+     "scatter_median": 11.870682716369629,
+     "scatter_iqr": 3.047201156616211,
+     "jerk_median": 20.42119789123535,
+     "n_frames": 1630
+    },
+    "teacher": {
+     "scatter_median": 12.118803024291992,
+     "scatter_iqr": 2.556330680847168,
+     "jerk_median": 20.89179801940918,
+     "n_frames": 1630
+    },
+    "excess": 0.98,
+    "excess_jerk": 0.977
+   },
+   "cv3_1200w_00c10251": {
+    "student": {
+     "scatter_median": 11.534987449645996,
+     "scatter_iqr": 3.7954177856445312,
+     "jerk_median": 19.846845626831055,
+     "n_frames": 3414
+    },
+    "teacher": {
+     "scatter_median": 11.488028526306152,
+     "scatter_iqr": 3.536635398864746,
+     "jerk_median": 19.84083366394043,
+     "n_frames": 3414
+    },
+    "excess": 1.004,
+    "excess_jerk": 1.0
+   },
+   "cv3_1200w_019b752c": {
+    "student": {
+     "scatter_median": 12.645095825195312,
+     "scatter_iqr": 3.5101661682128906,
+     "jerk_median": 21.70017433166504,
+     "n_frames": 3320
+    },
+    "teacher": {
+     "scatter_median": 12.519986152648926,
+     "scatter_iqr": 3.171213150024414,
+     "jerk_median": 21.48135757446289,
+     "n_frames": 3320
+    },
+    "excess": 1.01,
+    "excess_jerk": 1.01
+   },
+   "cv3_1200w_07549355": {
+    "student": {
+     "scatter_median": 12.781579971313477,
+     "scatter_iqr": 3.1996726989746094,
+     "jerk_median": 22.075401306152344,
+     "n_frames": 3217
+    },
+    "teacher": {
+     "scatter_median": 12.629562377929688,
+     "scatter_iqr": 2.785830497741699,
+     "jerk_median": 21.84872817993164,
+     "n_frames": 3217
+    },
+    "excess": 1.012,
+    "excess_jerk": 1.01
+   },
+   "cv3_1200w_0e08167a": {
+    "student": {
+     "scatter_median": 12.716477394104004,
+     "scatter_iqr": 4.182910919189453,
+     "jerk_median": 21.992889404296875,
+     "n_frames": 3332
+    },
+    "teacher": {
+     "scatter_median": 12.567109107971191,
+     "scatter_iqr": 3.6523895263671875,
+     "jerk_median": 21.655168533325195,
+     "n_frames": 3332
+    },
+    "excess": 1.012,
+    "excess_jerk": 1.016
+   },
+   "cv3_1200w_0e493ab3": {
+    "student": {
+     "scatter_median": 12.758655548095703,
+     "scatter_iqr": 4.177586555480957,
+     "jerk_median": 22.148866653442383,
+     "n_frames": 2616
+    },
+    "teacher": {
+     "scatter_median": 12.403299331665039,
+     "scatter_iqr": 3.510199546813965,
+     "jerk_median": 21.375425338745117,
+     "n_frames": 2616
+    },
+    "excess": 1.029,
+    "excess_jerk": 1.036
+   },
+   "cv3_2400w_01b12fee": {
+    "student": {
+     "scatter_median": 12.978169441223145,
+     "scatter_iqr": 4.508428573608398,
+     "jerk_median": 22.411767959594727,
+     "n_frames": 6704
+    },
+    "teacher": {
+     "scatter_median": 12.969921112060547,
+     "scatter_iqr": 4.3048553466796875,
+     "jerk_median": 22.266128540039062,
+     "n_frames": 6704
+    },
+    "excess": 1.001,
+    "excess_jerk": 1.007
+   },
+   "cv3_2400w_02493bd5": {
+    "student": {
+     "scatter_median": 12.396688461303711,
+     "scatter_iqr": 3.6867408752441406,
+     "jerk_median": 21.37938690185547,
+     "n_frames": 6654
+    },
+    "teacher": {
+     "scatter_median": 12.219805717468262,
+     "scatter_iqr": 3.15195369720459,
+     "jerk_median": 21.127063751220703,
+     "n_frames": 6654
+    },
+    "excess": 1.014,
+    "excess_jerk": 1.012
+   },
+   "cv3_2400w_03e3ff5e": {
+    "student": {
+     "scatter_median": 12.637349128723145,
+     "scatter_iqr": 3.5728416442871094,
+     "jerk_median": 21.793228149414062,
+     "n_frames": 6778
+    },
+    "teacher": {
+     "scatter_median": 12.396029472351074,
+     "scatter_iqr": 3.1065502166748047,
+     "jerk_median": 21.3751220703125,
+     "n_frames": 6778
+    },
+    "excess": 1.019,
+    "excess_jerk": 1.02
+   },
+   "cv3_2400w_0615394f": {
+    "student": {
+     "scatter_median": 13.064790725708008,
+     "scatter_iqr": 5.36241340637207,
+     "jerk_median": 22.563703536987305,
+     "n_frames": 6262
+    },
+    "teacher": {
+     "scatter_median": 12.757728576660156,
+     "scatter_iqr": 4.777462005615234,
+     "jerk_median": 22.007810592651367,
+     "n_frames": 6262
+    },
+    "excess": 1.024,
+    "excess_jerk": 1.025
+   },
+   "cv3_2400w_0762b03b": {
+    "student": {
+     "scatter_median": 13.754648208618164,
+     "scatter_iqr": 3.5107154846191406,
+     "jerk_median": 23.66452980041504,
+     "n_frames": 6202
+    },
+    "teacher": {
+     "scatter_median": 13.441614151000977,
+     "scatter_iqr": 3.014641761779785,
+     "jerk_median": 23.177433013916016,
+     "n_frames": 6202
+    },
+    "excess": 1.023,
+    "excess_jerk": 1.021
+   }
+  },
+  "mf_nfe2": {
+   "cv3_150w_024bb352": {
+    "student": {
+     "scatter_median": 11.375319480895996,
+     "scatter_iqr": 4.039243698120117,
+     "jerk_median": 19.75533676147461,
+     "n_frames": 400
+    },
+    "teacher": {
+     "scatter_median": 11.864161491394043,
+     "scatter_iqr": 3.6892309188842773,
+     "jerk_median": 20.267221450805664,
+     "n_frames": 400
+    },
+    "excess": 0.959,
+    "excess_jerk": 0.975
+   },
+   "cv3_150w_03bda5da": {
+    "student": {
+     "scatter_median": 12.519063949584961,
+     "scatter_iqr": 4.262752532958984,
+     "jerk_median": 21.646259307861328,
+     "n_frames": 417
+    },
+    "teacher": {
+     "scatter_median": 13.075350761413574,
+     "scatter_iqr": 4.028210639953613,
+     "jerk_median": 22.396265029907227,
+     "n_frames": 417
+    },
+    "excess": 0.957,
+    "excess_jerk": 0.967
+   },
+   "cv3_150w_03bfce23": {
+    "student": {
+     "scatter_median": 10.933938026428223,
+     "scatter_iqr": 3.8764495849609375,
+     "jerk_median": 18.793458938598633,
+     "n_frames": 428
+    },
+    "teacher": {
+     "scatter_median": 11.25830078125,
+     "scatter_iqr": 3.808478355407715,
+     "jerk_median": 19.296703338623047,
+     "n_frames": 428
+    },
+    "excess": 0.971,
+    "excess_jerk": 0.974
+   },
+   "cv3_150w_045c8437": {
+    "student": {
+     "scatter_median": 11.551511764526367,
+     "scatter_iqr": 3.6157169342041016,
+     "jerk_median": 19.631023406982422,
+     "n_frames": 503
+    },
+    "teacher": {
+     "scatter_median": 11.996606826782227,
+     "scatter_iqr": 3.4849977493286133,
+     "jerk_median": 20.57642364501953,
+     "n_frames": 503
+    },
+    "excess": 0.963,
+    "excess_jerk": 0.954
+   },
+   "cv3_150w_0546c96c": {
+    "student": {
+     "scatter_median": 11.820363998413086,
+     "scatter_iqr": 3.228208541870117,
+     "jerk_median": 19.979705810546875,
+     "n_frames": 441
+    },
+    "teacher": {
+     "scatter_median": 12.295049667358398,
+     "scatter_iqr": 3.09725284576416,
+     "jerk_median": 20.99958038330078,
+     "n_frames": 441
+    },
+    "excess": 0.961,
+    "excess_jerk": 0.951
+   },
+   "cv3_300w_01ef691b": {
+    "student": {
+     "scatter_median": 11.393043518066406,
+     "scatter_iqr": 4.504966735839844,
+     "jerk_median": 19.670307159423828,
+     "n_frames": 985
+    },
+    "teacher": {
+     "scatter_median": 11.821199417114258,
+     "scatter_iqr": 4.380258560180664,
+     "jerk_median": 20.32374382019043,
+     "n_frames": 985
+    },
+    "excess": 0.964,
+    "excess_jerk": 0.968
+   },
+   "cv3_300w_03c708a9": {
+    "student": {
+     "scatter_median": 10.724674224853516,
+     "scatter_iqr": 3.3589916229248047,
+     "jerk_median": 18.34635353088379,
+     "n_frames": 944
+    },
+    "teacher": {
+     "scatter_median": 11.319077491760254,
+     "scatter_iqr": 3.169095993041992,
+     "jerk_median": 19.42274284362793,
+     "n_frames": 944
+    },
+    "excess": 0.947,
+    "excess_jerk": 0.945
+   },
+   "cv3_300w_07135af8": {
+    "student": {
+     "scatter_median": 11.192707061767578,
+     "scatter_iqr": 3.435574531555176,
+     "jerk_median": 19.241247177124023,
+     "n_frames": 855
+    },
+    "teacher": {
+     "scatter_median": 11.54421615600586,
+     "scatter_iqr": 3.3130922317504883,
+     "jerk_median": 19.98954200744629,
+     "n_frames": 855
+    },
+    "excess": 0.97,
+    "excess_jerk": 0.963
+   },
+   "cv3_300w_095aa3aa": {
+    "student": {
+     "scatter_median": 12.363338470458984,
+     "scatter_iqr": 3.6876487731933594,
+     "jerk_median": 21.19218635559082,
+     "n_frames": 868
+    },
+    "teacher": {
+     "scatter_median": 12.902202606201172,
+     "scatter_iqr": 3.330944061279297,
+     "jerk_median": 22.245975494384766,
+     "n_frames": 868
+    },
+    "excess": 0.958,
+    "excess_jerk": 0.953
+   },
+   "cv3_300w_0d88bdb7": {
+    "student": {
+     "scatter_median": 11.102872848510742,
+     "scatter_iqr": 4.451066017150879,
+     "jerk_median": 18.92672348022461,
+     "n_frames": 948
+    },
+    "teacher": {
+     "scatter_median": 11.575357437133789,
+     "scatter_iqr": 4.642688751220703,
+     "jerk_median": 19.840133666992188,
+     "n_frames": 948
+    },
+    "excess": 0.959,
+    "excess_jerk": 0.954
+   },
+   "cv3_600w_026a542a": {
+    "student": {
+     "scatter_median": 10.849879264831543,
+     "scatter_iqr": 2.7202720642089844,
+     "jerk_median": 18.681947708129883,
+     "n_frames": 1588
+    },
+    "teacher": {
+     "scatter_median": 11.32492446899414,
+     "scatter_iqr": 2.611422538757324,
+     "jerk_median": 19.467069625854492,
+     "n_frames": 1588
+    },
+    "excess": 0.958,
+    "excess_jerk": 0.96
+   },
+   "cv3_600w_034f77bc": {
+    "student": {
+     "scatter_median": 12.194721221923828,
+     "scatter_iqr": 3.3785629272460938,
+     "jerk_median": 21.097028732299805,
+     "n_frames": 1690
+    },
+    "teacher": {
+     "scatter_median": 12.429801940917969,
+     "scatter_iqr": 3.2163286209106445,
+     "jerk_median": 21.524436950683594,
+     "n_frames": 1690
+    },
+    "excess": 0.981,
+    "excess_jerk": 0.98
+   },
+   "cv3_600w_04100098": {
+    "student": {
+     "scatter_median": 11.003756523132324,
+     "scatter_iqr": 3.2668209075927734,
+     "jerk_median": 18.92951202392578,
+     "n_frames": 1824
+    },
+    "teacher": {
+     "scatter_median": 11.136382102966309,
+     "scatter_iqr": 2.9881763458251953,
+     "jerk_median": 19.259906768798828,
+     "n_frames": 1824
+    },
+    "excess": 0.988,
+    "excess_jerk": 0.983
+   },
+   "cv3_600w_05b55121": {
+    "student": {
+     "scatter_median": 12.246878623962402,
+     "scatter_iqr": 2.6783618927001953,
+     "jerk_median": 21.036142349243164,
+     "n_frames": 1762
+    },
+    "teacher": {
+     "scatter_median": 12.675169944763184,
+     "scatter_iqr": 2.550180435180664,
+     "jerk_median": 21.77039909362793,
+     "n_frames": 1762
+    },
+    "excess": 0.966,
+    "excess_jerk": 0.966
+   },
+   "cv3_600w_0a35af94": {
+    "student": {
+     "scatter_median": 11.72083568572998,
+     "scatter_iqr": 2.88311767578125,
+     "jerk_median": 20.15949249267578,
+     "n_frames": 1630
+    },
+    "teacher": {
+     "scatter_median": 12.118803024291992,
+     "scatter_iqr": 2.556330680847168,
+     "jerk_median": 20.89179801940918,
+     "n_frames": 1630
+    },
+    "excess": 0.967,
+    "excess_jerk": 0.965
+   },
+   "cv3_1200w_00c10251": {
+    "student": {
+     "scatter_median": 11.294200897216797,
+     "scatter_iqr": 3.703608512878418,
+     "jerk_median": 19.34488296508789,
+     "n_frames": 3414
+    },
+    "teacher": {
+     "scatter_median": 11.488028526306152,
+     "scatter_iqr": 3.536635398864746,
+     "jerk_median": 19.84083366394043,
+     "n_frames": 3414
+    },
+    "excess": 0.983,
+    "excess_jerk": 0.975
+   },
+   "cv3_1200w_019b752c": {
+    "student": {
+     "scatter_median": 12.262860298156738,
+     "scatter_iqr": 3.3694324493408203,
+     "jerk_median": 21.096080780029297,
+     "n_frames": 3320
+    },
+    "teacher": {
+     "scatter_median": 12.519986152648926,
+     "scatter_iqr": 3.171213150024414,
+     "jerk_median": 21.48135757446289,
+     "n_frames": 3320
+    },
+    "excess": 0.979,
+    "excess_jerk": 0.982
+   },
+   "cv3_1200w_07549355": {
+    "student": {
+     "scatter_median": 12.395279884338379,
+     "scatter_iqr": 2.9801883697509766,
+     "jerk_median": 21.404644012451172,
+     "n_frames": 3217
+    },
+    "teacher": {
+     "scatter_median": 12.629562377929688,
+     "scatter_iqr": 2.785830497741699,
+     "jerk_median": 21.84872817993164,
+     "n_frames": 3217
+    },
+    "excess": 0.981,
+    "excess_jerk": 0.98
+   },
+   "cv3_1200w_0e08167a": {
+    "student": {
+     "scatter_median": 12.2826509475708,
+     "scatter_iqr": 3.8909683227539062,
+     "jerk_median": 21.32090950012207,
+     "n_frames": 3332
+    },
+    "teacher": {
+     "scatter_median": 12.567109107971191,
+     "scatter_iqr": 3.6523895263671875,
+     "jerk_median": 21.655168533325195,
+     "n_frames": 3332
+    },
+    "excess": 0.977,
+    "excess_jerk": 0.985
+   },
+   "cv3_1200w_0e493ab3": {
+    "student": {
+     "scatter_median": 12.253884315490723,
+     "scatter_iqr": 3.831545829772949,
+     "jerk_median": 21.276819229125977,
+     "n_frames": 2616
+    },
+    "teacher": {
+     "scatter_median": 12.403299331665039,
+     "scatter_iqr": 3.510199546813965,
+     "jerk_median": 21.375425338745117,
+     "n_frames": 2616
+    },
+    "excess": 0.988,
+    "excess_jerk": 0.995
+   },
+   "cv3_2400w_01b12fee": {
+    "student": {
+     "scatter_median": 12.680242538452148,
+     "scatter_iqr": 4.357791900634766,
+     "jerk_median": 21.85933494567871,
+     "n_frames": 6704
+    },
+    "teacher": {
+     "scatter_median": 12.969921112060547,
+     "scatter_iqr": 4.3048553466796875,
+     "jerk_median": 22.266128540039062,
+     "n_frames": 6704
+    },
+    "excess": 0.978,
+    "excess_jerk": 0.982
+   },
+   "cv3_2400w_02493bd5": {
+    "student": {
+     "scatter_median": 12.019266128540039,
+     "scatter_iqr": 3.3645334243774414,
+     "jerk_median": 20.760454177856445,
+     "n_frames": 6654
+    },
+    "teacher": {
+     "scatter_median": 12.219805717468262,
+     "scatter_iqr": 3.15195369720459,
+     "jerk_median": 21.127063751220703,
+     "n_frames": 6654
+    },
+    "excess": 0.984,
+    "excess_jerk": 0.983
+   },
+   "cv3_2400w_03e3ff5e": {
+    "student": {
+     "scatter_median": 12.22985553741455,
+     "scatter_iqr": 3.2374095916748047,
+     "jerk_median": 21.107227325439453,
+     "n_frames": 6778
+    },
+    "teacher": {
+     "scatter_median": 12.396029472351074,
+     "scatter_iqr": 3.1065502166748047,
+     "jerk_median": 21.3751220703125,
+     "n_frames": 6778
+    },
+    "excess": 0.987,
+    "excess_jerk": 0.987
+   },
+   "cv3_2400w_0615394f": {
+    "student": {
+     "scatter_median": 12.610596656799316,
+     "scatter_iqr": 5.023250579833984,
+     "jerk_median": 21.76487159729004,
+     "n_frames": 6262
+    },
+    "teacher": {
+     "scatter_median": 12.757728576660156,
+     "scatter_iqr": 4.777462005615234,
+     "jerk_median": 22.007810592651367,
+     "n_frames": 6262
+    },
+    "excess": 0.988,
+    "excess_jerk": 0.989
+   },
+   "cv3_2400w_0762b03b": {
+    "student": {
+     "scatter_median": 13.287907600402832,
+     "scatter_iqr": 3.2099218368530273,
+     "jerk_median": 22.922359466552734,
+     "n_frames": 6202
+    },
+    "teacher": {
+     "scatter_median": 13.441614151000977,
+     "scatter_iqr": 3.014641761779785,
+     "jerk_median": 23.177433013916016,
+     "n_frames": 6202
+    },
+    "excess": 0.989,
+    "excess_jerk": 0.989
+   }
+  },
+  "mf_nfe8h": {
+   "cv3_150w_024bb352": {
+    "student": {
+     "scatter_median": 11.38736629486084,
+     "scatter_iqr": 3.8858985900878906,
+     "jerk_median": 19.842374801635742,
+     "n_frames": 400
+    },
+    "teacher": {
+     "scatter_median": 11.864161491394043,
+     "scatter_iqr": 3.6892309188842773,
+     "jerk_median": 20.267221450805664,
+     "n_frames": 400
+    },
+    "excess": 0.96,
+    "excess_jerk": 0.979
+   },
+   "cv3_150w_03bda5da": {
+    "student": {
+     "scatter_median": 12.586893081665039,
+     "scatter_iqr": 4.125267028808594,
+     "jerk_median": 21.543031692504883,
+     "n_frames": 417
+    },
+    "teacher": {
+     "scatter_median": 13.075350761413574,
+     "scatter_iqr": 4.028210639953613,
+     "jerk_median": 22.396265029907227,
+     "n_frames": 417
+    },
+    "excess": 0.963,
+    "excess_jerk": 0.962
+   },
+   "cv3_150w_03bfce23": {
+    "student": {
+     "scatter_median": 11.112807273864746,
+     "scatter_iqr": 3.7508153915405273,
+     "jerk_median": 18.9813175201416,
+     "n_frames": 428
+    },
+    "teacher": {
+     "scatter_median": 11.25830078125,
+     "scatter_iqr": 3.808478355407715,
+     "jerk_median": 19.296703338623047,
+     "n_frames": 428
+    },
+    "excess": 0.987,
+    "excess_jerk": 0.984
+   },
+   "cv3_150w_045c8437": {
+    "student": {
+     "scatter_median": 11.625364303588867,
+     "scatter_iqr": 3.613875389099121,
+     "jerk_median": 19.85968780517578,
+     "n_frames": 503
+    },
+    "teacher": {
+     "scatter_median": 11.996606826782227,
+     "scatter_iqr": 3.4849977493286133,
+     "jerk_median": 20.57642364501953,
+     "n_frames": 503
+    },
+    "excess": 0.969,
+    "excess_jerk": 0.965
+   },
+   "cv3_150w_0546c96c": {
+    "student": {
+     "scatter_median": 11.89626693725586,
+     "scatter_iqr": 3.2199201583862305,
+     "jerk_median": 20.200542449951172,
+     "n_frames": 441
+    },
+    "teacher": {
+     "scatter_median": 12.295049667358398,
+     "scatter_iqr": 3.09725284576416,
+     "jerk_median": 20.99958038330078,
+     "n_frames": 441
+    },
+    "excess": 0.968,
+    "excess_jerk": 0.962
+   },
+   "cv3_300w_01ef691b": {
+    "student": {
+     "scatter_median": 11.410345077514648,
+     "scatter_iqr": 4.393281936645508,
+     "jerk_median": 19.825767517089844,
+     "n_frames": 985
+    },
+    "teacher": {
+     "scatter_median": 11.821199417114258,
+     "scatter_iqr": 4.380258560180664,
+     "jerk_median": 20.32374382019043,
+     "n_frames": 985
+    },
+    "excess": 0.965,
+    "excess_jerk": 0.975
+   },
+   "cv3_300w_03c708a9": {
+    "student": {
+     "scatter_median": 10.859851837158203,
+     "scatter_iqr": 3.3811826705932617,
+     "jerk_median": 18.48025894165039,
+     "n_frames": 944
+    },
+    "teacher": {
+     "scatter_median": 11.319077491760254,
+     "scatter_iqr": 3.169095993041992,
+     "jerk_median": 19.42274284362793,
+     "n_frames": 944
+    },
+    "excess": 0.959,
+    "excess_jerk": 0.951
+   },
+   "cv3_300w_07135af8": {
+    "student": {
+     "scatter_median": 11.236546516418457,
+     "scatter_iqr": 3.3808088302612305,
+     "jerk_median": 19.3658390045166,
+     "n_frames": 855
+    },
+    "teacher": {
+     "scatter_median": 11.54421615600586,
+     "scatter_iqr": 3.3130922317504883,
+     "jerk_median": 19.98954200744629,
+     "n_frames": 855
+    },
+    "excess": 0.973,
+    "excess_jerk": 0.969
+   },
+   "cv3_300w_095aa3aa": {
+    "student": {
+     "scatter_median": 12.466373443603516,
+     "scatter_iqr": 3.6307973861694336,
+     "jerk_median": 21.289663314819336,
+     "n_frames": 868
+    },
+    "teacher": {
+     "scatter_median": 12.902202606201172,
+     "scatter_iqr": 3.330944061279297,
+     "jerk_median": 22.245975494384766,
+     "n_frames": 868
+    },
+    "excess": 0.966,
+    "excess_jerk": 0.957
+   },
+   "cv3_300w_0d88bdb7": {
+    "student": {
+     "scatter_median": 11.199962615966797,
+     "scatter_iqr": 4.531183242797852,
+     "jerk_median": 19.167036056518555,
+     "n_frames": 948
+    },
+    "teacher": {
+     "scatter_median": 11.575357437133789,
+     "scatter_iqr": 4.642688751220703,
+     "jerk_median": 19.840133666992188,
+     "n_frames": 948
+    },
+    "excess": 0.968,
+    "excess_jerk": 0.966
+   },
+   "cv3_600w_026a542a": {
+    "student": {
+     "scatter_median": 10.915785789489746,
+     "scatter_iqr": 2.6102123260498047,
+     "jerk_median": 18.774608612060547,
+     "n_frames": 1588
+    },
+    "teacher": {
+     "scatter_median": 11.32492446899414,
+     "scatter_iqr": 2.611422538757324,
+     "jerk_median": 19.467069625854492,
+     "n_frames": 1588
+    },
+    "excess": 0.964,
+    "excess_jerk": 0.964
+   },
+   "cv3_600w_034f77bc": {
+    "student": {
+     "scatter_median": 12.25384521484375,
+     "scatter_iqr": 3.337344169616699,
+     "jerk_median": 21.131669998168945,
+     "n_frames": 1690
+    },
+    "teacher": {
+     "scatter_median": 12.429801940917969,
+     "scatter_iqr": 3.2163286209106445,
+     "jerk_median": 21.524436950683594,
+     "n_frames": 1690
+    },
+    "excess": 0.986,
+    "excess_jerk": 0.982
+   },
+   "cv3_600w_04100098": {
+    "student": {
+     "scatter_median": 10.990057945251465,
+     "scatter_iqr": 3.204221725463867,
+     "jerk_median": 18.932600021362305,
+     "n_frames": 1824
+    },
+    "teacher": {
+     "scatter_median": 11.136382102966309,
+     "scatter_iqr": 2.9881763458251953,
+     "jerk_median": 19.259906768798828,
+     "n_frames": 1824
+    },
+    "excess": 0.987,
+    "excess_jerk": 0.983
+   },
+   "cv3_600w_05b55121": {
+    "student": {
+     "scatter_median": 12.249595642089844,
+     "scatter_iqr": 2.6451759338378906,
+     "jerk_median": 21.005605697631836,
+     "n_frames": 1762
+    },
+    "teacher": {
+     "scatter_median": 12.675169944763184,
+     "scatter_iqr": 2.550180435180664,
+     "jerk_median": 21.77039909362793,
+     "n_frames": 1762
+    },
+    "excess": 0.966,
+    "excess_jerk": 0.965
+   },
+   "cv3_600w_0a35af94": {
+    "student": {
+     "scatter_median": 11.835066795349121,
+     "scatter_iqr": 2.8467445373535156,
+     "jerk_median": 20.3349609375,
+     "n_frames": 1630
+    },
+    "teacher": {
+     "scatter_median": 12.118803024291992,
+     "scatter_iqr": 2.556330680847168,
+     "jerk_median": 20.89179801940918,
+     "n_frames": 1630
+    },
+    "excess": 0.977,
+    "excess_jerk": 0.973
+   },
+   "cv3_1200w_00c10251": {
+    "student": {
+     "scatter_median": 11.329882621765137,
+     "scatter_iqr": 3.720730781555176,
+     "jerk_median": 19.486713409423828,
+     "n_frames": 3414
+    },
+    "teacher": {
+     "scatter_median": 11.488028526306152,
+     "scatter_iqr": 3.536635398864746,
+     "jerk_median": 19.84083366394043,
+     "n_frames": 3414
+    },
+    "excess": 0.986,
+    "excess_jerk": 0.982
+   },
+   "cv3_1200w_019b752c": {
+    "student": {
+     "scatter_median": 12.261886596679688,
+     "scatter_iqr": 3.2884445190429688,
+     "jerk_median": 21.062824249267578,
+     "n_frames": 3320
+    },
+    "teacher": {
+     "scatter_median": 12.519986152648926,
+     "scatter_iqr": 3.171213150024414,
+     "jerk_median": 21.48135757446289,
+     "n_frames": 3320
+    },
+    "excess": 0.979,
+    "excess_jerk": 0.981
+   },
+   "cv3_1200w_07549355": {
+    "student": {
+     "scatter_median": 12.393911361694336,
+     "scatter_iqr": 2.9296979904174805,
+     "jerk_median": 21.392683029174805,
+     "n_frames": 3217
+    },
+    "teacher": {
+     "scatter_median": 12.629562377929688,
+     "scatter_iqr": 2.785830497741699,
+     "jerk_median": 21.84872817993164,
+     "n_frames": 3217
+    },
+    "excess": 0.981,
+    "excess_jerk": 0.979
+   },
+   "cv3_1200w_0e08167a": {
+    "student": {
+     "scatter_median": 12.248920440673828,
+     "scatter_iqr": 3.870478630065918,
+     "jerk_median": 21.293851852416992,
+     "n_frames": 3332
+    },
+    "teacher": {
+     "scatter_median": 12.567109107971191,
+     "scatter_iqr": 3.6523895263671875,
+     "jerk_median": 21.655168533325195,
+     "n_frames": 3332
+    },
+    "excess": 0.975,
+    "excess_jerk": 0.983
+   },
+   "cv3_1200w_0e493ab3": {
+    "student": {
+     "scatter_median": 12.201194763183594,
+     "scatter_iqr": 3.7093067169189453,
+     "jerk_median": 21.150121688842773,
+     "n_frames": 2616
+    },
+    "teacher": {
+     "scatter_median": 12.403299331665039,
+     "scatter_iqr": 3.510199546813965,
+     "jerk_median": 21.375425338745117,
+     "n_frames": 2616
+    },
+    "excess": 0.984,
+    "excess_jerk": 0.989
+   },
+   "cv3_2400w_01b12fee": {
+    "student": {
+     "scatter_median": 12.688272476196289,
+     "scatter_iqr": 4.309072494506836,
+     "jerk_median": 21.86688995361328,
+     "n_frames": 6704
+    },
+    "teacher": {
+     "scatter_median": 12.969921112060547,
+     "scatter_iqr": 4.3048553466796875,
+     "jerk_median": 22.266128540039062,
+     "n_frames": 6704
+    },
+    "excess": 0.978,
+    "excess_jerk": 0.982
+   },
+   "cv3_2400w_02493bd5": {
+    "student": {
+     "scatter_median": 12.017548561096191,
+     "scatter_iqr": 3.2463274002075195,
+     "jerk_median": 20.760637283325195,
+     "n_frames": 6654
+    },
+    "teacher": {
+     "scatter_median": 12.219805717468262,
+     "scatter_iqr": 3.15195369720459,
+     "jerk_median": 21.127063751220703,
+     "n_frames": 6654
+    },
+    "excess": 0.983,
+    "excess_jerk": 0.983
+   },
+   "cv3_2400w_03e3ff5e": {
+    "student": {
+     "scatter_median": 12.209250450134277,
+     "scatter_iqr": 3.161764144897461,
+     "jerk_median": 21.07013511657715,
+     "n_frames": 6778
+    },
+    "teacher": {
+     "scatter_median": 12.396029472351074,
+     "scatter_iqr": 3.1065502166748047,
+     "jerk_median": 21.3751220703125,
+     "n_frames": 6778
+    },
+    "excess": 0.985,
+    "excess_jerk": 0.986
+   },
+   "cv3_2400w_0615394f": {
+    "student": {
+     "scatter_median": 12.5736722946167,
+     "scatter_iqr": 4.968989372253418,
+     "jerk_median": 21.739377975463867,
+     "n_frames": 6262
+    },
+    "teacher": {
+     "scatter_median": 12.757728576660156,
+     "scatter_iqr": 4.777462005615234,
+     "jerk_median": 22.007810592651367,
+     "n_frames": 6262
+    },
+    "excess": 0.986,
+    "excess_jerk": 0.988
+   },
+   "cv3_2400w_0762b03b": {
+    "student": {
+     "scatter_median": 13.24710464477539,
+     "scatter_iqr": 3.162599563598633,
+     "jerk_median": 22.82280731201172,
+     "n_frames": 6202
+    },
+    "teacher": {
+     "scatter_median": 13.441614151000977,
+     "scatter_iqr": 3.014641761779785,
+     "jerk_median": 23.177433013916016,
+     "n_frames": 6202
+    },
+    "excess": 0.986,
+    "excess_jerk": 0.985
+   }
+  },
+  "closed_loop": {
+   "qf_mf_nfe2": {
+    "scatter_median": 10.84610366821289,
+    "scatter_iqr": 4.487277507781982,
+    "jerk_median": 18.689197540283203,
+    "n_frames": 2166
+   },
+   "qf_mf_nfe1": {
+    "scatter_median": 12.267635345458984,
+    "scatter_iqr": 4.268113136291504,
+    "jerk_median": 21.202438354492188,
+    "n_frames": 2023
+   }
+  }
+ },
+ "cl_script": "Speaker 1: \"Fancy,\" said Lucy, running to meet Conniston one afternoon as soon as he appeared at the drawing room door, \"I have found the diary of mrs Gilroy.\". \"Will that be honorable?\" said Lucy, retaining her hold of the book. She knew too much about the murder, and fled because she thought Durham would come and question her.\". A woman like mrs Gilroy does not take such a course for nothing. She's a clever woman.\".\nSpeaker 1: \"And a very disagreeable woman,\" said Lucy, emphatically. But, after some reflection, he decided to speak out. You are the truest and best woman in the world,\" said Conniston, eagerly, \"but what I have to tell you is not my own secret. It concerns Bernard.\". \"Then don't tell me,\" said Lucy, coloring angrily. To know why I do, it is necessary that you should learn all that we have discovered.\".\nSpeaker 1: \"You will, when you learn what I have to say.\" And Conniston related everything concerning the false marriage and the half brother of young Gore. \"And now, you see,\" he finished triumphantly, \"mrs Gilroy is fighting for her son. It is probable that she has set down the events of that night in her diary.\". Criminals who are very secretive in speech sometimes give themselves away in writing.\nSpeaker 1: \"Yes, with Julius; so neither of us had anything to do with the matter, if that is what you mean.\". \"You might suspect Julius,\" said Lucy, suspiciously, \"and although we have quarrelled I don't want to harm him.\". \"Oh!\" Lucy burst into tears and impulsively threw the book into Conniston's lap. \"Read it at once; I would rather save Bernard than Julius.\".\nSpeaker 1: He took away the diary with Lucy's permission, and carried it in triumph to the castle. Here he and Bernard sat down to master its contents. Conniston made out a short and concise account of the events of that fatal night, for the benefit of Durham. mrs Gilroy, it appears, thought that her son, Michael, was really and truly in America.\nSpeaker 1: When the presumed Bernard went away before six, he did not call again at ten o'clock. He saw Sir Simon and after a stormy interview he departed. Still, she may have thought it might fall into the hands of another person, and therefore made her son safe. See! here's the bit,\" and he read, \"Sir Simon was alive after mr Gore left the house.\".\nSpeaker 1: mrs Gilroy found the body, knew what had occurred, and then ran out on hearing Jerry's whistle knowing she would meet you. \"Afterwards, and shortly before a quarter past ten, there came a ring at the door. mrs Gilroy went, and there she found Signor Tolomeo, who asked to see Sir Simon. She took him up the stairs, and left him to speak with Sir Simon.\nSpeaker 1: What took place she did not know, but she was sitting below working, and heard the door close. mrs Gilroy-as appeared from the diary-ran up to see if the master was all right. She found him strangled, and with the handkerchiefs tied over his mouth and round his neck. He had come back again, and mrs Gilroy said she accused him.\nSpeaker 1: She then stated in her diary that she looked upon Bernard as an accessory after the fact. He had hired Guiseppe Tolomeo to kill his grandfather, and then came to see if the deed had been executed thoroughly. mrs Gilroy ended her diary by stating that she would do her best to get both the Italian and his nephew hanged.\nSpeaker 1: \"Very much obliged to her,\" said Bernard, when Conniston concluded reading, and beginning to walk to and fro. \"Well, it seems my uncle is the guilty person, Conniston.\". \"If we could only find Michael,\" said Bernard, dolefully. \"I believe she left the diary behind on purpose,\" said Gore, with some ill humor. His blood is hot, and he has a temper something like the one I have inherited from my mother, who was Guiseppe's sister.\nSpeaker 1: He has the credit for being a scamp, but I don't think he deserves it.\". However, Durham, at my request, has put an advertisement in the papers which may bring him to the office, then we can see how much of this story is true. Certainly, mrs Gilroy may have seen him at the house on that night.\". Sir Simon hated him, but if Guiseppe was hard up he wouldn't mind that.\nSpeaker 1: I daresay Tolomeo did see Sir Simon, and did have a row, as both he and grandfather were hot blooded. But I don't believe my uncle killed Sir Simon,\" said Bernard, striking the table. Tolomeo, from your account of him, would not commit a murder without getting some money from doing it. But the best thing to do, is to take this up to Durham and see what he thinks.\".\n"
+}
