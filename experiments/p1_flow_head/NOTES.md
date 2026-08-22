@@ -3030,6 +3030,63 @@ teacher-head calls, pure small-head speed story); polish k2–3 audio-only
 head-path cost when maximum fidelity matters). MeanFlow's acceptance
 test, restated in ear terms: make 2:25–2:50 the whole render.
 
+## 2026-08-21 — CFG SWEEP CLOSE-OUT (ear verdicts + the register decision)
+
+**Head dial (qf_cfg10/13/16/20, Josh):** "16 was ok, 20 just got loud and
+peaked and a little more expressive." → **1.3 native, 1.6 usable (a free
+modest expressiveness bump), 2.0 over-driven** — textbook baked-in-scale
+extrapolation, exactly as 2607.24731 predicts. Paper sentence + practical
+bound in one.
+
+**Teacher register (qf_teacher_cfg13 vs 20, Josh):** "teacher sounded good
+[at 2.0], maybe a bit fast. So ideally I think future would be a good 1.6
+but this is fine we can stick with our 1.3 for now, its not bad."
+**DECISIONS: (a) operating config stays 1.3** (with 1.6 available as an
+ear-approved bump); **(b) any future capture renders the teacher at 1.6**
+— Josh's production register leans expressive (his HF Space defaults 2.0)
+and the current 1.3 diet is the flatter teacher; 1.6 splits the
+difference without 2.0's loudness/pace cost. Context surfaced: some of
+the head's perceived emotion deficit is REGISTER (we distilled the 1.3
+teacher), not head shortfall.
+
+## 2026-08-21 — P2 MEANFLOW PRE-REGISTRATION (the last planned quality lever; build next)
+
+Promoted per the quality-night ledger (data +2.1 dB paid · steps +0.2
+exhausted · size 0 · polish ≈0). **Ear-verified target (Josh): the
+frame-boundary sampling scatter — "tiny voice frames mismatched just ever
+so slightly." Acceptance test in his words: make 2:25–2:50 the whole
+render.** Mechanism: MeanFlow learns the AVERAGE velocity over an
+interval (u(x_t, t→r)) instead of the instantaneous field, so 1–2-step
+sampling lands directly where the many-step trajectory would — a tighter
+conditional → adjacent independent draws cohere → less scatter.
+
+Build plan (references: MeanFlow Geng 2025; DSFlow 2602.09041; IntMeanFlow
+2510.07979; dots.tts's MeanFlow head as prior art to cite):
+1. `src/flow_head/meanflow.py`: MeanFlow loss with the JVP-tangent
+   identity + stopgrad target; head gains a second time input r (an added
+   embedding summed into conditioning — same pattern as the σ-bucket; new
+   artifact tag `mf_`). Tier-1 tests: JVP vs finite differences (the test
+   CLAUDE.md's tier list anticipated on day one), r=t degenerates to CFM,
+   loss values on known inputs.
+2. **New ear-pack-adjacent instrument: inter-frame latent scatter** —
+   distribution of ‖z_t − z_{t−1}‖ (and its high-frequency component) vs
+   the teacher's, measured on renders. The direct metric for the named
+   residue; cheap; added to scorers.
+3. Training: v3 pool (1.94M frames), 40K steps, ckpts every 5K, warm
+   comparisons vs `v3_640b_step80000` (the CFM incumbent).
+4. Eval: teacher-forced held-out + 30 s-chunked closed loop at **NFE 1
+   and 2** (MeanFlow's home regime) and NFE 8 (comparability), ear pack +
+   scatter metric, then Josh's ear.
+
+| Verdict | Condition |
+|---|---|
+| **MEANFLOW WINS** | chunked render: golden-window HNR ≥ 10.5 (the missed halfway bar) OR scatter metric within 1.5× teacher, at NFE ≤ 2, AND Josh hears the mismatch reduced vs `41_NEW_BEST` → new operating head; speed story upgrades (1–2 NFE ≈ 4–8× fewer head evals than heun8) |
+| **PARTIAL** | metrics move but ear says scatter persists → iterate (DSFlow's AdaLN-vs-token conditioning ablation is the first variation) |
+| **NULL** | no improvement over the CFM incumbent at any NFE → objective acquitted; residue is data-scale (rung 2: 2–4× capture AT CFG 1.6) or genuinely irreducible at 16.6M |
+
+Est. cost: ~$12–18 (training + renders + scoring). Gate rule (constraint
+6) applies: 1K/5K gate with decode+listen before the 40K run.
+
 ## Gate Night 1 continued — venue read (updates review §5)
 
 The scaling curve was the ICASSP-vs-Interspeech decision gate, and it is
