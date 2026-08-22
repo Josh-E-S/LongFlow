@@ -20,7 +20,55 @@ Full scope, positioning, data plan, and phases: `README.md`. ~~Paper target: Int
 - ~~**Next task is P1: the flow-head baseline** — caching pipeline (`src/cache/`, reuse the positive-stream logic from `src/steering/contrast_pairs.py`), then OT-CFM 4-NFE head with the mandatory 1K/5K gate check before the full 75K run.~~ **[2026-08-10]** P1 is mid-flight, not pending: caching pipeline built (batched, 4.9×), gate PASSED, 10K scaling PASSED, E3 steps-scaling FAILED. See the August addendum for the actual next action.
 - ~~Phase order: P1 flow-head baseline → P2 MeanFlow 1–2 NFE → P3 anchoring + benchmark → P4 encoder distillation (stretch) → P5 paper.~~ **[2026-08-10]** See revised ordering in the August addendum.
 
-## Current state (2026-08-18 — READ THIS FIRST; supersedes everything below)
+## Current state (2026-08-21 — READ THIS FIRST; supersedes everything below)
+
+The quality-night arc (08-19→21) is fully logged in NOTES from "QUALITY
+NIGHT PRE-REGISTRATION" onward. Headlines:
+
+- **EAR PACK shipped** (`src/eval/metrics.py::ear_pack`): per-window HNR /
+  CPPS / jitter / shimmer / flatness / HF-ratio + `asr_confidence`. HNR is
+  the validated ear-proxy (Josh's "cold/snow/garble" family = one variable,
+  distance from the σ-VAE manifold; proven by intervention via
+  teacher-polish). Every scorer reports ear-pack curves + graphs.
+- **Capture v3: 757 scripts / 1.94M CLEAN frames (~72 h), σ≡0**, even
+  bins, `longflow_p1_cache_v3`. Rule: offline base trains clean only.
+- **Quality-lever ledger (all pre-registered, all measured):** 4× data
+  **+2.1 dB** golden-window HNR (PAID; E3's law extends to cleanliness) ·
+  steps +0.2 dB (exhausted at ~42 epochs) · width-960 **0** (capacity
+  acquitted again; ladder paused) · teacher-polish ≈0 on the good head
+  (the head grew into the polish; knob retired to quality-toggle/
+  diagnostic duty).
+- **OPERATING CONFIG (ear-certified): `v3_640b_step80000` head (16.6M,
+  trained 80K on the 72 h pool), heun8 + CFG 1.3, 30 s golden-window
+  chunks, 0.25 s crossfades. Held-out records: WER 0.1435 / sim 0.9709.
+  Josh's grade: 75–85% of teacher SUSTAINED whole-render; one 25 s window
+  hit 90% (first ever).** Optional "quality mode": +audio-only polish k3
+  (independent noise ONLY — EMA/correlated noise is retired everywhere;
+  in the feedback path it is GN5 poison, on the audio path it wobbles).
+- **The one named residue: frame-boundary sampling scatter** ("tiny voice
+  frames mismatched ever so slightly") — a slightly-wide conditional ×
+  independent per-frame draws. **P2 MeanFlow is pre-registered and is the
+  next build** (NOTES "P2 MEANFLOW PRE-REGISTRATION"): second time-input r,
+  JVP loss, inter-frame-scatter metric, NFE 1–2, bars incl. HNR ≥ 10.5;
+  acceptance test in Josh's words: "make 2:25–2:50 the whole render."
+- **CFG register decisions:** head dial 1.3 native / 1.6 usable / 2.0
+  over-driven (baked-in-scale confirmed). Teacher at 2.0 = Josh's
+  production register (his HF Space) — we've been distilling the flatter
+  1.3 teacher. **Future captures render the teacher at 1.6. Config stays
+  1.3 for now.**
+- **Expressive control (tags like [sad]/[laughing]): a SEPARATE follow-on
+  project by constitution** (needs backbone LoRA → violates constraint 1;
+  TTS-1's recipe is the blueprint, N7 the before-story). Inference-only
+  expressiveness available today: CFG 1.6, the PsiPi reference-audio
+  trick, phrasing — none touch training by construction.
+- Golden-window law (proven by ear + forensics): render quality tracks the
+  fraction of context that is still prompt/teacher-grade; chunking resets
+  it. Single-stream endurance remains the stage-2 research problem;
+  the product ships chunks.
+- TOP PICKS Drive folder (id 1rcrFc8jGk3xzcMO0Toi-y6nlShL3N2g2) holds
+  curated renders with a README; 41/42 = current best; keep it updated.
+
+## Current state (2026-08-18 — superseded by the section above; background)
 
 Three intense days (08-17→18) after the truncation-audit session; full log =
 `experiments/p1_flow_head/NOTES.md` from "FULL-HISTORY REVIEW SESSION"
