@@ -39,6 +39,11 @@ class FlowHeadConfig:
     # head how much feedback noise the captured condition was generated under
     # (reading-pass decision, 2026-08-14). 0 disables.
     sigma_buckets: int = 0
+    # meanflow (P2, 2026-08-21): the head becomes an AVERAGE-velocity field
+    # u(x_t, t -> r) with a second time input r (target interval end). r = t
+    # degenerates to the instantaneous field (CFM-compatible). Defaults keep
+    # every earlier checkpoint loading unchanged.
+    meanflow: bool = False
 
 
 # Bucket edges for the capture-v2 sigma schedule (50% clean / 40% U(0.1,0.3) /
@@ -91,10 +96,13 @@ class AdaLNBlock(nn.Module):
 
 
 def timestep_embedding(t: torch.Tensor, dim: int) -> torch.Tensor:
-    """Sinusoidal embedding of t in [0, 1]; t shape [B] -> [B, dim]."""
+    """Sinusoidal embedding of t in [0, 1]; t shape [B] -> [B, dim].
+    Preserves the input's floating dtype (float64 passes stay float64 —
+    needed by the MeanFlow JVP-vs-finite-difference verification)."""
     half = dim // 2
-    freqs = torch.exp(-math.log(10000.0) * torch.arange(half, device=t.device) / half)
-    ang = t[:, None].float() * freqs[None, :] * 1000.0
+    dtype = t.dtype if t.is_floating_point() else torch.float32
+    freqs = torch.exp(-math.log(10000.0) * torch.arange(half, device=t.device, dtype=dtype) / half)
+    ang = t.to(dtype)[:, None] * freqs[None, :] * 1000.0
     return torch.cat([ang.cos(), ang.sin()], dim=-1)
 
 
@@ -114,6 +122,8 @@ class FlowHead(nn.Module):
         if cfg.sigma_buckets > 0:
             self.sigma_emb = nn.Embedding(cfg.sigma_buckets, w)
             nn.init.zeros_(self.sigma_emb.weight)  # sigma info is a no-op at init
+        if cfg.meanflow:
+            self.r_mlp = nn.Sequential(nn.Linear(w, w), nn.SiLU(), nn.Linear(w, w))
         self.blocks = nn.ModuleList([AdaLNBlock(w, cfg.ffn_ratio) for _ in range(cfg.layers)])
         self.final_norm = RMSNorm(w, affine=False)
         self.out_proj = nn.Linear(w, cfg.d_latent)
@@ -127,6 +137,7 @@ class FlowHead(nn.Module):
         condition: torch.Tensor,
         neg_condition: torch.Tensor | None = None,
         sigma_bucket: torch.Tensor | None = None,
+        r: torch.Tensor | None = None,
     ):
         if x_t.shape[-1] != self.cfg.d_latent or condition.shape[-1] != self.cfg.d_model:
             raise ValueError(
@@ -151,7 +162,15 @@ class FlowHead(nn.Module):
                 f"sigma_buckets={self.cfg.sigma_buckets} but sigma_bucket "
                 f"{'missing' if sigma_bucket is None else 'given'}"
             )
+        if self.cfg.meanflow != (r is not None):
+            raise ValueError(
+                f"meanflow={self.cfg.meanflow} but r {'missing' if r is None else 'given'}"
+            )
         cond = self.cond_proj(condition) + self.time_mlp(timestep_embedding(t, self.cfg.width))
+        if r is not None:
+            if r.shape != t.shape:
+                raise ValueError(f"r {tuple(r.shape)} != t {tuple(t.shape)}")
+            cond = cond + self.r_mlp(timestep_embedding(r, self.cfg.width))
         if neg_condition is not None:
             if neg_condition.shape != condition.shape:
                 raise ValueError(

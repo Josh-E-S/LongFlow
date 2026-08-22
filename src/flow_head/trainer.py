@@ -130,10 +130,15 @@ def train(
     seed: int = 0,
     checkpoint_every: int | None = None,
     checkpoint_path_fn=None,
+    loss_fn=None,
 ) -> dict:
     """lr_final: if set, cosine-decay from lr to lr_final over the run
     (review-adversarial.md §3 — constant-lr-to-the-end leaves terminal loss
     on the table).
+
+    loss_fn: optional callable (head, x1, condition) -> scalar loss replacing
+    the default CFM objective (P2: pass a meanflow_loss lambda). The custom
+    path is cond-only — dual-stream/sigma pools are refused with it.
 
     checkpoint_every/checkpoint_path_fn: if both given, saves an intermediate
     checkpoint every `checkpoint_every` steps via `checkpoint_path_fn(step)`
@@ -159,13 +164,20 @@ def train(
             frac = 0.5 * (1 + math.cos(math.pi * step / steps))
             opt.param_groups[0]["lr"] = lr_final + (lr - lr_final) * frac
         idx = torch.randint(0, hidden.shape[0], (batch_size,), generator=g)
-        loss = cfm_loss(
-            head,
-            latent[idx],
-            hidden[idx],
-            neg_condition=neg[idx] if neg is not None else None,
-            sigma_bucket=sig[idx] if sig is not None else None,
-        )
+        if loss_fn is not None:
+            if neg is not None or sig is not None:
+                raise ValueError(
+                    "custom loss_fn path is cond-only — load the pool without v2 fields"
+                )
+            loss = loss_fn(head, latent[idx], hidden[idx])
+        else:
+            loss = cfm_loss(
+                head,
+                latent[idx],
+                hidden[idx],
+                neg_condition=neg[idx] if neg is not None else None,
+                sigma_bucket=sig[idx] if sig is not None else None,
+            )
         opt.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0)
